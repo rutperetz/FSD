@@ -12,15 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Smart_Group">
 
-        <!-- Login screen (XML) -->
+        <!-- Register screen -->
         <activity
-            android:name=".LoginActivity"
+            android:name="com.example.smart_group.RegisterActivity"
             android:exported="false"
+            android:label="@string/title_activity_register"
             android:theme="@style/Theme.Smart_Group" />
 
-        <!-- Launcher activity -->
+        <!-- Login screen (Launcher activity) -->
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.smart_group.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Smart_Group">
             <intent-filter>
@@ -30,5 +31,6 @@
         </activity>
 
     </application>
+
 
 </manifest>
