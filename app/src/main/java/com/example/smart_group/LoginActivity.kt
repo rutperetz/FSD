@@ -14,6 +14,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         val forgotPassword = findViewById<TextView>(R.id.forgot_password_link_text)
+
         forgotPassword.setOnClickListener {
             startActivity(Intent(this, Forgot_PasswordActivity::class.java))
         }
