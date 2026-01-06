@@ -1,25 +1,22 @@
 package com.example.smart_group
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.example.fsd.R
+import android.content.Intent
+import android.widget.TextView
 
-class LoginActivity : ComponentActivity() {
+
+class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // מוצאים את TextView של Register
-        val registerText: TextView = findViewById(R.id.register_link_text)
-
-        // מאזין ללחיצה על כל השורה
-        registerText.setOnClickListener {
-            // Intent שמעביר ל-RegisterActivity
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+        val forgotPassword = findViewById<TextView>(R.id.forgot_password_link_text)
+        forgotPassword.setOnClickListener {
+            startActivity(Intent(this, Forgot_PasswordActivity::class.java))
         }
+
     }
 }
