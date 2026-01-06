@@ -2,8 +2,8 @@ package com.example.smart_group
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-
-class LoginActivity : ComponentActivity() {
+import androidx.appcompat.app.AppCompatActivity
+class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
