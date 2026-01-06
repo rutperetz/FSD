@@ -21,7 +21,7 @@
         android:shadowRadius="4"
         android:text="LOGIN"
         android:textColor="@color/blue"
-        android:textSize="32sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -29,16 +29,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/id_input"
+        android:id="@+id/email_input"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/text_box"
-        android:drawableStart="@drawable/id"
+        android:drawableStart="@drawable/email"
         android:drawablePadding="12dp"
-        android:hint="ID"
+        android:hint="Email"
         android:padding="14dp"
         android:textColor="@color/black"
         android:imeOptions="actionNext"
@@ -47,26 +47,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_login" />
-
-    <EditText
-        android:id="@+id/username_input"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/text_box"
-        android:drawableStart="@drawable/person"
-        android:drawablePadding="12dp"
-        android:hint="Username"
-        android:padding="14dp"
-        android:textColor="@color/black"
-        android:imeOptions="actionNext"
-        android:singleLine="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/id_input" />
 
     <EditText
         android:id="@+id/password_input"
@@ -87,7 +67,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/username_input" />
+        app:layout_constraintTop_toBottomOf="@id/email_input" />
 
 
     <com.google.android.material.button.MaterialButton
@@ -95,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="35dp"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:paddingTop="12dp"
@@ -117,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         android:text="Don't have a user? Register"
-        android:textSize="14sp"
+        android:textSize="19sp"
         android:textColor="@color/black"
         android:fontFamily="sans-serif"
         android:clickable="true"
@@ -134,7 +114,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="Forgot password"
-        android:textSize="14sp"
+        android:textSize="19sp"
         android:textColor="@color/black"
         android:fontFamily="sans-serif"
         android:clickable="true"
