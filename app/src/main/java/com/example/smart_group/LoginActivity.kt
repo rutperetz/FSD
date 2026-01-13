@@ -12,14 +12,12 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // מוצאים את TextView של Register
         val registerText: TextView = findViewById(R.id.register_link_text)
 
-        // מאזין ללחיצה על כל השורה
         registerText.setOnClickListener {
-            // Intent שמעביר ל-RegisterActivity
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
         }
     }
 }
