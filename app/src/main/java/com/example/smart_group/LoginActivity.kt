@@ -1,13 +1,9 @@
 package com.example.smart_group
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.fsd.R
-import android.content.Intent
-import android.widget.TextView
+import androidx.activity.ComponentActivity
 
-
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
