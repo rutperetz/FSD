@@ -1,10 +1,9 @@
-package com.example.smart_group.model
+package com.example.smart_group.data.model
 
 data class User(
-    val userId: String, //UUID
+    val userId: String, //firebase uid
     val userName: String,
     val email: String,
-    val passwordHash: String,
     val role: UserRole
 )
 
