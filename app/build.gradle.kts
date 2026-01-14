@@ -49,5 +49,14 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    
+        // Firebase Firestore
+        implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
+
+        // Kotlin Coroutines support for Firebase Tasks
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+
+
 }
 
