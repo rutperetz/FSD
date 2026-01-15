@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Smart_Group</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <string name="edit_questionnaire"><u>View/Edit questionnaire</u></string>
+    <string name="log_out"><u>Log Out</u></string>
+
 </resources>

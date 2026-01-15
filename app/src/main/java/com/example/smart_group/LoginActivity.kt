@@ -1,6 +1,8 @@
 package com.example.smart_group
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 
 class LoginActivity : ComponentActivity() {
