@@ -1,20 +1,38 @@
 package com.example.smart_group
 
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.smart_group.R
+import com.example.smart_group.network.ApiClient
+import com.example.smart_group.network.ApiService
+import com.google.android.material.button.MaterialButton
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        // ---- בדיקה שהאנדרואיד מצליח לדבר עם השרת (Render) ----
+        val api = ApiClient.retrofit.create(ApiService::class.java)
+
+        api.ping().enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                Log.d("SERVER", "Ping success. code=${response.code()} body=${response.body()}")
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.e("SERVER", "Ping failed: ${t.message}", t)
+            }
+        })
+        // ---------------------------------------------------------
 
         val backArrow = findViewById<ImageView>(R.id.back_arrow)
         val usernameInput = findViewById<EditText>(R.id.username_input)
@@ -36,41 +54,21 @@ class RegisterActivity : AppCompatActivity() {
             val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,10}$")
 
             when {
+                username.isEmpty() -> usernameInput.error = "Username is required"
+                !usernameRegex.matches(username) ->
+                    usernameInput.error = "Username must contain only English letters (max 15)"
 
-                username.isEmpty() -> {
-                    usernameInput.error = "Username is required"
-                }
-
-                !usernameRegex.matches(username) -> {
-                    usernameInput.error =
-                        "Username must contain only English letters (max 15)"
-                }
-
-                email.isEmpty() -> {
-                    emailInput.error = "Email is required"
-                }
-
-                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                email.isEmpty() -> emailInput.error = "Email is required"
+                !Patterns.EMAIL_ADDRESS.matcher(email).matches() ->
                     emailInput.error = "Invalid email address"
-                }
 
-                password.isEmpty() -> {
-                    passwordInput.error = "Password is required"
-                }
-
-                !passwordRegex.matches(password) -> {
-                    passwordInput.error =
-                        "Password must be 8–10 characters and include letters and numbers"
-                }
+                password.isEmpty() -> passwordInput.error = "Password is required"
+                !passwordRegex.matches(password) ->
+                    passwordInput.error = "Password must be 8–10 characters and include letters and numbers"
 
                 else -> {
-                    Toast.makeText(
-                        this,
-                        "Registration successful!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    // כאן בהמשך: Firebase / Server
+                    Toast.makeText(this, "Validation passed ✅", Toast.LENGTH_SHORT).show()
+                    // כאן נחבר Register אמיתי לשרת כשיהיה לנו endpoint
                 }
             }
         }
