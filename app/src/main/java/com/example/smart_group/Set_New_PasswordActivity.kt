@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.fsd.R
+import com.example.smart_group.R
 import com.google.android.material.button.MaterialButton
 
 class Set_New_PasswordActivity : AppCompatActivity() {
