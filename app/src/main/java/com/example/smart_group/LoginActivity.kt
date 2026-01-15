@@ -24,4 +24,4 @@ class LoginActivity : ComponentActivity() {
         }
 
     }
-}
+}}
