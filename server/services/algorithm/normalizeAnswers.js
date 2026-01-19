@@ -1,5 +1,4 @@
-const schema = require('./answerSchema.js') ;
-const computeCompatibility = require('../algorithm/similarityScore.js');
+
 function normalizeAnswers(ans) {
     const vector = [];
 
@@ -51,39 +50,5 @@ function normalizeAnswers(ans) {
 
     return vector;
 }
-// //testing
-// answers = [{
-//     "gender": "female",
-//     "genderPreference": "women",
-//     "availability": [
-//         "afternoon"
-//     ],
-//     "workStyle": "individual",
-//     "workMode": [
-//         "oncampus", "remote"
-//     ],
-//     "language": "Hebrew",
-//     "taskPreference": "flexible"
-// }, {
-//         "gender": "female",
-//         "genderPreference": "women",
-//         "availability": [
-//             "afternoon"
-//         ],
-//         "workStyle": "individual",
-//         "workMode": [
-//             "oncampus", "remote"
-//         ],
-//         "language": "Hebrew",
-//         "taskPreference": "flexible"
-//     }]
-// weights = {
-//     availability: 0.4,
-//     workMode: 0.1,
-//     workStyle: 0.2,
-//     language: 0.15,
-//     taskPreference: 0.15
-// }
-// vecs = answers.map(ans => normalizeAnswers(ans));
-// score = computeCompatibility(vecs[0], vecs[1], weights, schema);
-// console.log("compatibility score:", score);
+
+module.exports = normalizeAnswers;

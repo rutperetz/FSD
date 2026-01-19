@@ -18,7 +18,7 @@ const schema = {
     // single-choice (delta)
     single: [
         { name: "workStyle", index: 9 },        // individual/collaborative
-        { name: "language", index: 13 },        // Hebrew/English/Arabic (ניקח את הראשון)
+        { name: "language", index: 13 },        // Hebrew/English/Arabic 
         { name: "taskPreference", index: 16 }   // fixed/flexible
     ],
    
