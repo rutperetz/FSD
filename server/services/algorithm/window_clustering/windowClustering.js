@@ -86,10 +86,21 @@ function expandWindowForTies(neighborsList, windowSize, bufferLimit) {
 // - Combination search
 // - Best-size search
 // ------------------------------------------------------
-function windowClustering(vectors, matrix, neighbors, minSize, maxSize, threshold) {
+function windowClustering(vectors, matrix, minSize, maxSize, threshold, used ) {
     const n = vectors.length;
-    const used = new Array(n).fill(false);
     const groups = [];
+
+    // For each user, get sorted list of neighbors
+    const neighbors = new Array(n);
+    for (let i = 0; i < n; i++) {
+        const row = matrix[i];
+
+        neighbors[i] = row
+            .map((score, idx) => ({ idx, score })) // Create array of {idx, score} pairs
+            .filter(x => x.idx !== i && x.score > 0) // Exclude self and zero scores
+            .sort((a, b) => b.score - a.score);// Sort by val descending
+
+    }
 
     // Base buffer = 10% of class size (minimum 2)
     const baseBuffer = Math.max(2, Math.floor(n * 0.1));
@@ -155,9 +166,10 @@ function windowClustering(vectors, matrix, neighbors, minSize, maxSize, threshol
             // If we found the best group for this window
             if (bestGroup) {
                 groups.push({
-                    members: bestGroup,
-                    score: bestScore,
-                    reasons: explainGroupReason(bestGroup, vectors)
+                    memberIds: bestGroup,
+                    groupScore: bestScore,
+                    groupStatus:false,
+                    groupReasons: explainGroupReason(bestGroup, vectors)
                 });
 
                 bestGroup.forEach(idx => used[idx] = true);

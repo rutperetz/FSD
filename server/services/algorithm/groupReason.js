@@ -1,6 +1,5 @@
-const schema = require('./answerSchema');
 
-function explainGroupReason(groupIndices, vectors) {
+function explainGroupReason(groupIndices, vectors, schema) {
     const result = {
         gender: null,
         availability: [],

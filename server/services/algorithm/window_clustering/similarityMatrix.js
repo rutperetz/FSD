@@ -23,18 +23,6 @@ function buildSimilarityMatrix(vectors, weights, schema) {
         }
     }
 
-    // For each user, get sorted list of neighbors
-    const neighbors = new Array(n);
-    for (let i = 0; i < n; i++) {
-        const row = matrix[i];
-
-        neighbors[i] = row
-            .map((score, idx) => ({ idx, score })) // Create array of {idx, score} pairs
-            .filter(x => x.idx !== i && x.score > 0) // Exclude self and zero scores
-            .sort((a, b) => b.score - a.score);// Sort by val descending
-
-    }
-
-    return { matrix, neighbors };
+    return matrix ;
 }
 module.exports = buildSimilarityMatrix;
