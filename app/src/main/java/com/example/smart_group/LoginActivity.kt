@@ -8,10 +8,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
-
-class LoginActivity : AppCompatActivity() {
-import android.widget.TextView
 import androidx.activity.ComponentActivity
+class LoginActivity : AppCompatActivity() {
+
 
 class LoginActivity : ComponentActivity() {
 
@@ -28,7 +27,6 @@ class LoginActivity : ComponentActivity() {
         // val forgotPasswordText = findViewById<TextView>(R.id.forgot_password_text)
 
         loginBtn.setOnClickListener {
-            // ניקוי שגיאות קודמות
             emailInput.error = null
             passwordInput.error = null
 
@@ -82,4 +80,6 @@ class LoginActivity : ComponentActivity() {
         }
 
     }
-}}
+  }
+}
+}
