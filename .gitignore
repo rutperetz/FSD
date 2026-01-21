@@ -17,3 +17,5 @@ app/google-services.json
 # Node (server)
 node_modules/
 server/api/node_modules/
+serviceAccountKey.json
+
