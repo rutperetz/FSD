@@ -1,5 +1,8 @@
 const buildSimilarityMatrix = require("./similarityMatrix");
 
+// -------------------------
+// Update weights based on feedback
+// -------------------------
 function updateWeights(weights, feedback, totalStudents, alpha = 0.1) {
     const newWeights = {};
     const deltas = {};
@@ -33,7 +36,9 @@ function updateWeights(weights, feedback, totalStudents, alpha = 0.1) {
     return newWeights;
 }
 
-
+// -------------------------
+// Apply rejections to similarity matrix
+// -------------------------
 function updateMatrixWithRejections(matrix, feedback) {
     for (const student in feedback) {
         const rejected = feedback[student].rejectStudents || [];
@@ -44,6 +49,9 @@ function updateMatrixWithRejections(matrix, feedback) {
     }
 }
 
+// -------------------------
+// Process approvals and lock groups
+// -------------------------
 function processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used) {
     for (const group of groups) {
         const lockedMembers = new Set();
@@ -73,10 +81,13 @@ function processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used) 
         
     }
     lockedGroups = groups.filter(g => g.groupStatus); // Keep only locked groups
+    
     return lockedGroups;
 }
-
-function feedbackProcessor(matrix, groups, feedback, minSize, used, totalStudents) {
+// -------------------------
+// made the details for the cluster round
+// -------------------------
+function feedbackProcessor( groups, feedback, minSize, used, totalStudents) {
     // 1. Update weights
     const weights = updateWeights(weights, feedback, totalStudents);  
     //2. recompute similarity matrix

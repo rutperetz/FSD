@@ -1,5 +1,5 @@
-const computeGroupScore = require('../groupScore');
-const explainGroupReason = require('../groupReason');
+
+const { explainGroupReason, computeGroupScore } = require('../groupReasonAndScore');
 
 // ------------------------------------------------------
 // Mutual preference check
@@ -86,7 +86,8 @@ function expandWindowForTies(neighborsList, windowSize, bufferLimit) {
 // - Combination search
 // - Best-size search
 // ------------------------------------------------------
-function windowClustering(vectors, matrix, minSize, maxSize, threshold, used ) {
+function windowClustering(vectors, matrix, minSize, maxSize, used) {
+    var threshold = 0.7;
     const n = vectors.length;
     const groups = [];
 
@@ -166,9 +167,12 @@ function windowClustering(vectors, matrix, minSize, maxSize, threshold, used ) {
             // If we found the best group for this window
             if (bestGroup) {
                 groups.push({
+                    //groupId:
+                    //roundId:??
+                    //courseId:??
                     memberIds: bestGroup,
                     groupScore: bestScore,
-                    groupStatus:false,
+                    groupStatus: false,
                     groupReasons: explainGroupReason(bestGroup, vectors)
                 });
 
