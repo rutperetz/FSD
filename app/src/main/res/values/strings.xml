@@ -3,5 +3,7 @@
     <string name="forgot_password"><u>Forgot password</u></string>
     <string name="register_text">Dont have a user? <u>Register</u></string>
 
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="edit_questionnaire"><u>View/Edit questionnaire</u></string>
 
 </resources>
