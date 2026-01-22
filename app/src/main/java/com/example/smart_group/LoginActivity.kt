@@ -11,6 +11,10 @@ import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
+import android.widget.TextView
+import androidx.activity.ComponentActivity
+
+class LoginActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth   // ✅ תוספת
 
@@ -78,5 +82,17 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+        val registerText: TextView = findViewById(R.id.register_link_text)
+
+        registerText.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+        val forgotPassword = findViewById<TextView>(R.id.forgot_password_link_text)
+
+        forgotPassword.setOnClickListener {
+            startActivity(Intent(this, Forgot_PasswordActivity::class.java))
+        }
+
     }
-}
+}}
