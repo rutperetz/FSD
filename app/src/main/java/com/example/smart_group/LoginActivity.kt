@@ -8,12 +8,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth   // ✅ תוספת
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        auth = FirebaseAuth.getInstance()     // ✅ תוספת
 
         val emailInput = findViewById<EditText>(R.id.email_input)
         val passwordInput = findViewById<EditText>(R.id.password_input)
@@ -30,7 +34,6 @@ class LoginActivity : AppCompatActivity() {
 
             val email = emailInput.text.toString().trim()
             val password = passwordInput.text.toString()
-
             val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,10}$")
 
             when {
@@ -56,12 +59,22 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 else -> {
-                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+                    // ✅ כאן במקום Toast "Login successful" — עושים Login אמיתי מול Firebase Auth
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
 
-                    // ✅ כשתהיה לך HomeActivity / MainActivity — פותחים את זה:
-                    // val intent = Intent(this, HomeActivity::class.java)
-                    // startActivity(intent)
-                    // finish()
+                            // כשתהיה לך פעילות בית/מסך ראשי:
+                            // startActivity(Intent(this, HomeActivity::class.java))
+                            // finish()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(
+                                this,
+                                "Login failed: email or password incorrect",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                 }
             }
         }
