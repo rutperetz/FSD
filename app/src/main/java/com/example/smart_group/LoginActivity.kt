@@ -8,11 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
-import androidx.activity.ComponentActivity
+
 class LoginActivity : AppCompatActivity() {
-
-
-class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +24,7 @@ class LoginActivity : ComponentActivity() {
         // val forgotPasswordText = findViewById<TextView>(R.id.forgot_password_text)
 
         loginBtn.setOnClickListener {
+            // ניקוי שגיאות קודמות
             emailInput.error = null
             passwordInput.error = null
 
@@ -67,19 +65,5 @@ class LoginActivity : ComponentActivity() {
                 }
             }
         }
-        val registerText: TextView = findViewById(R.id.register_link_text)
-
-        registerText.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-        val forgotPassword = findViewById<TextView>(R.id.forgot_password_link_text)
-
-        forgotPassword.setOnClickListener {
-            startActivity(Intent(this, Forgot_PasswordActivity::class.java))
-        }
-
     }
-  }
-}
 }
