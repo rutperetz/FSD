@@ -6,9 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.smart_group"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
+
 
     defaultConfig {
         applicationId = "com.example.smart_group"
