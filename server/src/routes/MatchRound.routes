@@ -1,0 +1,9 @@
+import express from "express";
+import { createMatchRound, getGroupsByRound } from "../controllers/matchRound.controller.js";
+
+const router = express.Router();
+
+router.post("/", createMatchRound);
+router.get("/:roundId/groups", getGroupsByRound);
+
+export default router;
