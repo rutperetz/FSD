@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import groupRoutes from "./routes/group.routes.js";
+import matchRoundRoutes from "./routes/matchRound.routes.js";
 
 dotenv.config();
 
@@ -16,12 +18,15 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, message: "Server is running" });
 });
 
+app.use("/api/groups", groupRoutes);
+app.use("/api/match-rounds", matchRoundRoutes);
+
+
 // port
 const PORT = process.env.PORT || 3000;
 
 // database connection + server start
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected");
     app.listen(PORT, () => {

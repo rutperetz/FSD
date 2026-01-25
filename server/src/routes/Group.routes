@@ -1,0 +1,15 @@
+import express from "express";
+import { getGroupById, updateMemberDecision, getGroupsByStudent } from "../controllers/group.controller.js";
+
+const router = express.Router();
+
+// GET /api/groups/:groupId
+router.get("/:groupId", getGroupById);
+
+// GET /api/groups/by-student/:studentId
+router.get("/by-student/:studentId", getGroupsByStudent);
+
+// PATCH /api/groups/:groupId/decision
+router.patch("/:groupId/decision", updateMemberDecision);
+
+export default router;
