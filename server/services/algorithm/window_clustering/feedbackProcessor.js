@@ -54,16 +54,20 @@ function updateMatrixWithRejections(matrix, feedback) {
 // -------------------------
 function processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used) {
     for (const group of groups) {
+        // If the group is already locked, mark all members as used
+        if (group.groupStatus) {
+            group.memberIds.forEach(s => used[s] = true);
+        } // Already locked
         const lockedMembers = new Set();
-        const approvers = group.members.filter(s => feedback[s].approveGroup);
+        const approvers = group.memberIds.filter(s => feedback[s].approveGroup);
         for (let i = 0; i < approvers.length; i++) {
             for (let j = i + 1; j < approvers.length; j++) {
                 const a = approvers[i];
                 const b = approvers[j];
 
                 // Only if no one rejected the other
-                if (!feedback[a].rejectStudents.includes(b) &&
-                    !feedback[b].rejectStudents.includes(a)) {
+                if (!approvers[a].rejectStudents.includes(b) &&
+                    !approvers[b].rejectStudents.includes(a)) {
                     matrix[a][b] = 1;
                     matrix[b][a] = 1;
                     lockedMembers.add(a);
@@ -73,7 +77,7 @@ function processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used) 
         }
         // If enough locked members, finalize the group
         if (lockedMembers.size >= minSize) {
-            group.members = Array.from(lockedMembers);
+            group.memberIds = Array.from(lockedMembers);
             group.groupStatus = true;
             // Mark locked members as used
             lockedMembers.forEach(s => used[s] = true);
@@ -87,17 +91,17 @@ function processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used) 
 // -------------------------
 // made the details for the cluster round
 // -------------------------
-function feedbackProcessor( groups, feedback, minSize, used, totalStudents) {
+function feedbackProcessor(groups, feedback, minSize, used, totalStudents, weights) {
     // 1. Update weights
-    const weights = updateWeights(weights, feedback, totalStudents);  
+    const newWeights = updateWeights(weights, feedback, totalStudents);  
     //2. recompute similarity matrix
-    matrix= buildSimilarityMatrix(vectors, weights, schema);
+    matrix = buildSimilarityMatrix(vectors, newWeights, schema);
     //3. apply rejections
     updateMatrixWithRejections(matrix, feedback);
     //4. apply approvals + lock groups
     const lockedGroups = processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used);
-    return { matrix, lockedGroups, weights };
+    return { matrix, lockedGroups, newWeights };
 }
 
-module.exports = {feedbackProcessor} ;
+module.exports = feedbackProcessor ;
 

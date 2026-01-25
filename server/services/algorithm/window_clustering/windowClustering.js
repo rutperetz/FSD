@@ -86,7 +86,7 @@ function expandWindowForTies(neighborsList, windowSize, bufferLimit) {
 // - Combination search
 // - Best-size search
 // ------------------------------------------------------
-function windowClustering(vectors, matrix, minSize, maxSize, used) {
+function windowClustering(vectors, matrix, minSize, maxSize, used,schema) {
     var threshold = 0.7;
     const n = vectors.length;
     const groups = [];
@@ -173,7 +173,7 @@ function windowClustering(vectors, matrix, minSize, maxSize, used) {
                     memberIds: bestGroup,
                     groupScore: bestScore,
                     groupStatus: false,
-                    groupReasons: explainGroupReason(bestGroup, vectors)
+                    groupReasons: explainGroupReason(bestGroup, vectors, schema)
                 });
 
                 bestGroup.forEach(idx => used[idx] = true);
