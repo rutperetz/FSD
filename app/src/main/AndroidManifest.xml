@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Smart_Group">
         <activity
+            android:name=".SplashActivity"
+            android:exported="false" />
+        <activity
             android:name=".profileActivity"
             android:exported="false" />
         <activity
