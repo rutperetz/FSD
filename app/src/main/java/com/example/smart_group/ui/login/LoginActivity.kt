@@ -9,7 +9,7 @@ import com.example.smart_group.R
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smart_group.ui.login.LoginViewModel
-import com.example.smart_group.RegisterActivity
+import com.example.smart_group.ui.register.RegisterActivity
 import com.example.smart_group.Forgot_PasswordActivity
 import com.google.android.material.button.MaterialButton
 

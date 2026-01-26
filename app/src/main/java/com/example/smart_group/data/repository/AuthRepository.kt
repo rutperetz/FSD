@@ -6,10 +6,15 @@ import kotlinx.coroutines.tasks.await
 class AuthRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 ) {
-    //login
+    // login
     suspend fun login(email: String, password: String): String {
         val result = auth.signInWithEmailAndPassword(email, password).await()
         return result.user?.uid ?: throw Exception("Missing user id")
     }
 
+    // ✅ register
+    suspend fun register(email: String, password: String): String {
+        val result = auth.createUserWithEmailAndPassword(email, password).await()
+        return result.user?.uid ?: throw Exception("Missing user id")
+    }
 }
