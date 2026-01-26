@@ -1,4 +1,4 @@
-package com.example.smart_group.model
+package com.example.smart_group.data.model
 
 data class Course(
     val courseId: String,

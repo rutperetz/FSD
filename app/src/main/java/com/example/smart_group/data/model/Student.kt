@@ -1,8 +1,8 @@
-package com.example.smart_group.model
+package com.example.smart_group.data.model
 
 data class Student(
     val studentId:String,//UUID
-    val userId: String?,  //user roll admin/student
+    val userId: String?,  //firebase uid
     val userName: String,
     val email: String,
     val answers: Answers,

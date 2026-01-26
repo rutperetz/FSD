@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,21 +14,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Smart_Group">
         <activity
-            android:name="com.example.smart_group.Set_New_PasswordActivity"
+            android:name=".profileActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.smart_group.Verify_CodeActivity"
+            android:name=".Set_New_PasswordActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.smart_group.Forgot_PasswordActivity"
+            android:name=".Verify_CodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Forgot_PasswordActivity"
             android:exported="false" /> <!-- Register screen -->
         <activity
-            android:name="com.example.smart_group.RegisterActivity"
+            android:name=".RegisterActivity"
             android:exported="false"
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.Smart_Group" /> <!-- Login screen (Launcher activity) -->
         <activity
-            android:name="com.example.smart_group.LoginActivity"
+            android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Smart_Group">
             <intent-filter>

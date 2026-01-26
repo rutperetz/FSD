@@ -13,3 +13,15 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Node (server)
+node_modules/
+server/api/node_modules/
+serviceAccountKey.json
+# Firebase / Google service account keys (server)
+server/api/*firebase-adminsdk*.json
+**/*firebase-adminsdk*.json
+**/serviceAccount*.json
+**/*service-account*.json
+**/*credentials*.json
+
+
