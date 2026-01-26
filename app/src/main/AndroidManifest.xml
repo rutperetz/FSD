@@ -31,7 +31,7 @@
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.Smart_Group" /> <!-- Login screen (Launcher activity) -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Smart_Group">
             <intent-filter>
