@@ -11,10 +11,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
-        // Redirect immediately to LoginActivity
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish()
+//        // Redirect immediately to LoginActivity
+//        startActivity(Intent(this, LoginActivity::class.java))
+//        finish()
     }
 }
