@@ -30,6 +30,8 @@
             android:exported="false"
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.Smart_Group" /> <!-- Login screen (Launcher activity) -->
+        <activity android:name=".ui.questionnaire.QuestionnaireActivity" />
+
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true"

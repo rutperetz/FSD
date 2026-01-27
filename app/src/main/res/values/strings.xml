@@ -5,5 +5,50 @@
 
     <string name="title_activity_register">RegisterActivity</string>
     <string name="edit_questionnaire"><u>View/Edit questionnaire</u></string>
+    <string name="back">Back</string>
+    <string name="fill_out_questionnaire">Fill out questionnaire</string>
+
+
+    <!-- Questionnaire - common -->
+    <string name="save">Save</string>
+
+    <!-- Questionnaire - questions -->
+    <string name="q_gender">Gender</string>
+    <string name="q_gender_pref">Gender Preference for Group Members</string>
+    <string name="q_availability">Work Availability (select all that apply)</string>
+    <string name="q_work_style">Preferred Work Style</string>
+    <string name="q_work_mode">Preferred Working Mode (select all that apply)</string>
+    <string name="q_language">Preferred Language</string>
+    <string name="q_task_management">Task Management Preference</string>
+
+    <!-- Questionnaire - options -->
+    <string name="opt_male">Male</string>
+    <string name="opt_female">Female</string>
+
+    <string name="opt_pref_men">Prefer working with men</string>
+    <string name="opt_pref_women">Prefer working with women</string>
+    <string name="opt_no_preference">No preference</string>
+
+    <string name="opt_morning">Morning</string>
+    <string name="opt_afternoon">Afternoon</string>
+    <string name="opt_evening">Evening</string>
+    <string name="opt_weekend">Weekend</string>
+
+    <string name="opt_individual">Individual</string>
+    <string name="opt_collaborative">Collaborative</string>
+
+    <string name="opt_on_campus">On-campus</string>
+    <string name="opt_remote_zoom">Remote (Zoom)</string>
+
+    <string name="opt_hebrew">Hebrew</string>
+    <string name="opt_english">English</string>
+    <string name="opt_arabic">Arabic</string>
+
+    <string name="opt_fixed_deadlines">Fixed deadlines</string>
+    <string name="opt_flexible_work">Flexible work</string>
+
+    <string name="required">Required</string>
+    <string name="all_fields_required">All fields must be answered.</string>
+
 
 </resources>
