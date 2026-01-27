@@ -1,9 +1,9 @@
-
+const schema = require('../answerSchema.js');
 
 // -------------------------
 // Hard constraints check
 // -------------------------
-function hardConstraintsFail(vecA, vecB, schema) {
+function hardConstraintsFail(vecA, vecB) {
 
     // -------------------------
     // Gender preference (A → B)
@@ -71,10 +71,10 @@ function jaccardIndex(a, b) {
 // -------------------------
 // Compute compatibility score between two vectors
 // -------------------------
-function computeCompatibility(vecA, vecB, weights, schema) {
+function computeCompatibility(vecA, vecB, weights) {
 
     // Hard constraints first
-    if (hardConstraintsFail(vecA, vecB, schema)) {
+    if (hardConstraintsFail(vecA, vecB)) {
         return 0;
     }
 
@@ -100,7 +100,7 @@ function computeCompatibility(vecA, vecB, weights, schema) {
 // -------------------------
 // Build similarity matrix
 // -------------------------
-function buildSimilarityMatrix(vectors, weights, schema) {
+function buildSimilarityMatrix(vectors, weights) {
     const n = vectors.length;
 
     //empty matrix

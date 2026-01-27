@@ -3,19 +3,25 @@ const buildSimilarityMatrix = require("./similarityMatrix");
 // -------------------------
 // Update weights based on feedback
 // -------------------------
-function updateWeights(weights, feedback, totalStudents, alpha = 0.1) {
+function updateWeights(weights, feedback, alpha = 0.1) {
     const newWeights = {};
     const deltas = {};
     const categoryRejections = {};
+    const totalFeedback = Object.keys(feedback).length;
     // Count rejections per field
-    for (const cat in feedback.rejectReasons)
-    { categoryRejections[cat] = (categoryRejections[cat] || 0) + feedback.rejectReasons[cat]; }
+    for (const studentKey in feedback) {
+        const rejectReasons = feedback[studentKey].rejectReasons;
+        for (const field in rejectReasons) {
+            categoryRejections[field] = (categoryRejections[field] || 0) + rejectReasons[field];
+        }
+    }
+    
     // 1. Compute Δ_f for each field
     for (const field in weights) {
         const rejectionCount = categoryRejections[field] || 0;
 
-        // rejectionRate = number of rejections / number of students
-        const rejectionRate = rejectionCount / totalStudents;
+        // rejectionRate = number of rejections / number of feedbacks
+        const rejectionRate = rejectionCount / totalFeedback;
 
         // Δ_f = α * rejectionRate
         deltas[field] = alpha * rejectionRate;
@@ -40,36 +46,35 @@ function updateWeights(weights, feedback, totalStudents, alpha = 0.1) {
 // Apply rejections to similarity matrix
 // -------------------------
 function updateMatrixWithRejections(matrix, feedback) {
-    for (const student in feedback) {
-        const rejected = feedback[student].rejectStudents || [];
-        rejected.forEach(other => {
-            matrix[student][other] = 0;
-            matrix[other][student] = 0;
+    for (const studentKey in feedback) {
+        const studentIndex = parseInt(studentKey);
+        const rejected = feedback[studentKey].rejectStudents || [];
+
+        rejected.forEach(otherIndex => {
+            matrix[studentIndex][otherIndex] = 0;
+            matrix[otherIndex][studentIndex] = 0;
         });
     }
 }
 
 // -------------------------
-// Process approvals and lock groups
+// Lock groups based on approvals
 // -------------------------
-function processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used) {
+function lockGroups(groups, feedback, minSize) {
     for (const group of groups) {
-        // If the group is already locked, mark all members as used
-        if (group.groupStatus) {
-            group.memberIds.forEach(s => used[s] = true);
-        } // Already locked
+       
         const lockedMembers = new Set();
-        const approvers = group.memberIds.filter(s => feedback[s].approveGroup);
+        const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
         for (let i = 0; i < approvers.length; i++) {
             for (let j = i + 1; j < approvers.length; j++) {
                 const a = approvers[i];
                 const b = approvers[j];
 
+                const aFeedback = feedback[a.toString()];
+                const bFeedback = feedback[b.toString()];
                 // Only if no one rejected the other
-                if (!approvers[a].rejectStudents.includes(b) &&
-                    !approvers[b].rejectStudents.includes(a)) {
-                    matrix[a][b] = 1;
-                    matrix[b][a] = 1;
+                if (!aFeedback.rejectStudents.includes(b) &&
+                    !bFeedback.rejectStudents.includes(a)) {
                     lockedMembers.add(a);
                     lockedMembers.add(b);
                 }
@@ -79,29 +84,51 @@ function processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used) 
         if (lockedMembers.size >= minSize) {
             group.memberIds = Array.from(lockedMembers);
             group.groupStatus = true;
-            // Mark locked members as used
-            lockedMembers.forEach(s => used[s] = true);
         }
-        
+
     }
-    lockedGroups = groups.filter(g => g.groupStatus); // Keep only locked groups
-    
-    return lockedGroups;
+
+    return groups;
+
+}
+// -------------------------
+// Process approvals 
+// -------------------------
+function processApprovals(matrix, groups, feedback) {
+    for (const group of groups) {
+        const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
+        for (let i = 0; i < approvers.length; i++) {
+            for (let j = i + 1; j < approvers.length; j++) {
+                const a = approvers[i];
+                const b = approvers[j];
+
+                const aFeedback = feedback[a.toString()];
+                const bFeedback = feedback[b.toString()];
+                // Only if no one rejected the other
+                if (!aFeedback.rejectStudents.includes(b) &&
+                    !bFeedback.rejectStudents.includes(a)) {
+                    matrix[a][b] = 1;
+                    matrix[b][a] = 1;
+                }
+            }
+        }
+    }
 }
 // -------------------------
 // made the details for the cluster round
 // -------------------------
-function feedbackProcessor(groups, feedback, minSize, used, totalStudents, weights) {
+function feedbackProcessor(vectors,groups, feedback,weights) {
     // 1. Update weights
-    const newWeights = updateWeights(weights, feedback, totalStudents);  
+    const updatedWeights = updateWeights(weights, feedback);  
     //2. recompute similarity matrix
-    matrix = buildSimilarityMatrix(vectors, newWeights, schema);
+    const newMatrix = buildSimilarityMatrix(vectors, updatedWeights);
     //3. apply rejections
-    updateMatrixWithRejections(matrix, feedback);
-    //4. apply approvals + lock groups
-    const lockedGroups = processApprovalsAndLockGroups(matrix, groups, feedback, minSize, used);
-    return { matrix, lockedGroups, newWeights };
+    updateMatrixWithRejections(newMatrix, feedback);
+    //4. apply approvals 
+    processApprovals(newMatrix, groups, feedback);
+    
+    return { newMatrix, updatedWeights };
 }
 
-module.exports = feedbackProcessor ;
+module.exports = { feedbackProcessor,lockGroups };
 

@@ -1,3 +1,5 @@
+
+const schema = require('./answerSchema.js');
 // ---------------------------
 // Group score
 // ---------------------------
@@ -18,7 +20,7 @@ function computeGroupScore(groupIndices, matrix) {
 // ---------------------------
 // Group reason explanation
 // ---------------------------
-function explainGroupReason(groupIndices, vectors, schema) {
+function explainGroupReason(groupIndices, vectors) {
     const result = {
         gender: null,
         availability: [],
