@@ -15,7 +15,7 @@ function updateWeights(weights, feedback, alpha = 0.1) {
             categoryRejections[field] = (categoryRejections[field] || 0) + rejectReasons[field];
         }
     }
-    
+
     // 1. Compute Δ_f for each field
     for (const field in weights) {
         const rejectionCount = categoryRejections[field] || 0;
@@ -62,7 +62,7 @@ function updateMatrixWithRejections(matrix, feedback) {
 // -------------------------
 function lockGroups(groups, feedback, minSize) {
     for (const group of groups) {
-       
+
         const lockedMembers = new Set();
         const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
         for (let i = 0; i < approvers.length; i++) {
@@ -117,18 +117,17 @@ function processApprovals(matrix, groups, feedback) {
 // -------------------------
 // made the details for the cluster round
 // -------------------------
-function feedbackProcessor(vectors,groups, feedback,weights) {
+function feedbackProcessor(vectors, groups, feedback, weights) {
     // 1. Update weights
-    const updatedWeights = updateWeights(weights, feedback);  
+    const updatedWeights = updateWeights(weights, feedback);
     //2. recompute similarity matrix
     const newMatrix = buildSimilarityMatrix(vectors, updatedWeights);
     //3. apply rejections
     updateMatrixWithRejections(newMatrix, feedback);
     //4. apply approvals 
     processApprovals(newMatrix, groups, feedback);
-    
+
     return { newMatrix, updatedWeights };
 }
 
-module.exports = { feedbackProcessor,lockGroups };
-
+module.exports = { feedbackProcessor, lockGroups };

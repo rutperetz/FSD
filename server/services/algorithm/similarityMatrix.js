@@ -1,19 +1,21 @@
-const schema = require('../answerSchema.js');
-
+const schema = require('./answerSchema.js');
 // -------------------------
 // Hard constraints check
 // -------------------------
 function hardConstraintsFail(vecA, vecB) {
-
     // -------------------------
     // Gender preference (A → B)
     // -------------------------
-    const A_pref_men = vecA[schema.indices.genderPref.men] === 1;
-    const A_pref_women = vecA[schema.indices.genderPref.women] === 1;
-    const A_pref_none = vecA[schema.indices.genderPref.none] === 1;
+    const pref = schema.fields.genderPreference.indices;
+    const gender = schema.fields.gender.indices;
 
-    const B_is_male = vecB[schema.indices.gender.male] === 1;
-    const B_is_female = vecB[schema.indices.gender.female] === 1;
+
+    const A_pref_men = vecA[pref.men] === 1;
+    const A_pref_women = vecA[pref.women] === 1;
+    const A_pref_none = vecA[pref.none] === 1;
+
+    const B_is_male = vecB[gender.male] === 1;
+    const B_is_female = vecB[gender.female] === 1;
 
     if (!A_pref_none) {
         if (A_pref_men && !B_is_male) return true;
@@ -23,12 +25,12 @@ function hardConstraintsFail(vecA, vecB) {
     // -------------------------
     // Gender preference (B → A)
     // -------------------------
-    const B_pref_men = vecB[schema.indices.genderPref.men] === 1;
-    const B_pref_women = vecB[schema.indices.genderPref.women] === 1;
-    const B_pref_none = vecB[schema.indices.genderPref.none] === 1;
+    const B_pref_men = vecB[pref.men] === 1;
+    const B_pref_women = vecB[pref.women] === 1;
+    const B_pref_none = vecB[pref.none] === 1;
 
-    const A_is_male = vecA[schema.indices.gender.male] === 1;
-    const A_is_female = vecA[schema.indices.gender.female] === 1;
+    const A_is_male = vecA[gender.male] === 1;
+    const A_is_female = vecA[gender.female] === 1;
 
     if (!B_pref_none) {
         if (B_pref_men && !A_is_male) return true;
@@ -38,17 +40,15 @@ function hardConstraintsFail(vecA, vecB) {
     // -------------------------
     // Availability overlap
     // -------------------------
-    let overlap = false;
-    for (const idx of schema.indices.availability) {
-        if (vecA[idx] === 1 && vecB[idx] === 1) {
-            overlap = true;
-            break;
-        }
-    }
+    const availabilityIdx = schema.fields.availability.indices;
+
+    const overlap = availabilityIdx.some(idx => vecA[idx] === 1 && vecB[idx] === 1);
+
     if (!overlap) return true;
 
-    return false; // no hard constraint failed
+    return false;
 }
+
 // -------------------------
 // Jaccard Index for multi-choice fields
 // -------------------------
@@ -72,7 +72,6 @@ function jaccardIndex(a, b) {
 // Compute compatibility score between two vectors
 // -------------------------
 function computeCompatibility(vecA, vecB, weights) {
-
     // Hard constraints first
     if (hardConstraintsFail(vecA, vecB)) {
         return 0;
@@ -80,18 +79,26 @@ function computeCompatibility(vecA, vecB, weights) {
 
     let score = 0;
 
-    // Multi-choice fields (Jaccard)
-    for (const field of schema.multi) {
-        const subA = field.indices.map(i => vecA[i]);
-        const subB = field.indices.map(i => vecB[i]);
-        const j = jaccardIndex(subA, subB);
-        score += weights[field.name] * j;
-    }
+    for (const [fieldName, field] of Object.entries(schema.fields)) {
+        const weight = weights[fieldName];
+        if (fieldName === "gender" || fieldName === "genderPreference") continue;
 
-    // Single-choice fields (delta)
-    for (const field of schema.single) {
-        const d = vecA[field.index] === vecB[field.index] ? 1 : 0;
-        score += weights[field.name] * d;
+        // Multi-choice → Jaccard
+        if (field.type === "multi") {
+            const a = field.indices.map(i => vecA[i]);
+            const b = field.indices.map(i => vecB[i]);
+            score += weight * jaccardIndex(a, b);
+        }
+
+        // Single-choice → delta
+        if (field.type === "single") {
+            for (const label of field.labels) {
+                const idx = field.indices[label];
+                if (vecA[idx] === 1 && vecB[idx] === 1) {
+                    score += weight;
+                }
+            }
+        }
     }
 
     return score;
@@ -106,7 +113,7 @@ function buildSimilarityMatrix(vectors, weights) {
     //empty matrix
     const matrix = Array.from({ length: n }, () => Array(n).fill(0));
 
-    
+
     for (let i = 0; i < n; i++) {
         for (let j = i + 1; j < n; j++) {
 
@@ -123,6 +130,6 @@ function buildSimilarityMatrix(vectors, weights) {
         }
     }
 
-    return matrix ;
+    return matrix;
 }
 module.exports = buildSimilarityMatrix;

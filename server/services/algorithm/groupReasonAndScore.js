@@ -20,78 +20,38 @@ function computeGroupScore(groupIndices, matrix) {
 // ---------------------------
 // Group reason explanation
 // ---------------------------
+
 function explainGroupReason(groupIndices, vectors) {
-    const result = {
-        gender: null,
-        availability: [],
-        workMode: [],
-        workStyle: null,
-        language: null,
-        taskPreference: null
-    };
+    const result = {};
 
-    // -------------------------
-    // Gender
-    // -------------------------
-    const allFemale = groupIndices.every(i => vectors[i][schema.indices.gender.female] === 1);
-    const allMale = groupIndices.every(i => vectors[i][schema.indices.gender.male] === 1);
+    for (const [fieldName, field] of Object.entries(schema.fields)) {
+        if (field.type === "single") {
+            result[fieldName] = null;
 
-    if (allFemale) result.gender = "female";
-    if (allMale) result.gender = "male";
+            for (const label of field.labels) {
+                const idx = field.indices[label];
+                const allHave = groupIndices.every(i => vectors[i][idx] === 1);
 
-    // -------------------------
-    // Availability (multi)
-    // -------------------------
-    const availabilityLabels = ["morning", "afternoon", "evening", "weekend"];
-    const availabilityIdx = schema.indices.availability;
+                if (allHave) {
+                    result[fieldName] = label;
+                    break;
+                }
+            }
+        }
 
-    availabilityLabels.forEach((label, idx) => {
-        const bitIndex = availabilityIdx[idx];
-        const allHave = groupIndices.every(i => vectors[i][bitIndex] === 1);
-        if (allHave) result.availability.push(label);
-    });
+        if (field.type === "multi") {
+            result[fieldName] = [];
 
-    // -------------------------
-    // Work Mode (multi)
-    // -------------------------
-    const workModeLabels = ["oncampus", "remote"];
-    const workModeIdx = schema.indices.workMode;
+            field.labels.forEach((label, pos) => {
+                const idx = field.indices[pos];
+                const allHave = groupIndices.every(i => vectors[i][idx] === 1);
 
-    workModeLabels.forEach((label, idx) => {
-        const bitIndex = workModeIdx[idx];
-        const allHave = groupIndices.every(i => vectors[i][bitIndex] === 1);
-        if (allHave) result.workMode.push(label);
-    });
-
-    // -------------------------
-    // Work Style (single)
-    // -------------------------
-    const allIndiv = groupIndices.every(i => vectors[i][schema.indices.workStyle[0]] === 1);
-    const allCollab = groupIndices.every(i => vectors[i][schema.indices.workStyle[1]] === 1);
-
-    if (allIndiv) result.workStyle = "individual";
-    if (allCollab) result.workStyle = "collaborative";
-
-    // -------------------------
-    // Language (single)
-    // -------------------------
-    const langLabels = ["Hebrew", "English", "Arabic"];
-    const langIdx = schema.indices.language;
-
-    langLabels.forEach((label, idx) => {
-        const bitIndex = langIdx[idx];
-        const allSpeak = groupIndices.every(i => vectors[i][bitIndex] === 1);
-        if (allSpeak) result.language = label;
-    });
-
-    // -------------------------
-    // Task Preference (single)
-    // -------------------------
-    const allFixed = groupIndices.every(i => vectors[i][schema.indices.taskPreference[0]] === 1);
-    const allFlexible = groupIndices.every(i => vectors[i][schema.indices.taskPreference[1]] === 1);
-
-    if (allFixed) result.taskPreference = "fixed";
-    if (allFlexible) result.taskPreference = "flexible";
+                if (allHave) {
+                    result[fieldName].push(label);
+                }
+            });
+        }
+    }
 
     return result;
 }

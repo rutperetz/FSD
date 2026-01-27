@@ -168,9 +168,6 @@ function windowClustering(vectors, matrix, minSize, maxSize) {
             // If we found the best group for this window
             if (bestGroup) {
                 groups.push({
-                    //groupId:
-                    //roundId:??
-                    //courseId:??
                     memberIds: bestGroup,
                     groupScore: bestScore,
                     groupStatus: false,

@@ -1,52 +1,31 @@
-
+const schema = require("./answerSchema.js");
+// -------------------------
+// Normalize answers into binary vector
+// -------------------------
 function normalizeAnswers(ans) {
-    const vector = [];
+    const vector = new Array(
+        Object.values(schema.indices).flatMap(idx =>
+            Array.isArray(idx) ? idx : Object.values(idx)
+        ).length
+    ).fill(0);
 
-    // -------------------------
-    // gender: male / female
-    // -------------------------
-    vector.push(ans.gender === "male" ? 1 : 0);     // gender_male
-    vector.push(ans.gender === "female" ? 1 : 0);   // gender_female
+    for (const [fieldName, field] of Object.entries(schema.fields)) {
+        const userValue = ans[fieldName];
 
-    // -------------------------
-    // genderPreference: men / women / no_preference
-    // -------------------------
-    vector.push(ans.genderPreference === "men" ? 1 : 0);             // pref_men
-    vector.push(ans.genderPreference === "women" ? 1 : 0);           // pref_women
-    vector.push(ans.genderPreference === "no_preference" ? 1 : 0);   // pref_none
+        if (field.type === "single") {
+            for (const label of field.labels) {
+                const idx = field.indices[label];
+                vector[idx] = userValue === label ? 1 : 0;
+            }
+        }
 
-    // -------------------------
-    // availability: morning / afternoon / evening / weekend
-    // -------------------------
-    vector.push(ans.availability.includes("morning") ? 1 : 0);    // avail_morning
-    vector.push(ans.availability.includes("afternoon") ? 1 : 0);  // avail_afternoon
-    vector.push(ans.availability.includes("evening") ? 1 : 0);    // avail_evening
-    vector.push(ans.availability.includes("weekend") ? 1 : 0);    // avail_weekend
-
-    // -------------------------
-    // workStyle: individual / collaborative
-    // -------------------------
-    vector.push(ans.workStyle === "individual" ? 1 : 0);       // style_individual
-    vector.push(ans.workStyle === "collaborative" ? 1 : 0);    // style_collaborative
-
-    // -------------------------
-    // workMode: oncampus / remote
-    // -------------------------
-    vector.push(ans.workMode.includes("oncampus") ? 1 : 0);    // mode_oncampus
-    vector.push(ans.workMode.includes("remote") ? 1 : 0);      // mode_remote
-
-    // -------------------------
-    // language: Hebrew / English / Arabic
-    // -------------------------
-    vector.push(ans.language === "Hebrew" ? 1 : 0);   // lang_hebrew
-    vector.push(ans.language === "English" ? 1 : 0);  // lang_english
-    vector.push(ans.language === "Arabic" ? 1 : 0);   // lang_arabic
-
-    // -------------------------
-    // taskPreference: fixed / flexible
-    // -------------------------
-    vector.push(ans.taskPreference === "fixed" ? 1 : 0);     // task_fixed
-    vector.push(ans.taskPreference === "flexible" ? 1 : 0);  // task_flexible
+        if (field.type === "multi") {
+            field.labels.forEach((label, pos) => {
+                const idx = field.indices[pos];
+                vector[idx] = userValue.includes(label) ? 1 : 0;
+            });
+        }
+    }
 
     return vector;
 }

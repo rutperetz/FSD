@@ -1,26 +1,75 @@
+// answerSchema.js
+
 const schema = {
-    indices: {
-        gender: { male: 0, female: 1 },
-        genderPref: { men: 2, women: 3, none: 4 },
-        availability: [5, 6, 7, 8],
-        workStyle: [9, 10],
-        workMode: [11, 12],
-        language: [13, 14, 15],
-        taskPreference: [16, 17]
+    fields: {
+        gender: {
+            type: "single",
+            labels: ["male", "female"]
+        },
+
+        genderPreference: {
+            type: "single",
+            labels: ["men", "women", "no_preference"]
+        },
+
+        availability: {
+            type: "multi",
+            labels: ["morning", "afternoon", "evening", "weekend"]
+        },
+
+        workStyle: {
+            type: "multi",
+            labels: ["individual", "collaborative"]
+        },
+
+        workMode: {
+            type: "multi",
+            labels: ["oncampus", "remote"]
+        },
+
+        language: {
+            type: "multi",
+            labels: ["Hebrew", "English", "Arabic"]
+        },
+
+        taskPreference: {
+            type: "multi",
+            labels: ["fixed", "flexible"]
+        }
     },
 
-    //  multi-choice (Jaccard)
-    multi: [
-        { name: "availability", indices: [5, 6, 7, 8] },
-        { name: "workMode", indices: [11, 12] }
-    ],
-
-    // single-choice (delta)
-    single: [
-        { name: "workStyle", index: 9 },        // individual/collaborative
-        { name: "language", index: 13 },        // Hebrew/English/Arabic 
-        { name: "taskPreference", index: 16 }   // fixed/flexible
-    ],
-   
+    //added dynamically
+    indices: {}
 };
- module.exports = schema;
+
+// -------------------------
+// Build indices dynamically
+// -------------------------
+let currentIndex = 0;
+
+for (const fieldName in schema.fields) {
+    const field = schema.fields[fieldName];
+
+    if (field.type === "single") {
+        // single-choice → 
+        field.indices = {};
+        field.labels.forEach(label => {
+            field.indices[label] = currentIndex++;
+        });
+    }
+
+    if (field.type === "multi") {
+        // multi-choice → 
+        field.indices = [];
+        field.labels.forEach(() => {
+            field.indices.push(currentIndex++);
+        });
+    }
+}
+
+// Copy indices to schema.indices for backward compatibility
+schema.indices = Object.fromEntries(
+    Object.entries(schema.fields).map(([key, field]) => [key, field.indices])
+);
+
+module.exports = schema;

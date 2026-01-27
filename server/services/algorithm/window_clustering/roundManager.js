@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const FILE_PATH = path.join(__dirname, 'matchRounds.json');
-const buildSimilarityMatrix = require("./similarityMatrix");
+const buildSimilarityMatrix = require("../similarityMatrix.js");
 const windowClustering = require("./windowClustering");
-const { feedbackProcessor,lockGroups } = require("./feedbackProcessor");
+const { feedbackProcessor, lockGroups } = require("../feedbackProcessor.js");
 const schema = require('../answerSchema.js');
 
 
@@ -19,20 +19,20 @@ function saveMatchRounds(matchRounds) {
 
 
 //feedback- רק לצורך מבחן
-function roundManager(courseId, vectors, baseWeights, minSize, maxSize, roundNum,feedback) {
+function roundManager(courseId, vectors, baseWeights, minSize, maxSize, roundNum, feedback) {
     const n = vectors.length;
     const id = courseId + roundNum;
     if (roundNum === 1) {
         const matchRounds = [];
         // 1. build similarity matrix
         const matrix = buildSimilarityMatrix(vectors, baseWeights, schema);
-     
+
         const used = new Array(n).fill(false);
 
         // 2. run window clustering
 
         const { groups, unassigned } = windowClustering(vectors, matrix, minSize, maxSize, used, schema);
-        
+
         // 3. save round data
         matchRounds.push({
             roundId: id,
@@ -58,7 +58,7 @@ function roundManager(courseId, vectors, baseWeights, minSize, maxSize, roundNum
         matchGroups = lockGroups(matchGroups, feedback, minSize);
         trueGroups = trueGroups.concat(matchGroups.filter(g => g.groupStatus)); // update true groups with newly locked groups
         let unmatchGroups = matchGroups.filter(g => !g.groupStatus); // keep only still unlocked groups
-    
+
         const matchStudent = new Array(n).fill(false);
         for (const group of trueGroups) {
             for (const memberIdx of group.memberIds) {
@@ -91,7 +91,7 @@ function roundManager(courseId, vectors, baseWeights, minSize, maxSize, roundNum
             let { newMatrix, updatedWeights } =
                 feedbackProcessor(unmatchVectors, unmatchGroups, filteredFeedback, matchWeights);
 
-            newWeights=updatedWeights
+            newWeights = updatedWeights
             matrix = newMatrix;
             const { groups, unassigned: newUnassigned } =
                 windowClustering(unmatchVectors, matrix, minSize, maxSize);
@@ -103,7 +103,7 @@ function roundManager(courseId, vectors, baseWeights, minSize, maxSize, roundNum
             finalGroups = trueGroups.concat(groups);
             unassigned = newUnassigned.map(idx => indexMap[idx]);
         }
-//4. save round data
+        //4. save round data
         matchRounds.push({
             roundId: id,
             courseId,
@@ -115,8 +115,8 @@ function roundManager(courseId, vectors, baseWeights, minSize, maxSize, roundNum
             feedback
         });
         saveMatchRounds(matchRounds);
-       // return { IN_PROGRESS };
+        // return { IN_PROGRESS };
     }
-   
+
 }
 module.exports = roundManager;
