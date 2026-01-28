@@ -5,30 +5,31 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.smart_group.data.model.Answers
+import com.example.smart_group.data.model.Student
 import com.example.smart_group.data.model.User
 import com.example.smart_group.data.model.UserRole
 import com.example.smart_group.data.repository.AuthRepository
+import com.example.smart_group.data.repository.StudentRepository
 import com.example.smart_group.data.repository.UserRepository
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class RegisterViewModel(
     private val authRepo: AuthRepository = AuthRepository(),
-    private val userRepo: UserRepository = UserRepository()
+    private val userRepo: UserRepository = UserRepository(),
+    private val studentRepo: StudentRepository = StudentRepository()
 ) : ViewModel() {
 
-    // מונע לחיצות כפולות
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // Toast
     private val _toastMessage = MutableLiveData<String?>()
     val toastMessage: LiveData<String?> = _toastMessage
 
-    // ניווט ללוגין אחרי הצלחה
     private val _navigateToLogin = MutableLiveData(false)
     val navigateToLogin: LiveData<Boolean> = _navigateToLogin
 
-    // Errors לשדות
     private val _usernameError = MutableLiveData<String?>()
     val usernameError: LiveData<String?> = _usernameError
 
@@ -38,72 +39,103 @@ class RegisterViewModel(
     private val _passwordError = MutableLiveData<String?>()
     val passwordError: LiveData<String?> = _passwordError
 
-    fun onToastShown() {
-        _toastMessage.value = null
-    }
+    fun onToastShown() { _toastMessage.value = null }
+    fun onNavigatedToLogin() { _navigateToLogin.value = false }
 
-    fun onNavigatedToLogin() {
-        _navigateToLogin.value = false
-    }
+    fun signUp(
+        usernameRaw: String,
+        emailRaw: String,
+        passwordRaw: String,
+        questionnaireAnswers: Map<String, Any>?
+    ) {
+        val cleanedUserName = usernameRaw.trim()
+        val cleanedEmail = emailRaw.trim()
+        val cleanedPassword = passwordRaw
 
-    fun signUp(usernameRaw: String, emailRaw: String, passwordRaw: String) {
-        val cleanUsername = usernameRaw.trim()
-        val cleanEmail = emailRaw.trim()
-        val cleanPassword = passwordRaw
-
-        // ניקוי שגיאות קודמות
         _usernameError.value = null
         _emailError.value = null
         _passwordError.value = null
 
-        // ולידציות כמו אצלך
-        val usernameRegex = Regex("^[A-Za-z]{1,15}$")
-        val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,10}$")
+        val userNameRegex = Regex("^[A-Za-z]{1,15}$")
+        val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,10}$")
 
-        if (cleanUsername.isEmpty()) {
+        if (cleanedUserName.isEmpty()) {
             _usernameError.value = "Username is required"
             return
         }
-        if (!usernameRegex.matches(cleanUsername)) {
+        if (!userNameRegex.matches(cleanedUserName)) {
             _usernameError.value = "Username must contain only English letters (max 15)"
             return
         }
 
-        if (cleanEmail.isEmpty()) {
+        if (cleanedEmail.isEmpty()) {
             _emailError.value = "Email is required"
             return
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(cleanEmail).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(cleanedEmail).matches()) {
             _emailError.value = "Invalid email address"
             return
         }
 
-        if (cleanPassword.isEmpty()) {
+        if (cleanedPassword.isEmpty()) {
             _passwordError.value = "Password is required"
             return
         }
-        if (!passwordRegex.matches(cleanPassword)) {
+        if (!passRegex.matches(cleanedPassword)) {
             _passwordError.value = "Password must be 8–10 characters and include letters and numbers"
             return
         }
 
-        // ✅ הרשמה אמיתית: Auth -> uid -> Firestore users/{uid}
+        if (questionnaireAnswers == null) {
+            _toastMessage.value = "Please complete the questionnaire before signing up."
+            return
+        }
+
+        // המרה מ-Map -> Answers (תואם schema)
+        val convertedAnswers = Answers(
+            gender = (questionnaireAnswers["gender"] as? String) ?: "",
+            genderPreference = (questionnaireAnswers["genderPreference"] as? String) ?: "",
+
+            availability = (questionnaireAnswers["availability"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+            workStyle = (questionnaireAnswers["workStyle"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+            workMode = (questionnaireAnswers["workMode"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+            language = (questionnaireAnswers["language"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+            taskPreference = (questionnaireAnswers["taskPreference"] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+        )
+
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val newUid = authRepo.register(cleanEmail, cleanPassword)
+                // 1) Auth
+                val createdUid = authRepo.register(cleanedEmail, cleanedPassword)
 
-                val userDoc = User(
-                    userId = newUid,
-                    userName = cleanUsername,
-                    email = cleanEmail,
+                // 2) users/{uid}
+                val createdUser = User(
+                    userId = createdUid,
+                    userName = cleanedUserName,
+                    email = cleanedEmail,
                     role = UserRole.STUDENT
                 )
+                userRepo.addUser(createdUser)
 
-                userRepo.addUser(userDoc)
+                // 3) students/{studentId} + answers
+                val createdStudentId = UUID.randomUUID().toString()
 
-                _toastMessage.value = "Registered successfully ✅"
+                val createdStudent = Student(
+                    studentId = createdStudentId,
+                    userId = createdUid,
+                    userName = cleanedUserName,
+                    email = cleanedEmail,
+                    answers = convertedAnswers,
+                    normalizedAnswers = emptyList(),
+                    questionnaireCompleted = true
+                )
+
+                studentRepo.addStudent(createdStudent)
+
+                _toastMessage.value = "Registered successfully "
                 _navigateToLogin.value = true
+
             } catch (e: Exception) {
                 val msg = (e.message ?: "").lowercase()
                 _toastMessage.value = when {

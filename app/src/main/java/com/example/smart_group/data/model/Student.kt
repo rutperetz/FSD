@@ -1,38 +1,32 @@
 package com.example.smart_group.data.model
 
+// NOTE: ברירות מחדל חשובות כדי ש-Firestore יוכל ליצור אובייקט בלי קונסטרקטור מלא
 data class Student(
-    val studentId:String,//UUID
-    val userId: String?,  //firebase uid
-    val userName: String,
-    val email: String,
-    val answers: Answers,
-    val normalizedAnswers: List<Int>
-    /*gender_male
-    gender_female
-    pref_men
-    pref_women
-    pref_none
-    avail_morning
-    avail_afternoon
-    avail_evening
-    avail_weekend
-    style_individual
-    style_collaborative
-    mode_oncampus
-    mode_remote
-    lang_hebrew
-    lang_english
-    lang_arabic
-    task_fixed
-    task_flexible*/
+    val studentId: String = "",        // UUID
+    val userId: String = "",           // firebase uid
+    val userName: String = "",
+    val email: String = "",
+
+    //  answers לפי הסכמה
+    val answers: Answers = Answers(),
+
+    //  כרגע לא חייבים לנרמל - נשמור ריק ונוסיף אחרי זה
+    val normalizedAnswers: List<Int> = emptyList(),
+
+    //  סימון שהשאלון הושלם
+    val questionnaireCompleted: Boolean = false
 )
 
+//  תואם  לסכמה שצריכה להיות:
+// gender, genderPreference = single (String)
+// availability, workStyle, workMode, language, taskPreference = multi (List<String>)
 data class Answers(
-    val gender: String,
-    val genderPreference: String,
-    val availability: List<String>,
-    val workStyle: String,
-    val workMode: List<String>,
-    val language: String,
-    val taskPreference: String
+    val gender: String = "",                   // "male" / "female"
+    val genderPreference: String = "",         // "men"/"women"/"no_preference"
+
+    val availability: List<String> = emptyList(),    // ["morning", ...]
+    val workStyle: List<String> = emptyList(),       // ["individual"] / ["collaborative"]
+    val workMode: List<String> = emptyList(),        // ["oncampus"] / ["remote"]
+    val language: List<String> = emptyList(),        // ["Hebrew"] / ["English"] / ["Arabic"]
+    val taskPreference: List<String> = emptyList()   // ["fixed"] / ["flexible"]
 )

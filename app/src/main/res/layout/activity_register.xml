@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/login_background">
 
-    <!-- Back arrow – same icon, but now positioned and clickable reliably -->
+    <!-- Back arrow – clickable reliably -->
     <ImageView
         android:id="@+id/back_arrow"
         android:layout_width="48dp"

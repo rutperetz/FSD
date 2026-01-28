@@ -9,8 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.smart_group.R
-import android.util.Log
-
 
 class QuestionnaireActivity : AppCompatActivity() {
 
@@ -20,6 +18,7 @@ class QuestionnaireActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questionnaire)
 
+        // back arrow (ב-XML שלך זה iv_back)
         findViewById<ImageView>(R.id.iv_back).setOnClickListener { finish() }
 
         // multi-select toggle (exclude gender + genderPreference because they're RadioGroup singles)
@@ -41,20 +40,24 @@ class QuestionnaireActivity : AppCompatActivity() {
             }
         }
 
+        // כששומרים מקומית ב-VM (Saved) -> נחזיר תוצאות ל-Register
         vm.state.observe(this) { st ->
             if (st is QuestionnaireUiState.Saved) {
                 val data = Intent().apply {
                     putExtra("QUESTIONNAIRE_COMPLETED", true)
 
-                    // אם תרצי להעביר גם את כל התשובות ל-Register:
+                    // SINGLE
                     putExtra("gender", st.answers.gender)
                     putExtra("genderPreference", st.answers.genderPreference)
+
+                    // MULTI
                     putStringArrayListExtra("availability", ArrayList(st.answers.availability))
                     putStringArrayListExtra("workStyle", ArrayList(st.answers.workStyle))
                     putStringArrayListExtra("workMode", ArrayList(st.answers.workMode))
                     putStringArrayListExtra("language", ArrayList(st.answers.language))
                     putStringArrayListExtra("taskPreference", ArrayList(st.answers.taskPreference))
                 }
+
                 setResult(Activity.RESULT_OK, data)
                 vm.reset()
                 finish()
@@ -66,11 +69,13 @@ class QuestionnaireActivity : AppCompatActivity() {
 
             // Gender (tag)
             val genderId = findViewById<RadioGroup>(R.id.rg_gender).checkedRadioButtonId
-            val gender = if (genderId != -1) findViewById<RadioButton>(genderId).tag.toString() else ""
+            val gender =
+                if (genderId != -1) findViewById<RadioButton>(genderId).tag.toString() else ""
 
             // Gender Preference (tag) - single
             val prefId = findViewById<RadioGroup>(R.id.rg_gender_pref).checkedRadioButtonId
-            val genderPreference = if (prefId != -1) findViewById<RadioButton>(prefId).tag.toString() else ""
+            val genderPreference =
+                if (prefId != -1) findViewById<RadioButton>(prefId).tag.toString() else ""
 
             fun checkedTags(vararg ids: Int): List<String> {
                 val out = mutableListOf<String>()
@@ -84,26 +89,59 @@ class QuestionnaireActivity : AppCompatActivity() {
             val answers = QuestionnaireAnswers(
                 gender = gender,
                 genderPreference = genderPreference,
-                availability = checkedTags(R.id.rb_av_morning, R.id.rb_av_afternoon, R.id.rb_av_evening, R.id.rb_av_weekend),
-                workStyle = checkedTags(R.id.rb_style_individual, R.id.rb_style_collaborative),
-                workMode = checkedTags(R.id.rb_mode_on_campus, R.id.rb_mode_remote),
-                language = checkedTags(R.id.rb_lang_hebrew, R.id.rb_lang_english, R.id.rb_lang_arabic),
-                taskPreference = checkedTags(R.id.rb_task_fixed, R.id.rb_task_flexible)
+                availability = checkedTags(
+                    R.id.rb_av_morning, R.id.rb_av_afternoon, R.id.rb_av_evening, R.id.rb_av_weekend
+                ),
+                workStyle = checkedTags(
+                    R.id.rb_style_individual, R.id.rb_style_collaborative
+                ),
+                workMode = checkedTags(
+                    R.id.rb_mode_on_campus, R.id.rb_mode_remote
+                ),
+                language = checkedTags(
+                    R.id.rb_lang_hebrew, R.id.rb_lang_english, R.id.rb_lang_arabic
+                ),
+                taskPreference = checkedTags(
+                    R.id.rb_task_fixed, R.id.rb_task_flexible
+                )
             )
 
             // required red flags
             setFieldError(R.id.tv_gender_title, R.id.tv_gender_required, answers.gender.isBlank())
-            setFieldError(R.id.tv_gender_pref_title, R.id.tv_gender_pref_required, answers.genderPreference.isBlank())
-            setFieldError(R.id.tv_availability_title, R.id.tv_availability_required, answers.availability.isEmpty())
-            setFieldError(R.id.tv_work_style_title, R.id.tv_work_style_required, answers.workStyle.isEmpty())
-            setFieldError(R.id.tv_work_mode_title, R.id.tv_work_mode_required, answers.workMode.isEmpty())
-            setFieldError(R.id.tv_language_title, R.id.tv_language_required, answers.language.isEmpty())
-            setFieldError(R.id.tv_task_title, R.id.tv_task_required, answers.taskPreference.isEmpty())
-
-            android.util.Log.d("Questionnaire", "answers = $answers")
+            setFieldError(
+                R.id.tv_gender_pref_title,
+                R.id.tv_gender_pref_required,
+                answers.genderPreference.isBlank()
+            )
+            setFieldError(
+                R.id.tv_availability_title,
+                R.id.tv_availability_required,
+                answers.availability.isEmpty()
+            )
+            setFieldError(
+                R.id.tv_work_style_title,
+                R.id.tv_work_style_required,
+                answers.workStyle.isEmpty()
+            )
+            setFieldError(
+                R.id.tv_work_mode_title,
+                R.id.tv_work_mode_required,
+                answers.workMode.isEmpty()
+            )
+            setFieldError(
+                R.id.tv_language_title,
+                R.id.tv_language_required,
+                answers.language.isEmpty()
+            )
+            setFieldError(
+                R.id.tv_task_title,
+                R.id.tv_task_required,
+                answers.taskPreference.isEmpty()
+            )
 
             if (!vm.validate(answers)) {
-                Toast.makeText(this, getString(R.string.all_fields_required), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.all_fields_required), Toast.LENGTH_LONG)
+                    .show()
                 findViewById<ScrollView>(R.id.sv_content).smoothScrollTo(0, 0)
                 return@setOnClickListener
             }

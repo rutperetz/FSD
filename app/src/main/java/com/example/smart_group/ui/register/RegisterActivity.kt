@@ -20,20 +20,53 @@ class RegisterActivity : ComponentActivity() {
 
     private var questionnaireCompleted: Boolean = false
 
+    //  נשמור כאן את כל תשובות השאלון לפי הסכמה (keys קבועים)
+    private var questionnaireAnswers: Map<String, Any>? = null
+
     private val questionnaireLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
+
+                val data = result.data
                 val completed =
-                    result.data?.getBooleanExtra("QUESTIONNAIRE_COMPLETED", false) ?: false
+                    data?.getBooleanExtra("QUESTIONNAIRE_COMPLETED", false) ?: false
+
                 questionnaireCompleted = completed
 
-                // עדכון UI (אופציונלי אבל מומלץ)
                 val tvFillQuestionnaire = findViewById<TextView>(R.id.tv_fill_questionnaire)
+
                 if (completed) {
+
+                    //  SINGLE
+                    val gender = data?.getStringExtra("gender") ?: ""
+                    val genderPreference = data?.getStringExtra("genderPreference") ?: ""
+
+                    // MULTI
+                    val availability = data?.getStringArrayListExtra("availability") ?: arrayListOf()
+                    val workStyle = data?.getStringArrayListExtra("workStyle") ?: arrayListOf()
+                    val workMode = data?.getStringArrayListExtra("workMode") ?: arrayListOf()
+                    val language = data?.getStringArrayListExtra("language") ?: arrayListOf()
+                    val taskPreference = data?.getStringArrayListExtra("taskPreference") ?: arrayListOf()
+
+                    //  נשמור את זה במבנה שמוכן לשמירה בפיירסטור
+                    // (ניצמד לסכמה בדיוק)
+                    questionnaireAnswers = mapOf(
+                        "gender" to gender,
+                        "genderPreference" to genderPreference,
+                        "availability" to availability,
+                        "workStyle" to workStyle,
+                        "workMode" to workMode,
+                        "language" to language,
+                        "taskPreference" to taskPreference
+                    )
+
                     tvFillQuestionnaire.text = "Questionnaire completed ✓"
                     tvFillQuestionnaire.paintFlags =
                         tvFillQuestionnaire.paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
+
                 } else {
+                    questionnaireAnswers = null
+
                     tvFillQuestionnaire.text = getString(R.string.fill_out_questionnaire)
                     tvFillQuestionnaire.paintFlags =
                         tvFillQuestionnaire.paintFlags or Paint.UNDERLINE_TEXT_FLAG
@@ -71,8 +104,8 @@ class RegisterActivity : ComponentActivity() {
 
         signUpBtn.setOnClickListener {
 
-            // ✅ חובה למלא שאלון לפני הרשמה
-            if (!questionnaireCompleted) {
+            // חובה למלא שאלון לפני הרשמה
+            if (!questionnaireCompleted || questionnaireAnswers == null) {
                 Toast.makeText(
                     this,
                     "Please complete the questionnaire before signing up.",
@@ -84,8 +117,10 @@ class RegisterActivity : ComponentActivity() {
             regVm.signUp(
                 usernameRaw = usernameBox.text.toString(),
                 emailRaw = emailBox.text.toString(),
-                passwordRaw = passwordBox.text.toString()
+                passwordRaw = passwordBox.text.toString(),
+                questionnaireAnswers = questionnaireAnswers
             )
+
         }
 
         // MVVM errors
