@@ -2,9 +2,8 @@ package com.example.smart_group
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.ComponentActivity
-import com.example.fsd.R
+import com.example.smart_group.ui.group.CourseGroupActivity
 
 class LoginActivity : ComponentActivity() {
 
@@ -12,14 +11,12 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // מוצאים את TextView של Register
-        val registerText: TextView = findViewById(R.id.register_link_text)
-
-        // מאזין ללחיצה על כל השורה
-        registerText.setOnClickListener {
-            // Intent שמעביר ל-RegisterActivity
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+        val intent = Intent(this, CourseGroupActivity::class.java).apply {
+            putExtra("courseId", "C1")
+            putExtra("roundId", "R1")
+            putExtra("groupId", "G1")
         }
+        startActivity(intent)
+        finish()
     }
 }

@@ -12,13 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Smart_Group">
 
-        <!-- Register screen -->
-        <activity
-            android:name="com.example.smart_group.RegisterActivity"
-            android:exported="false"
-            android:label="@string/title_activity_register"
-            android:theme="@style/Theme.Smart_Group" />
-
         <!-- Login screen (Launcher activity) -->
         <activity
             android:name="com.example.smart_group.LoginActivity"
@@ -29,6 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.example.smart_group.ui.group.CourseGroupActivity"
+            android:exported="false" />
 
     </application>
 
