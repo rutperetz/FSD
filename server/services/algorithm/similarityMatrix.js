@@ -118,12 +118,7 @@ function buildSimilarityMatrix(vectors, weights) {
         for (let j = i + 1; j < n; j++) {
 
             // Similarity score
-            const score = computeCompatibility(
-                vectors[i],
-                vectors[j],
-                weights,
-                schema
-            );
+            const score = computeCompatibility(vectors[i],vectors[j],weights);
 
             matrix[i][j] = score;
             matrix[j][i] = score;

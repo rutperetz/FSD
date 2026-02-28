@@ -62,32 +62,35 @@ function updateMatrixWithRejections(matrix, feedback) {
 // -------------------------
 function lockGroups(groups, feedback, minSize) {
     for (const group of groups) {
+        if (group.groupStatus) continue; // Already locked
+        else {
+            const lockedMembers = new Set();
+            const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
+            for (let i = 0; i < approvers.length; i++) {
+                for (let j = i + 1; j < approvers.length; j++) {
+                    const a = approvers[i];
+                    const b = approvers[j];
 
-        const lockedMembers = new Set();
-        const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
-        for (let i = 0; i < approvers.length; i++) {
-            for (let j = i + 1; j < approvers.length; j++) {
-                const a = approvers[i];
-                const b = approvers[j];
-
-                const aFeedback = feedback[a.toString()];
-                const bFeedback = feedback[b.toString()];
-                // Only if no one rejected the other
-                if (!aFeedback.rejectStudents.includes(b) &&
-                    !bFeedback.rejectStudents.includes(a)) {
-                    lockedMembers.add(a);
-                    lockedMembers.add(b);
+                    const aFeedback = feedback[a.toString()];
+                    const bFeedback = feedback[b.toString()];
+                    // Only if no one rejected the other
+                    if (!aFeedback.rejectStudents.includes(b) &&
+                        !bFeedback.rejectStudents.includes(a)) {
+                        lockedMembers.add(a);
+                        lockedMembers.add(b);
+                    }
                 }
             }
-        }
-        // If enough locked members, finalize the group
-        if (lockedMembers.size >= minSize) {
-            group.memberIds = Array.from(lockedMembers);
-            group.groupStatus = true;
-        }
+            // If enough locked members, finalize the group
+            if (lockedMembers.size >= minSize) {
+                group.memberIds = Array.from(lockedMembers);
+                group.groupStatus = true;
+            }
 
-    }
-
+        }
+    } 
+    // return only locked groups
+    groups = groups.filter(g => g.groupStatus);
     return groups;
 
 }
