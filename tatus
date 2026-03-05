@@ -1,0 +1,15 @@
+[33mcommit 1917fff0a109c8f3a5fc182dbff7940727ee3d9c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mandroid-initial[m[33m)[m
+Author: anatstefanski <anatstefanski16@gmail.com>
+Date:   Thu Jan 22 13:24:15 2026 +0200
+
+    Remove service account key from repo and ignore it
+
+server/api/smartgroup-48a3d-firebase-adminsdk-fbsvc-605cc91fde.json
+
+[33mcommit 84c35bf3aa278409b72679a31b7728589e9f3e2f[m
+Author: anatstefanski <anatstefanski16@gmail.com>
+Date:   Wed Jan 21 23:17:34 2026 +0200
+
+    connection between db and serve
+
+server/api/smartgroup-48a3d-firebase-adminsdk-fbsvc-605cc91fde.json
