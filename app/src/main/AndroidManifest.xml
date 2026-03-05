@@ -23,8 +23,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".profileActivity"
+            android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
+        <activity android:name=".ui.profile.EditProfileActivity" />
         <activity
             android:name=".Set_New_PasswordActivity"
             android:exported="false" />
