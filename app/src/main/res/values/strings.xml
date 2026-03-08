@@ -1,10 +1,17 @@
 <resources>
     <string name="app_name">Smart_Group</string>
-    <string name="forgot_password"><u>Forgot password</u></string>
+    <string name="forgot_password"><u>Forgot password?</u></string>
     <string name="register_text">Dont have a user? <u>Register</u></string>
 
     <string name="title_activity_register">RegisterActivity</string>
     <string name="edit_questionnaire"><u>View/Edit questionnaire</u></string>
     <string name="log_out">Log out</string>
+
+
+    <!-- Toast / Validation Messages -->
+    <string name="msg_enter_email">Please enter your email</string>
+    <string name="msg_invalid_email">Invalid email address</string>
+    <string name="msg_reset_email_sent">If an account exists for this email, a password reset link has been sent.</string>
+    <string name="msg_generic_error">Something went wrong. Please try again.</string>
 
 </resources>

@@ -23,18 +23,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.profile.ProfileActivity"
+            android:name=".ProfileActivity"
             android:exported="false" />
-        <activity android:name=".ui.profile.EditProfileActivity" />
-        <activity
-            android:name=".Set_New_PasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Verify_CodeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Forgot_PasswordActivity"
-            android:exported="false" /> <!-- Register screen -->
+        <activity android:name=".ui.forgotpassword.ForgotPasswordActivity" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
