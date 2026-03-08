@@ -25,12 +25,6 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
-        <activity
-            android:name=".Set_New_PasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Verify_CodeActivity"
-            android:exported="false" />
         <activity android:name=".ui.forgotpassword.ForgotPasswordActivity" />
         <activity
             android:name=".RegisterActivity"

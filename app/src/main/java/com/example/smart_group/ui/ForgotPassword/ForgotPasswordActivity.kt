@@ -31,9 +31,9 @@ class ForgotPasswordActivity : AppCompatActivity() {
             viewModel.sendResetEmail(emailInput.text.toString())
         }
 
-        viewModel.toastMessage.observe(this) { msg ->
-            if (msg != null) {
-                Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+        viewModel.toastMessageRes.observe(this) { resId ->
+            if (resId != null) {
+                Toast.makeText(this, getString(resId), Toast.LENGTH_LONG).show()
                 viewModel.onToastShown()
             }
         }

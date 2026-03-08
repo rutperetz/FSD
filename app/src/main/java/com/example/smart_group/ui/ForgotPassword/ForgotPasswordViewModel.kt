@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smart_group.data.repository.AuthRepository
 import kotlinx.coroutines.launch
+import com.example.smart_group.R
 
 class ForgotPasswordViewModel(
     private val authRepository: AuthRepository = AuthRepository()
@@ -15,8 +16,8 @@ class ForgotPasswordViewModel(
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _toastMessage = MutableLiveData<String?>()
-    val toastMessage: LiveData<String?> = _toastMessage
+    private val _toastMessageRes = MutableLiveData<Int?>()
+    val toastMessageRes: LiveData<Int?> = _toastMessageRes
 
     private val _navigateBackToLogin = MutableLiveData(false)
     val navigateBackToLogin: LiveData<Boolean> = _navigateBackToLogin
@@ -25,12 +26,12 @@ class ForgotPasswordViewModel(
         val email = emailRaw.trim()
 
         if (email.isEmpty()) {
-            _toastMessage.value = "Please enter your email"
+            _toastMessageRes.value = R.string.msg_enter_email
             return
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _toastMessage.value = "Invalid email address"
+            _toastMessageRes.value = R.string.msg_invalid_email
             return
         }
 
@@ -38,10 +39,10 @@ class ForgotPasswordViewModel(
             _isLoading.value = true
             try {
                 authRepository.sendPasswordResetEmail(email)
-                _toastMessage.value = "Password reset email sent. Please check your inbox"
+                _toastMessageRes.value = R.string.msg_reset_email_sent
                 _navigateBackToLogin.value = true
-            } catch (e: Exception) {
-                _toastMessage.value = "No account found with this email"
+            } catch (_: Exception) {
+                _toastMessageRes.value = R.string.msg_generic_error
             } finally {
                 _isLoading.value = false
             }
@@ -49,7 +50,7 @@ class ForgotPasswordViewModel(
     }
 
     fun onToastShown() {
-        _toastMessage.value = null
+        _toastMessageRes.value = null
     }
 
     fun onNavigated() {
