@@ -39,9 +39,6 @@ class AuthRepository(
         auth.signOut()
     }
 
-    suspend fun sendPasswordReset(email: String) {
-        auth.sendPasswordResetEmail(email).await()
-    }
     suspend fun sendPasswordResetEmail(email: String) {
         auth.sendPasswordResetEmail(email).await()
     }
