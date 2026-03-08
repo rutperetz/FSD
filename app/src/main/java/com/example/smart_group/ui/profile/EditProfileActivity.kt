@@ -1,5 +1,6 @@
 package com.example.smart_group.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageView
@@ -9,9 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.smart_group.R
-import com.google.android.material.button.MaterialButton
-import android.content.Intent
 import com.example.smart_group.ui.login.LoginActivity
+import com.google.android.material.button.MaterialButton
 
 class EditProfileActivity : AppCompatActivity() {
 
@@ -31,66 +31,55 @@ class EditProfileActivity : AppCompatActivity() {
         val btnSave = findViewById<MaterialButton>(R.id.save_changes_btn)
         val tvLogout = findViewById<TextView>(R.id.logout_text)
 
-        vm.usernameError.observe(this) { msg ->
-            etUsername.error = msg
-        }
-
-        vm.emailError.observe(this) { msg ->
-            etEmail.error = msg
-        }
-
-        vm.passwordError.observe(this) { msg ->
-            etPassword.error = msg
-        }
-
         vm.toastMessage.observe(this) { msg ->
             if (!msg.isNullOrBlank()) {
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
                 vm.onToastShown()
             }
         }
-        backArrow.setOnClickListener { finish() }
 
         vm.user.observe(this) { user ->
-            if (user != null) {
-                etUsername.setText(user.userName)
-                etEmail.setText(user.email)
-                etPassword.setText("") // לא מציגים סיסמה קיימת
+            user?.let {
+                etUsername.setText(it.userName)
+                etEmail.setText(it.email)
+                etPassword.setText("")
             }
         }
-
 
         vm.state.observe(this) { state ->
             when (state) {
                 is EditProfileState.Loading -> {
-                    // אפשר להוסיף disable לכפתור זמנית
                     btnSave.isEnabled = false
                 }
-                is EditProfileState.Saved -> {
-                    btnSave.isEnabled = true
-                    Toast.makeText(this, "Profile updated", Toast.LENGTH_SHORT).show()
 
-                    val i = Intent(this, ProfileActivity::class.java)
-                    i.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    startActivity(i)
+                is EditProfileState.Idle -> {
+                    btnSave.isEnabled = true
+                }
+
+                is EditProfileState.NavigateBackToProfile -> {
+                    btnSave.isEnabled = true
                     finish()
                 }
 
-                is EditProfileState.Error -> {
+                is EditProfileState.NavigateToLogin -> {
                     btnSave.isEnabled = true
+
                     Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
-                }
-                else -> {
-                    btnSave.isEnabled = true
+                    vm.logout()
+
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
                 }
             }
         }
 
-        btnSave.setOnClickListener {
-            etUsername.error = null
-            etEmail.error = null
-            etPassword.error = null
+        backArrow.setOnClickListener {
+            finish()
+        }
 
+        btnSave.setOnClickListener {
             vm.saveChanges(
                 newUserNameRaw = etUsername.text.toString(),
                 newEmailRaw = etEmail.text.toString(),
@@ -100,9 +89,10 @@ class EditProfileActivity : AppCompatActivity() {
 
         tvLogout.setOnClickListener {
             vm.logout()
-            val i = Intent(this, LoginActivity::class.java) // לשים את השם המדויק אצלך
-            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(i)
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
         }
 
         vm.loadUser()

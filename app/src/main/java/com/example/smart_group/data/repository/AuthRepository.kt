@@ -6,12 +6,14 @@ import kotlinx.coroutines.tasks.await
 class AuthRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 ) {
-    //login
+
     suspend fun login(email: String, password: String): String {
         val result = auth.signInWithEmailAndPassword(email, password).await()
         return result.user?.uid ?: throw Exception("Missing user id")
     }
+
     fun getCurrentUserId(): String? = auth.currentUser?.uid
+
     fun getCurrentEmail(): String? = auth.currentUser?.email
 
     suspend fun updateEmail(newEmail: String) {
@@ -22,6 +24,15 @@ class AuthRepository(
     suspend fun updatePassword(newPassword: String) {
         val user = auth.currentUser ?: throw Exception("No logged-in user")
         user.updatePassword(newPassword).await()
+    }
+
+    suspend fun reloadCurrentUser() {
+        val user = auth.currentUser ?: throw Exception("No logged-in user")
+        user.reload().await()
+    }
+
+    fun isCurrentUserEmailVerified(): Boolean {
+        return auth.currentUser?.isEmailVerified == true
     }
 
     fun logout() {

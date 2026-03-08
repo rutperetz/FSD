@@ -1,22 +1,23 @@
 package com.example.smart_group.data.repository
 
-
-
-import com.google.firebase.firestore.FirebaseFirestore
 import com.example.smart_group.data.model.Student
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class StudentRepository(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
-
     private val studentsRef = db.collection("students")
 
     suspend fun getStudent(studentId: String): Student? =
         studentsRef.document(studentId).get().await().toObject(Student::class.java)
 
     suspend fun getStudentByUserId(userId: String): Student? =
-        studentsRef.whereEqualTo("userId", userId).get().await().toObjects(Student::class.java).firstOrNull()
+        studentsRef.whereEqualTo("userId", userId)
+            .get()
+            .await()
+            .toObjects(Student::class.java)
+            .firstOrNull()
 
     suspend fun getAllStudents(): List<Student> =
         studentsRef.get().await().toObjects(Student::class.java)
@@ -27,6 +28,22 @@ class StudentRepository(
 
     suspend fun updateStudent(student: Student) {
         studentsRef.document(student.studentId).set(student).await()
+    }
+
+    suspend fun updateStudentFieldsByUserId(
+        userId: String,
+        userName: String? = null,
+        email: String? = null
+    ) {
+        val student = getStudentByUserId(userId) ?: return
+
+        val updates = mutableMapOf<String, Any>()
+        if (userName != null) updates["userName"] = userName
+        if (email != null) updates["email"] = email
+
+        if (updates.isNotEmpty()) {
+            studentsRef.document(student.studentId).update(updates).await()
+        }
     }
 
     suspend fun deleteStudent(studentId: String) {
