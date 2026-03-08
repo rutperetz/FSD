@@ -16,7 +16,7 @@ class AuthRepository(
 
     suspend fun updateEmail(newEmail: String) {
         val user = auth.currentUser ?: throw Exception("No logged-in user")
-        user.updateEmail(newEmail).await()
+        user.verifyBeforeUpdateEmail(newEmail).await()
     }
 
     suspend fun updatePassword(newPassword: String) {

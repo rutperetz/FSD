@@ -97,6 +97,8 @@ class EditProfileViewModel(
                 // Email changed -> Auth then Firestore :contentReference[oaicite:12]{index=12} :contentReference[oaicite:13]{index=13}
                 if (cleanedEmail != current.email) {
                     authRepo.updateEmail(cleanedEmail)
+                    _toastMessage.value =
+                        "Verification email sent. Please confirm your new email."
                 }
 
                 // Password update (only if typed) :contentReference[oaicite:14]{index=14}
@@ -106,7 +108,7 @@ class EditProfileViewModel(
 
                 val updated = current.copy(
                     userName = cleanedUserName,
-                    email = cleanedEmail
+                    email = current.email
                 )
                 userRepo.updateUser(updated) // :contentReference[oaicite:15]{index=15}
 
