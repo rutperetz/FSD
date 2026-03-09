@@ -1,5 +1,6 @@
 package com.example.smart_group.ui.courses
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -14,6 +15,8 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_group.R
+import com.example.smart_group.ui.login.LoginActivity
+import com.example.smart_group.ui.profile.ProfileActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CoursesActivity : ComponentActivity() {
@@ -148,23 +151,24 @@ class CoursesActivity : ComponentActivity() {
 
         fabAdd.visibility = if (isAdmin) View.VISIBLE else View.GONE
         fabAdd.setOnClickListener {
-            Toast.makeText(this, "Add Course clicked", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, AdminActivity::class.java))
         }
 
         btnProfile.setOnClickListener {
-            Toast.makeText(this, "Profile clicked", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
         btnGps.setOnClickListener {
-            Toast.makeText(this, "GPS clicked", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LocationActivity::class.java))
         }
 
         btnStats.setOnClickListener {
-            Toast.makeText(this, "Stats clicked", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Stats screen will be connected next", Toast.LENGTH_SHORT).show()
         }
 
         btnLogout.setOnClickListener {
-            Toast.makeText(this, "Logout clicked", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
 
         refreshList()
