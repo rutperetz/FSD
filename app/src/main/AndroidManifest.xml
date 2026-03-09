@@ -25,6 +25,9 @@
         <activity
             android:name=".profileActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.group.GroupActivity" />
         <activity
             android:name=".Set_New_PasswordActivity"
             android:exported="false" />
