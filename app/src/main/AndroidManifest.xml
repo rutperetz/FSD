@@ -67,6 +67,10 @@
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.Smart_Group" />
+        <activity
+            android:name=".ui.courses.StatsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
 
     </application>
 

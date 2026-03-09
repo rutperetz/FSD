@@ -163,7 +163,7 @@ class CoursesActivity : ComponentActivity() {
         }
 
         btnStats.setOnClickListener {
-            Toast.makeText(this, "Stats screen will be connected next", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, StatsActivity::class.java))
         }
 
         btnLogout.setOnClickListener {
