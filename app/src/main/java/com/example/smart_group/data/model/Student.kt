@@ -10,7 +10,7 @@ data class Student(
     //  answers לפי הסכמה
     val answers: Answers = Answers(),
 
-    //  כרגע לא חייבים לנרמל - נשמור ריק ונוסיף אחרי זה
+    //  כרגע ללא נרמול - נשמור ריק ונוסיף אחרי זה
     val normalizedAnswers: List<Int> = emptyList(),
 
     //  סימון שהשאלון הושלם

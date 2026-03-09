@@ -55,6 +55,7 @@ class RegisterViewModel(
         _usernameError.value = null
         _emailError.value = null
         _passwordError.value = null
+        //בודק אם השדןת מלאים נכון במידה ולא מחזיר הודעה בהתאם
 
         val userNameRegex = Regex("^[A-Za-z]{1,15}$")
         val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,10}$")
