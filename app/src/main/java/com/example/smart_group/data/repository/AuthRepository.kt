@@ -12,6 +12,11 @@ class AuthRepository(
         return result.user?.uid ?: throw Exception("Missing user id")
     }
 
+    //  register
+    suspend fun register(email: String, password: String): String {
+        val result = auth.createUserWithEmailAndPassword(email, password).await()
+        return result.user?.uid ?: throw Exception("Missing user id")
+    }
     fun getCurrentUserId(): String? = auth.currentUser?.uid
 
     fun getCurrentEmail(): String? = auth.currentUser?.email

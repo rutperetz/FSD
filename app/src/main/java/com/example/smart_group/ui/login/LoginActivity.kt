@@ -8,10 +8,11 @@ import android.widget.Toast
 import com.example.smart_group.R
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.smart_group.RegisterActivity
-import com.example.smart_group.ui.forgotpassword.ForgotPasswordActivity
+import com.example.smart_group.ui.login.LoginViewModel
+import com.example.smart_group.ui.register.RegisterActivity
+import com.example.smart_group.Forgot_PasswordActivity
 import com.google.android.material.button.MaterialButton
-import com.example.smart_group.ui.profile.ProfileActivity
+
 class LoginActivity : AppCompatActivity() {
 
     private val viewModel: LoginViewModel by viewModels()
@@ -41,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
 
         //לחיצה על שכחתי סיסמא
         forgotPasswordText.setOnClickListener {
-            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+            startActivity(Intent(this, Forgot_PasswordActivity::class.java))
         }
 
         //מאזין לתוצאות שבאו מהVIEWMODLE
@@ -63,9 +64,9 @@ class LoginActivity : AppCompatActivity() {
             if (go) {
                 Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
 
-                 //כאן בעתיד תעברי למסך הבא (כשיהיה לך)
-                startActivity(Intent(this, ProfileActivity::class.java))
-                finish()
+                // כאן בעתיד תעברי למסך הבא (כשיהיה לך)
+                // startActivity(Intent(this, HomeActivity::class.java))
+                // finish()
 
                 viewModel.onNavigated()
             }
