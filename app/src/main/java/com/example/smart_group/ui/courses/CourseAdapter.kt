@@ -1,8 +1,6 @@
 package com.example.smart_group.ui.courses
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,28 +37,14 @@ class CourseAdapter(
 
         holder.imgCourse.setImageResource(item.imageRes)
         holder.tvCourseTitle.text = item.title
-        holder.tvCourseDesc.text = item.description
-        holder.tvCategory.text = item.category
 
-        holder.btnPlay.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.videoUrl))
-            context.startActivity(intent)
-        }
-
-        if (isAdmin) {
-            holder.btnDelete.visibility = View.VISIBLE
-            holder.btnDelete.setOnClickListener {
-                onDeleteClicked(item)
-            }
-        } else {
-            holder.btnDelete.visibility = View.GONE
-            holder.btnDelete.setOnClickListener(null)
-        }
+        holder.tvCourseDesc.visibility = View.GONE
+        holder.tvCategory.visibility = View.GONE
+        holder.btnPlay.visibility = View.GONE
+        holder.btnDelete.visibility = View.GONE
     }
 
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    override fun getItemCount(): Int = items.size
 
     fun updateData(newItems: List<CourseUiModel>) {
         items = newItems.toMutableList()
