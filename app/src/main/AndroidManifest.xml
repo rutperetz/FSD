@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -13,33 +14,68 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Smart_Group">
+
         <activity
-            android:name=".profileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Set_New_PasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Verify_CodeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Forgot_PasswordActivity"
-            android:exported="false" /> <!-- Register screen -->
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false"
-            android:label="@string/title_activity_register"
-            android:theme="@style/Theme.Smart_Group" /> <!-- Login screen (Launcher activity) -->
-        <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Smart_Group">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:label="@string/title_activity_register"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".ui.forgotpassword.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".ui.courses.CoursesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".ui.courses.AdminActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".ui.courses.LocationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".ui.courses.StatsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".ui.profile.EditProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
+        <activity
+            android:name=".SplashActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
     </application>
 
 </manifest>
