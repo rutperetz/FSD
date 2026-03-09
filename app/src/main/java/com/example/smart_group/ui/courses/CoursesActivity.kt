@@ -2,22 +2,14 @@ package com.example.smart_group.ui.courses
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.core.widget.addTextChangedListener
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_group.R
-import com.example.smart_group.ui.login.LoginActivity
 import com.example.smart_group.ui.profile.ProfileActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class CoursesActivity : ComponentActivity() {
 
@@ -26,175 +18,107 @@ class CoursesActivity : ComponentActivity() {
     private val allCourses = mutableListOf(
         CourseUiModel(
             id = 1,
-            title = "C#",
-            description = "תחביר, OOP והיכרות עם .NET",
+            title = "FSD",
+            description = "Full Stack Development",
             category = "שפות תכנות",
             imageRes = R.drawable.img_code,
-            videoUrl = "https://www.youtube.com/watch?v=GhQdlIFylQ8"
+            videoUrl = ""
         ),
         CourseUiModel(
             id = 2,
-            title = "Java",
-            description = "מחלקות, ירושה, OOP ו-Collections",
-            category = "שפות תכנות",
-            imageRes = R.drawable.img_code,
-            videoUrl = "https://www.youtube.com/watch?v=eIrMbAQSU34"
+            title = "Algorithm",
+            description = "Algorithms and problem solving",
+            category = "מדעי המחשב",
+            imageRes = R.drawable.img_cs,
+            videoUrl = ""
         ),
         CourseUiModel(
             id = 3,
-            title = "Python",
-            description = "משתנים, פונקציות ורשימות",
+            title = "Java",
+            description = "OOP and Collections",
             category = "שפות תכנות",
             imageRes = R.drawable.img_code,
-            videoUrl = "https://www.youtube.com/watch?v=rfscVS0vtbw"
+            videoUrl = ""
         ),
         CourseUiModel(
             id = 4,
-            title = "אינפי 1",
-            description = "גבולות, נגזרות ואינטגרלים בסיסיים",
+            title = "Linear Algebra",
+            description = "Matrices and vectors",
             category = "מתמטיקה",
             imageRes = R.drawable.img_math,
-            videoUrl = "https://www.youtube.com/watch?v=WUvTyaaNkzM"
-        ),
-        CourseUiModel(
-            id = 5,
-            title = "אלגברה לינארית",
-            description = "וקטורים, מטריצות ומרחבים וקטוריים",
-            category = "מתמטיקה",
-            imageRes = R.drawable.img_math,
-            videoUrl = "https://www.youtube.com/watch?v=ZK3O402wf1c"
-        ),
-        CourseUiModel(
-            id = 6,
-            title = "מבני נתונים",
-            description = "רשימות, מחסנית, תור, עצים וטבלאות גיבוב",
-            category = "מדעי המחשב",
-            imageRes = R.drawable.img_cs,
-            videoUrl = "https://www.youtube.com/watch?v=bum_19loj9A"
+            videoUrl = ""
         )
     )
 
-    private var selectedCategory: String = "All"
-    private var visibleCount = 5
-    private val pageSize = 5
-    private val isAdmin = true
+    private var currentSearchQuery: String = ""
 
-    private lateinit var tvRole: TextView
-    private lateinit var etSearch: EditText
-    private lateinit var spCategory: Spinner
     private lateinit var rvCourses: RecyclerView
-    private lateinit var btnLoadMore: Button
-    private lateinit var fabAdd: FloatingActionButton
-    private lateinit var btnProfile: Button
-    private lateinit var btnGps: Button
-    private lateinit var btnStats: Button
-    private lateinit var btnLogout: Button
+    private lateinit var bottomNav: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_courses)
 
-        tvRole = findViewById(R.id.tvRole)
-        etSearch = findViewById(R.id.etSearch)
-        spCategory = findViewById(R.id.spCategory)
         rvCourses = findViewById(R.id.rvCourses)
-        btnLoadMore = findViewById(R.id.btnLoadMore)
-        fabAdd = findViewById(R.id.fabAdd)
-        btnProfile = findViewById(R.id.btnProfile)
-        btnGps = findViewById(R.id.btnGps)
-        btnStats = findViewById(R.id.btnStats)
-        btnLogout = findViewById(R.id.btnLogout)
-
-        tvRole.text = if (isAdmin) "Admin" else "Student"
+        bottomNav = findViewById(R.id.bottom_nav)
 
         rvCourses.layoutManager = LinearLayoutManager(this)
+
         adapter = CourseAdapter(
             context = this,
-            items = getVisibleFilteredCourses().toMutableList(),
-            isAdmin = isAdmin,
-            onDeleteClicked = { course ->
-                allCourses.remove(course)
-                refreshList()
-                Toast.makeText(this, "Course deleted", Toast.LENGTH_SHORT).show()
-            }
+            items = getFilteredCourses().toMutableList(),
+            isAdmin = false,
+            onDeleteClicked = { }
         )
         rvCourses.adapter = adapter
 
-        val categories = listOf("All", "מתמטיקה", "שפות תכנות", "מדעי המחשב")
-        spCategory.adapter =
-            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    currentSearchQuery = ""
+                    refreshList()
+                    true
+                }
 
-        spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedCategory = categories[position]
-                visibleCount = pageSize
-                refreshList()
+                R.id.nav_search -> {
+                    showSearchDialog()
+                    true
+                }
+
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    true
+                }
+
+                else -> false
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        etSearch.addTextChangedListener {
-            visibleCount = pageSize
-            refreshList()
-        }
-
-        btnLoadMore.setOnClickListener {
-            visibleCount += pageSize
-            refreshList()
-        }
-
-        fabAdd.visibility = if (isAdmin) View.VISIBLE else View.GONE
-        fabAdd.setOnClickListener {
-            startActivity(Intent(this, AdminActivity::class.java))
-        }
-
-        btnProfile.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
-        }
-
-        btnGps.setOnClickListener {
-            startActivity(Intent(this, LocationActivity::class.java))
-        }
-
-        btnStats.setOnClickListener {
-            startActivity(Intent(this, StatsActivity::class.java))
-        }
-
-        btnLogout.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
         }
 
         refreshList()
     }
 
-    private fun getFilteredCourses(): List<CourseUiModel> {
-        val query = etSearch.text.toString().trim()
+    private fun showSearchDialog() {
+        val input = EditText(this)
+        input.hint = "Search course"
 
+        AlertDialog.Builder(this)
+            .setTitle("Search")
+            .setView(input)
+            .setPositiveButton("Search") { _, _ ->
+                currentSearchQuery = input.text.toString().trim()
+                refreshList()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun getFilteredCourses(): List<CourseUiModel> {
         return allCourses.filter { course ->
-            val matchesCategory = selectedCategory == "All" || course.category == selectedCategory
-            val matchesSearch = course.title.contains(query, ignoreCase = true)
-            matchesCategory && matchesSearch
+            course.title.contains(currentSearchQuery, ignoreCase = true)
         }
     }
 
-    private fun getVisibleFilteredCourses(): List<CourseUiModel> {
-        return getFilteredCourses().take(visibleCount)
-    }
-
     private fun refreshList() {
-        val visibleCourses = getVisibleFilteredCourses()
-        val filteredCourses = getFilteredCourses()
-
-        adapter.updateData(visibleCourses)
-
-        btnLoadMore.visibility =
-            if (visibleCourses.size < filteredCourses.size) View.VISIBLE else View.GONE
+        adapter.updateData(getFilteredCourses())
     }
 }

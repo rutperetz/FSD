@@ -1,72 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp">
+    android:layout_marginBottom="22dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
 
-    <ImageView
-        android:id="@+id/imgCourse"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_foreground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="190dp">
 
-    <TextView
-        android:id="@+id/tvCourseTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Course Title"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginStart="12dp"
-        app:layout_constraintStart_toEndOf="@id/imgCourse"
-        app:layout_constraintEnd_toStartOf="@id/btnPlay"
-        app:layout_constraintTop_toTopOf="@id/imgCourse" />
+        <ImageView
+            android:id="@+id/imgCourse"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_code" />
 
-    <TextView
-        android:id="@+id/tvCourseDesc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Course description..."
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintStart_toEndOf="@id/imgCourse"
-        app:layout_constraintEnd_toStartOf="@id/btnPlay"
-        app:layout_constraintTop_toBottomOf="@id/tvCourseTitle" />
+        <TextView
+            android:id="@+id/tvCourseTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="FSD"
+            android:textColor="@android:color/white"
+            android:textSize="34sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Category"
-        android:textSize="12sp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="6dp"
-        app:layout_constraintStart_toEndOf="@id/imgCourse"
-        app:layout_constraintTop_toBottomOf="@id/tvCourseDesc" />
+        <TextView
+            android:id="@+id/tvCourseDesc"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
-    <ImageButton
-        android:id="@+id/btnPlay"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@android:color/transparent"
-        android:src="@android:drawable/ic_media_play"
-        android:contentDescription="Play"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
-    <ImageButton
-        android:id="@+id/btnDelete"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@android:color/transparent"
-        android:src="@android:drawable/ic_menu_delete"
-        android:contentDescription="Delete"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnPlay" />
+        <ImageButton
+            android:id="@+id/btnPlay"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</androidx.cardview.widget.CardView>
