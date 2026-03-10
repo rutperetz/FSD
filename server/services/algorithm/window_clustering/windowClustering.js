@@ -131,8 +131,8 @@ function windowClustering(vectors, matrix, threshold, minSize, maxSize, used) {
 
     }
 
-    // Base buffer = 10% of class size (minimum 2)
-    const baseBuffer = Math.max(2, n * 0.1);
+    // Base buffer = 10% of class size (minimum 10)
+    const baseBuffer = Math.max(10, n * 0.1);
 
     for (let i = 0; i < n; i++) {
         if (used[i] || neighbors[i].length === 0) continue;
@@ -171,13 +171,13 @@ function windowClustering(vectors, matrix, threshold, minSize, maxSize, used) {
                 if (candidates.length < size - 1) continue;
 
                 // Generate all possible combinations of neighbors (pruned using matrix & preferences)
-                const combos = combinations(candidates, size - 1, neighbors, matrix, windowSize);
+                const combos = combinations(candidates, size - 1, neighbors, matrix, expandedCandidates.length);
 
                 for (const combo of combos) {
                     const groupIndices = [i, ...combo];
 
                     // Check mutual preference
-                    if (!checkMutualPreference(groupIndices, neighbors, windowSize)) continue;
+                    if (!checkMutualPreference(groupIndices, neighbors, expandedCandidates.length )) continue;
 
                     // Compute group score
                     const score = computeGroupScore(groupIndices, matrix);

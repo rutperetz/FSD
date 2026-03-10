@@ -1,12 +1,12 @@
 
-const normalizeAnswers = require('./normalizeAnswers.js');
-const buildSimilarityMatrix = require('./similarityMatrix.js');
+const normalizeAnswers = require('../normalizeAnswers.js');
+const buildSimilarityMatrix = require('../similarityMatrix.js');
 const fs = require("fs");
 const path = require("path");
-const { explainGroupReason, computeGroupScore } = require('./groupReasonAndScore');
-const windowClustering = require('./window_clustering/windowClustering.js');
-const schema = require('./answerSchema.js');
-const roundManager = require('./window_clustering/roundManager.js');
+const { explainGroupReason, computeGroupScore } = require('../groupReasonAndScore.js');
+const windowClustering = require('../window_clustering/windowClustering.js');
+const schema = require('../answerSchema.js');
+const roundManager = require('../window_clustering/roundManager.js');
 
 weights = {
     availability: 0.4,
@@ -15,12 +15,12 @@ weights = {
     language: 0.15,
     taskPreference: 0.15
 }
-minSize = 2;
-maxSize = 3;
+minSize = 3;
+maxSize = 4;
 courseId = "CS101";
 
 function loadStudentsFromFile() {
-    const filePath = path.join(__dirname, './data_updated.json');
+    const filePath = path.join(__dirname, 'data_updated.json');
     const raw = fs.readFileSync(filePath, "utf8");
     const data = JSON.parse(raw);
 
@@ -43,7 +43,6 @@ function loadStudentsFromFile() {
 
     return { feedback_1, feedback_2, vectors };
 }
-
 // test-1 normalizeAnswers + similarityScore
 function test1() {
 
@@ -99,10 +98,8 @@ function test5() {
     const { feedback_1, feedback_2, vectors } = loadStudentsFromFile();
     const threshold = 0.7;
     roundManager(courseId, vectors, weights, threshold, minSize, maxSize, 1, null);
-    //const groupingStatus = roundManager(courseId, vectors, weights, minSize, maxSize, 1, null);
-    // console.log("Grouping Status:",groupingStatus);
-    roundManager(courseId, vectors, weights, 0.6, minSize, maxSize, 2, feedback_1);
-    roundManager(courseId, vectors, weights, 0.5, minSize, maxSize, 3, feedback_2);
+    roundManager(courseId, vectors, weights, threshold, minSize, maxSize, 2, feedback_1);
+    roundManager(courseId, vectors, weights, threshold, minSize, maxSize, 3, feedback_2);
 }
 
 //test1();
