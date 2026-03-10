@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.smart_group.R
 import com.example.smart_group.ui.login.LoginActivity
 import com.google.android.material.button.MaterialButton
+import com.example.smart_group.ui.courses.CoursesActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class EditProfileActivity : AppCompatActivity() {
 

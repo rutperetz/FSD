@@ -15,28 +15,23 @@
         android:theme="@style/Theme.Smart_Group">
 
         <activity
-            android:name=".Set_New_PasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Verify_CodeActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Smart_Group">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
 
         <activity
             android:name=".ui.register.RegisterActivity"
             android:exported="false"
-            android:label="@string/title_activity_register"
             android:theme="@style/Theme.Smart_Group" />
 
         <activity
@@ -74,10 +69,6 @@
             android:exported="false"
             android:theme="@style/Theme.Smart_Group" />
 
-        <activity
-            android:name=".SplashActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Smart_Group" />
         <activity
             android:name=".ui.questionnaire.QuestionnaireActivity"
             android:exported="false"

@@ -8,9 +8,9 @@ import android.widget.Toast
 import com.example.smart_group.R
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.smart_group.ui.register.RegisterActivity
 import com.example.smart_group.ui.courses.CoursesActivity
 import com.example.smart_group.ui.login.LoginViewModel
-import com.example.smart_group.ui.register.RegisterActivity
 import com.example.smart_group.ui.forgotpassword.ForgotPasswordActivity
 import com.google.android.material.button.MaterialButton
 
@@ -65,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
             if (go) {
                 Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
 
-                //כאן בעתיד תעברי למסך הבא (כשיהיה לך)
+                 //כאן בעתיד תעברי למסך הבא (כשיהיה לך)
                 startActivity(Intent(this, CoursesActivity::class.java))
                 finish()
 

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_group.R
 import com.example.smart_group.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.widget.Toast
 
 class CoursesActivity : ComponentActivity() {
 
@@ -93,6 +94,7 @@ class CoursesActivity : ComponentActivity() {
                 else -> false
             }
         }
+
 
         refreshList()
     }

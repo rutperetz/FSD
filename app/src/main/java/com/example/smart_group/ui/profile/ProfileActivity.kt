@@ -8,6 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.smart_group.R
+import com.example.smart_group.ui.courses.CoursesActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 
 class ProfileActivity : AppCompatActivity() {
@@ -52,6 +54,8 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         vm.loadProfile()
+
+
     }
 
     override fun onResume() {
