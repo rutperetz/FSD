@@ -124,6 +124,7 @@
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:itemIconSize="28dp"
+        app:itemBackground="@drawable/bottom_nav_background"
         android:background="@color/lightBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

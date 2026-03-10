@@ -63,6 +63,8 @@ class CoursesActivity : ComponentActivity() {
         rvCourses = findViewById(R.id.rvCourses)
         bottomNav = findViewById(R.id.bottom_nav)
 
+        bottomNav.selectedItemId = R.id.nav_home
+
         rvCourses.layoutManager = LinearLayoutManager(this)
 
         adapter = CourseAdapter(
@@ -75,19 +77,19 @@ class CoursesActivity : ComponentActivity() {
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
+
                 R.id.nav_home -> {
-                    currentSearchQuery = ""
-                    refreshList()
                     true
                 }
 
                 R.id.nav_search -> {
-                    showSearchDialog()
+                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
                     true
                 }
 
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
+                    finish()
                     true
                 }
 
@@ -99,20 +101,20 @@ class CoursesActivity : ComponentActivity() {
         refreshList()
     }
 
-    private fun showSearchDialog() {
-        val input = EditText(this)
-        input.hint = "Search course"
-
-        AlertDialog.Builder(this)
-            .setTitle("Search")
-            .setView(input)
-            .setPositiveButton("Search") { _, _ ->
-                currentSearchQuery = input.text.toString().trim()
-                refreshList()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
+//    private fun showSearchDialog() {
+//        val input = EditText(this)
+//        input.hint = "Search course"
+//
+//        AlertDialog.Builder(this)
+//            .setTitle("Search")
+//            .setView(input)
+//            .setPositiveButton("Search") { _, _ ->
+//                currentSearchQuery = input.text.toString().trim()
+//                refreshList()
+//            }
+//            .setNegativeButton("Cancel", null)
+//            .show()
+//    }
 
     private fun getFilteredCourses(): List<CourseUiModel> {
         return allCourses.filter { course ->

@@ -52,7 +52,31 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         }
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
 
+        bottomNav.selectedItemId = R.id.nav_profile
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+
+                R.id.nav_home -> {
+                    startActivity(Intent(this, CoursesActivity::class.java))
+                    finish()
+                    true
+                }
+
+                R.id.nav_search -> {
+                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                R.id.nav_profile -> {
+                    true
+                }
+
+                else -> false
+            }
+        }
         vm.loadProfile()
 
 
