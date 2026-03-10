@@ -13,23 +13,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Smart_Group">
-        <activity
-            android:name=".profileActivity"
-            android:exported="false" />
+
         <activity
             android:name=".Set_New_PasswordActivity"
             android:exported="false" />
         <activity
             android:name=".Verify_CodeActivity"
             android:exported="false" />
-        <activity
-            android:name=".Forgot_PasswordActivity"
-            android:exported="false" /> <!-- Register screen -->
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false"
-            android:label="@string/title_activity_register"
-            android:theme="@style/Theme.Smart_Group" /> <!-- Login screen (Launcher activity) -->
+
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true"
@@ -41,13 +32,9 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.login.LoginActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Smart_Group" />
 
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ui.register.RegisterActivity"
             android:exported="false"
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.Smart_Group" />
@@ -91,6 +78,15 @@
             android:name=".SplashActivity"
             android:exported="false"
             android:theme="@style/Theme.Smart_Group" />
+        <activity
+            android:name=".ui.questionnaire.QuestionnaireActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+        <activity
+            android:name=".ui.questionnaire.EditQuestionnaireActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Smart_Group" />
+
 
     </application>
 
