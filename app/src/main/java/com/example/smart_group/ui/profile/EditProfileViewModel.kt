@@ -175,9 +175,9 @@ class EditProfileViewModel(
     }
 
     private fun validatePassword(password: String): String? {
-        val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,10}$")
+        val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,15}$")
         return if (!passwordRegex.matches(password)) {
-            "Password must be 8–10 characters and include letters and numbers"
+            "Password must be 12-15 characters and include letters and numbers"
         } else {
             null
         }

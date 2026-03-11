@@ -58,7 +58,7 @@ class RegisterViewModel(
         //בודק אם השדןת מלאים נכון במידה ולא מחזיר הודעה בהתאם
 
         val userNameRegex = Regex("^[A-Za-z]{1,15}$")
-        val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,10}$")
+        val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,15}$")
 
         if (cleanedUserName.isEmpty()) {
             _usernameError.value = "Username is required"
@@ -83,7 +83,7 @@ class RegisterViewModel(
             return
         }
         if (!passRegex.matches(cleanedPassword)) {
-            _passwordError.value = "Password must be 8–10 characters and include letters and numbers"
+            _passwordError.value = "Password must be 12-15 characters and include letters and numbers"
             return
         }
 
