@@ -5,7 +5,11 @@
 
     <string name="title_activity_register">RegisterActivity</string>
     <string name="edit_questionnaire"><u>View/Edit questionnaire</u></string>
-    <string name="log_out">Log out</string>
+    <string name="log_out"><u>Log out</u></string>
+
+    <string name="VIEW_GROUP">● <u>View my group</u></string>
+
+
 
 
     <!-- Toast / Validation Messages -->
