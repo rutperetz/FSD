@@ -14,7 +14,8 @@ class CourseAdapter(
     private val context: Context,
     private var items: MutableList<CourseUiModel>,
     private val isAdmin: Boolean,
-    private val onDeleteClicked: (CourseUiModel) -> Unit
+    private val onDeleteClicked: (CourseUiModel) -> Unit = {},
+    private val onCourseClick: (CourseUiModel) -> Unit = {}
 ) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
 
     class CourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,11 +38,26 @@ class CourseAdapter(
 
         holder.imgCourse.setImageResource(item.imageRes)
         holder.tvCourseTitle.text = item.title
+        holder.tvCourseDesc.text = "Lecturer: ${item.lecturer} | Deadline: ${item.deadline}"
+        holder.tvCategory.text =
+            "Group: ${item.minGroupSize}-${item.maxGroupSize} | Status: ${item.groupingStatus}"
 
-        holder.tvCourseDesc.visibility = View.GONE
-        holder.tvCategory.visibility = View.GONE
+        holder.tvCourseDesc.visibility = View.VISIBLE
+        holder.tvCategory.visibility = View.VISIBLE
         holder.btnPlay.visibility = View.GONE
-        holder.btnDelete.visibility = View.GONE
+
+        if (isAdmin) {
+            holder.btnDelete.visibility = View.VISIBLE
+            holder.btnDelete.setOnClickListener {
+                onDeleteClicked(item)
+            }
+        } else {
+            holder.btnDelete.visibility = View.GONE
+        }
+
+        holder.itemView.setOnClickListener {
+            onCourseClick(item)
+        }
     }
 
     override fun getItemCount(): Int = items.size
