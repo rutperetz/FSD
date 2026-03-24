@@ -1,10 +1,13 @@
 package com.example.smart_group.ui.courses
 
 data class CourseUiModel(
-    val id: Int,
+    val courseId: String,
     val title: String,
-    val description: String,
-    val category: String,
-    val imageRes: Int,
-    val videoUrl: String
+    val lecturer: String,
+    val minGroupSize: Int,
+    val maxGroupSize: Int,
+    val deadline: String,
+    val groupingStatus: String,
+    val currentRound: Int,
+    val imageRes: Int
 )

@@ -5,13 +5,15 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import com.example.smart_group.R
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.smart_group.R
 import com.example.smart_group.RegisterActivity
+import com.example.smart_group.ui.courses.AdminActivity
 import com.example.smart_group.ui.forgotpassword.ForgotPasswordActivity
-import com.google.android.material.button.MaterialButton
 import com.example.smart_group.ui.profile.ProfileActivity
+import com.google.android.material.button.MaterialButton
+
 class LoginActivity : AppCompatActivity() {
 
     private val viewModel: LoginViewModel by viewModels()
@@ -26,7 +28,6 @@ class LoginActivity : AppCompatActivity() {
         val registerText = findViewById<TextView>(R.id.register_link_text)
         val forgotPasswordText = findViewById<TextView>(R.id.forgot_password_link_text)
 
-        //לחיצה כל כפתור הLOGIN
         loginBtn.setOnClickListener {
             viewModel.login(
                 emailRaw = emailInput.text.toString(),
@@ -34,18 +35,14 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
-        //לחיצה על המילה REGISTER
         registerText.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        //לחיצה על שכחתי סיסמא
         forgotPasswordText.setOnClickListener {
             startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
 
-        //מאזין לתוצאות שבאו מהVIEWMODLE
-        //Toast messages
         viewModel.toastMessage.observe(this) { msg ->
             if (msg != null) {
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
@@ -53,21 +50,25 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        //Loading-disable button
         viewModel.isLoading.observe(this) { loading ->
             loginBtn.isEnabled = !loading
         }
 
-        //Navigation on success
-        viewModel.navigateToNext.observe(this) { go ->
+        viewModel.navigateToStudent.observe(this) { go ->
             if (go) {
-                Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
-
-                 //כאן בעתיד תעברי למסך הבא (כשיהיה לך)
+                Toast.makeText(this, "Student login successful ✅", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, ProfileActivity::class.java))
                 finish()
+                viewModel.onStudentNavigated()
+            }
+        }
 
-                viewModel.onNavigated()
+        viewModel.navigateToAdmin.observe(this) { go ->
+            if (go) {
+                Toast.makeText(this, "Admin login successful ✅", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, AdminActivity::class.java))
+                finish()
+                viewModel.onAdminNavigated()
             }
         }
     }
