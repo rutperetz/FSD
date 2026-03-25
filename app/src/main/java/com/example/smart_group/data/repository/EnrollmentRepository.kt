@@ -28,4 +28,16 @@ class EnrollmentRepository(
     suspend fun deleteEnrollment(courseId: String, enrollmentId: String) {
         enrollmentsRef(courseId).document(enrollmentId).delete().await()
     }
+
+    suspend fun getEnrollmentByStudent(
+        courseId: String,
+        studentId: String
+    ): Enrollment? {
+        return enrollmentsRef(courseId)
+            .whereEqualTo("studentId", studentId)
+            .get()
+            .await()
+            .toObjects(Enrollment::class.java)
+            .firstOrNull()
+    }
 }
