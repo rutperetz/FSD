@@ -10,7 +10,12 @@ class UserRepository(
     private val usersRef = db.collection("users")
 
     suspend fun getUser(userId: String): User? =
-        usersRef.document(userId).get().await().toObject(User::class.java)
+        usersRef
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+            .toObjects(User::class.java)
+            .firstOrNull()
 
     suspend fun getAllUsers(): List<User> =
         usersRef.get().await().toObjects(User::class.java)
@@ -28,17 +33,30 @@ class UserRepository(
         userName: String? = null,
         email: String? = null
     ) {
-        val updates = mutableMapOf<String, Any>()
+        val userDoc = usersRef
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+            .documents
+            .firstOrNull() ?: return
 
+        val updates = mutableMapOf<String, Any>()
         if (userName != null) updates["userName"] = userName
         if (email != null) updates["email"] = email
 
         if (updates.isNotEmpty()) {
-            usersRef.document(userId).update(updates).await()
+            userDoc.reference.update(updates).await()
         }
     }
 
     suspend fun deleteUser(userId: String) {
-        usersRef.document(userId).delete().await()
+        val userDoc = usersRef
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+            .documents
+            .firstOrNull() ?: return
+
+        userDoc.reference.delete().await()
     }
 }
