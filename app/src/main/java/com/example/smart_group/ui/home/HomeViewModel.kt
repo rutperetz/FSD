@@ -74,9 +74,7 @@ class HomeViewModel(
 
                         val courseIds = enrollments.map { it.courseId }.distinct()
 
-                        val studentCourses = courseIds.mapNotNull { courseId ->
-                            courseRepository.getCourse(courseId)
-                        }
+                        val studentCourses = courseRepository.getCoursesByIds(courseIds)
 
                         _courses.value = studentCourses
                     }

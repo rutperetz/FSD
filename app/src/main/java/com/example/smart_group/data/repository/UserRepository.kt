@@ -4,18 +4,18 @@ import com.example.smart_group.data.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class UserRepository(
+class
+UserRepository(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
     private val usersRef = db.collection("users")
 
     suspend fun getUser(userId: String): User? =
         usersRef
-            .whereEqualTo("userId", userId)
+            .document(userId)
             .get()
             .await()
-            .toObjects(User::class.java)
-            .firstOrNull()
+            .toObject(User::class.java)
 
     suspend fun getAllUsers(): List<User> =
         usersRef.get().await().toObjects(User::class.java)

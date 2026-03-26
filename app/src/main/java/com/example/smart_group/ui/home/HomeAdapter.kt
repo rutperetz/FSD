@@ -7,7 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_group.R
 import com.example.smart_group.data.model.Course
-
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 class HomeAdapter(
     private val courses: MutableList<Course> = mutableListOf(),
     private val onCourseClick: ((Course) -> Unit)? = null
@@ -15,9 +16,13 @@ class HomeAdapter(
 
     inner class HomeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvCourseTitle: TextView = itemView.findViewById(R.id.tvCourseTitle)
-
+        private val imgCourse: ImageView = itemView.findViewById(R.id.imgCourse)
         fun bind(course: Course) {
             tvCourseTitle.text = course.title
+
+            Glide.with(itemView)
+                .load(course.imageUrl)
+                .into(imgCourse)
 
             itemView.setOnClickListener {
                 onCourseClick?.invoke(course)
@@ -42,4 +47,6 @@ class HomeAdapter(
         courses.addAll(newCourses)
         notifyDataSetChanged()
     }
+
+
 }

@@ -18,6 +18,16 @@ class CourseRepository(
     suspend fun getAllCourses(): List<Course> =
         coursesRef.get().await().toObjects(Course::class.java)
 
+    suspend fun getCoursesByIds(courseIds: List<String>): List<Course> {
+        if (courseIds.isEmpty()) return emptyList()
+
+        return db.collection("courses")
+            .whereIn("courseId", courseIds)
+            .get()
+            .await()
+            .toObjects(Course::class.java)
+    }
+
     suspend fun addCourse(course: Course) {
         coursesRef.document(course.courseId).set(course).await()
     }

@@ -1,5 +1,6 @@
 package com.example.smart_group.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_group.R
+import com.example.smart_group.ui.profile.ProfileActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {
 
@@ -53,6 +56,32 @@ class HomeActivity : AppCompatActivity() {
             if (message != null) {
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 viewModel.onToastShown()
+            }
+        }
+
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
+
+        bottomNav.selectedItemId = R.id.nav_home
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+
+                R.id.nav_home -> {
+                    true
+                }
+
+                R.id.nav_search -> {
+                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    finish()
+                    true
+                }
+
+                else -> false
             }
         }
 
