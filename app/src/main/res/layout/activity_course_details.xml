@@ -113,14 +113,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-
             android:text="@string/VIEW_GROUP"
             android:textSize="24sp"
             android:textColor="@color/black"
             android:fontFamily="sans-serif"
-
-            android:paintFlags="underlineText"
-
             android:clickable="true"
             android:focusable="true"
             android:includeFontPadding="false"/>
@@ -144,7 +140,6 @@
         app:backgroundTint="@color/green"
         app:cornerRadius="12dp"
         app:layout_constraintEnd_toStartOf="@id/cancelButton"
-        app:layout_constraintHorizontalWeight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/courseInfoLayout" />
 
@@ -165,7 +160,6 @@
         android:textSize="18sp"
         app:backgroundTint="@color/red"
         app:cornerRadius="12dp"
-        app:layout_constraintHorizontalWeight="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/signUpButton"
         app:layout_constraintTop_toBottomOf="@id/courseInfoLayout" />
