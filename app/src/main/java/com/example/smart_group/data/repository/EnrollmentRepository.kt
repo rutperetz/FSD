@@ -29,15 +29,31 @@ class EnrollmentRepository(
         enrollmentsRef(courseId).document(enrollmentId).delete().await()
     }
 
-    suspend fun getEnrollmentByStudent(
-        courseId: String,
-        studentId: String
-    ): Enrollment? {
-        return enrollmentsRef(courseId)
+//    suspend fun getEnrollmentsByStudentId(studentId: String): List<Enrollment> {
+//        return db.collectionGroup("enrollments")
+//            .whereEqualTo("studentId", studentId)
+//            .get()
+//            .await()
+//            .documents
+//            .mapNotNull { document ->
+//                document.toObject(Enrollment::class.java)
+//            }
+//    }
+suspend fun getEnrollmentsByStudentId(studentId: String): List<Enrollment> {
+    val courses = db.collection("courses").get().await()
+
+    val result = mutableListOf<Enrollment>()
+
+    for (course in courses.documents) {
+        val enrollments = course.reference
+            .collection("enrollments")
             .whereEqualTo("studentId", studentId)
             .get()
             .await()
-            .toObjects(Enrollment::class.java)
-            .firstOrNull()
+
+        result.addAll(enrollments.toObjects(Enrollment::class.java))
     }
+
+    return result
+}
 }

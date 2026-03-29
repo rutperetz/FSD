@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.smart_group.R
-import com.example.smart_group.ui.courses.CoursesActivity
+import com.example.smart_group.ui.home.HomeActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 
@@ -60,7 +60,7 @@ class ProfileActivity : AppCompatActivity() {
             when (item.itemId) {
 
                 R.id.nav_home -> {
-                    startActivity(Intent(this, CoursesActivity::class.java))
+                    startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                     true
                 }

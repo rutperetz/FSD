@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.smart_group.R
 import com.example.smart_group.ui.login.LoginActivity
 import com.google.android.material.button.MaterialButton
-import com.example.smart_group.ui.courses.CoursesActivity
+import com.example.smart_group.ui.home.HomeActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class EditProfileActivity : AppCompatActivity() {
@@ -104,7 +104,7 @@ class EditProfileActivity : AppCompatActivity() {
             when (item.itemId) {
 
                 R.id.nav_home -> {
-                    startActivity(Intent(this, CoursesActivity::class.java))
+                    startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                     true
                 }
