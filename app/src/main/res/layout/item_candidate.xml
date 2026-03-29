@@ -1,56 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingVertical="10dp"
-    android:layoutDirection="ltr">
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="3dp">
 
-    <TextView
-        android:id="@+id/tvBullet"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="•"
-        android:textSize="20sp"
-        android:textColor="@android:color/black"
-        android:layout_marginEnd="10dp" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvStudentName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="student 1"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="#0B3D91" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnApprove"
-        android:layout_width="72dp"
-        android:layout_height="32dp"
-        android:text="Approve"
-        android:textAllCaps="false"
-        android:textSize="10sp"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:padding="0dp"
-        android:backgroundTint="#62C04E"
-        android:textColor="@android:color/white" />
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_status_pending"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:text="Pending"
+                android:textColor="#0B3D91"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnDecline"
-        android:layout_width="72dp"
-        android:layout_height="32dp"
-        android:text="Decline"
-        android:textAllCaps="false"
-        android:textSize="10sp"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:padding="0dp"
-        android:layout_marginStart="8dp"
-        android:backgroundTint="#FF5A52"
-        android:textColor="@android:color/white" />
+            <TextView
+                android:id="@+id/tvStudentName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Student 1"
+                android:textColor="#0B3D91"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvActionHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="end"
+            android:text="Choose whether to approve or decline this student."
+            android:textColor="#6B7C93"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:id="@+id/layoutApproveDecline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnApprove"
+                android:layout_width="88dp"
+                android:layout_height="38dp"
+                android:backgroundTint="#4CAF50"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="Approve"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnDecline"
+                android:layout_width="88dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="10dp"
+                android:backgroundTint="#E85D5D"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="Decline"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnRemove"
+            android:layout_width="100dp"
+            android:layout_height="38dp"
+            android:layout_marginTop="14dp"
+            android:backgroundTint="#ECECEC"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="0dp"
+            android:text="Remove"
+            android:textAllCaps="false"
+            android:textColor="#333333"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

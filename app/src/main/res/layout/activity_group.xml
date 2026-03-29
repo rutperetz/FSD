@@ -4,133 +4,261 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="#F7F9FC">
 
-    <ImageView
-        android:id="@+id/imgLogo"
-        android:layout_width="160dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/logo"
-        android:scaleType="fitCenter"
-        android:layoutDirection="ltr"
-        android:contentDescription="SmartGroup logo"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/btnBack"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/outline_arrow_back_24"
-        android:tint="#0B3D91"
-        android:autoMirrored="false"
-        android:scaleX="1"
-        android:rotation="0"
-        android:contentDescription="Back"
-        android:layoutDirection="ltr"
-        app:layout_constraintTop_toBottomOf="@id/imgLogo"
-        app:layout_constraintStart_toStartOf="parent" />
-    <FrameLayout
-        android:id="@+id/headerContainer"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
-        android:layout_height="170dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
-            android:id="@+id/imgHeader"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:background="#0A2342"
-            android:contentDescription="Course header" />
-
-        <TextView
-            android:id="@+id/tvCourseTitle"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text=""
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:textColor="#5FA8FF" />
-    </FrameLayout>
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
 
-    <TextView
-        android:id="@+id/tvMembersTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Group Members"
-        android:textStyle="bold"
-        android:textSize="26sp"
-        android:textColor="#0B3D91"
-        android:fontFamily="serif"
-        android:layout_marginTop="18dp"
-        app:layout_constraintTop_toBottomOf="@id/headerContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <!-- Top logo -->
+            <ImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="160dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:contentDescription="SmartGroup logo"
+                android:layoutDirection="ltr"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvCandidates"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="12dp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="12dp"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/tvMembersTitle"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <!-- Back -->
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:autoMirrored="false"
+                android:contentDescription="Back"
+                android:layoutDirection="ltr"
+                android:rotation="0"
+                android:scaleX="1"
+                android:src="@drawable/outline_arrow_back_24"
+                app:tint="#0B3D91" />
+
+            <!-- Header -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/headerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="#0A2342"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvRoundInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Round 1"
+                        android:textColor="#D6E8FF"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCourseTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="#5FA8FF"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Group Members -->
+            <TextView
+                android:id="@+id/tvMembersTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:text="Group Members"
+                android:textColor="#0B3D91"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCandidates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="4dp" />
+
+            <!-- Why these students -->
+            <TextView
+                android:id="@+id/tvReasonsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Why these students?"
+                android:textColor="#0B3D91"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvReasons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_reason_box"
+                android:lineSpacingExtra="4dp"
+                android:padding="16dp"
+                android:text=""
+                android:textColor="#173B63"
+                android:textSize="14sp" />
+
+            <!-- Feedback -->
+            <TextView
+                android:id="@+id/tvFeedbackTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:text="What do you think?"
+                android:textColor="#0B3D91"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_reason_box"
+                android:gravity="top|start"
+                android:hint="Write a short comment..."
+                android:inputType="textMultiLine"
+                android:maxLines="4"
+                android:minLines="3"
+                android:padding="16dp"
+                android:textColor="#173B63"
+                android:textColorHint="#8DA3BF" />
+
+            <LinearLayout
+                android:id="@+id/feedbackButtonsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnLike"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="#0B3D91"
+                    android:paddingVertical="12dp"
+                    android:text="I like this match"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnDislike"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="#DCEBFF"
+                    android:paddingVertical="12dp"
+                    android:text="I don't like this match"
+                    android:textAllCaps="false"
+                    android:textColor="#0B3D91"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvFeedbackThanks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Thanks for your feedback"
+                android:textColor="#2E7D32"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center"
         android:background="@drawable/bg_bottom_bar"
+        android:gravity="center"
         android:layoutDirection="rtl"
+        android:orientation="horizontal"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/iconProfile"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_weight="1"
-            android:src="@drawable/outline_account_circle_24"
             android:contentDescription="Profile"
-            app:tint="@android:color/white"/>
+            android:src="@drawable/outline_account_circle_24"
+            app:tint="@android:color/white" />
 
         <ImageView
             android:id="@+id/iconSearch"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_search"
             android:contentDescription="Search"
-            app:tint="@android:color/white"/>
+            android:src="@android:drawable/ic_menu_search"
+            app:tint="@android:color/white" />
 
         <ImageView
             android:id="@+id/iconHome"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_weight="1"
-            android:src="@drawable/baseline_home_24"
             android:contentDescription="Home"
-            app:tint="@android:color/white"/>
-
+            android:src="@drawable/baseline_home_24"
+            app:tint="@android:color/white" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
