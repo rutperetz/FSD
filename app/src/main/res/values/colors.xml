@@ -12,7 +12,7 @@
 
     <color name="lightWhite">#EEF6FF</color>
     <color name="gray">#D6D6D6</color>
-
+    <color name="gray_dark">#888888</color>
 
 
 </resources>
