@@ -1,5 +1,7 @@
 package com.example.smart_group.data.model
+
 import com.google.firebase.Timestamp
+
 data class Course(
     val courseId: String = "",
     val title: String = "",
@@ -7,7 +9,8 @@ data class Course(
     val groupSize: GroupSize = GroupSize(),
     val deadline: Timestamp? = null,
     val groupingStatus: GroupingStatus = GroupingStatus.PENDING,
-    val currentRound: Int = 0
+    val currentRound: Int = 0,
+    val imageUrl: String = ""
 )
 
 data class GroupSize(

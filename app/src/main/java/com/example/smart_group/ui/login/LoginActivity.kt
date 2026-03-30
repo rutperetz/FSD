@@ -8,10 +8,10 @@ import android.widget.Toast
 import com.example.smart_group.R
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.smart_group.ui.login.LoginViewModel
-import com.example.smart_group.RegisterActivity
-import com.example.smart_group.Forgot_PasswordActivity
+import com.example.smart_group.ui.register.RegisterActivity
+import com.example.smart_group.ui.forgotpassword.ForgotPasswordActivity
 import com.google.android.material.button.MaterialButton
+import com.example.smart_group.ui.home.HomeActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
 
         //לחיצה על שכחתי סיסמא
         forgotPasswordText.setOnClickListener {
-            startActivity(Intent(this, Forgot_PasswordActivity::class.java))
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
 
         //מאזין לתוצאות שבאו מהVIEWMODLE
@@ -59,16 +59,27 @@ class LoginActivity : AppCompatActivity() {
             loginBtn.isEnabled = !loading
         }
 
-        //Navigation on success
-        viewModel.navigateToNext.observe(this) { go ->
+        // Student navigation
+        viewModel.navigateToStudent.observe(this) { go ->
             if (go) {
                 Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
 
-                // כאן בעתיד תעברי למסך הבא (כשיהיה לך)
-                // startActivity(Intent(this, HomeActivity::class.java))
-                // finish()
+                startActivity(Intent(this, HomeActivity::class.java))
+                finish()
 
-                viewModel.onNavigated()
+                viewModel.onStudentNavigated()
+            }
+        }
+
+// Admin navigation
+        viewModel.navigateToAdmin.observe(this) { go ->
+            if (go) {
+                Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
+
+                startActivity(Intent(this, HomeActivity::class.java))
+                finish()
+
+                viewModel.onAdminNavigated()
             }
         }
     }

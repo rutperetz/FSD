@@ -13,39 +13,52 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Smart_Group">
+
         <activity
             android:name=".SplashActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Smart_Group">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".profileActivity"
+            android:name=".ui.login.LoginActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.group.GroupActivity" />
-        <activity
-            android:name=".Set_New_PasswordActivity"
+            android:name=".ui.register.RegisterActivity"
             android:exported="false" />
+
         <activity
-            android:name=".Verify_CodeActivity"
+            android:name=".ui.home.HomeActivity"
             android:exported="false" />
+
         <activity
-            android:name=".Forgot_PasswordActivity"
-            android:exported="false" /> <!-- Register screen -->
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false" />
+
         <activity
-            android:name=".RegisterActivity"
-            android:exported="false"
-            android:label="@string/title_activity_register"
-            android:theme="@style/Theme.Smart_Group" /> <!-- Login screen (Launcher activity) -->
+            android:name=".ui.profile.EditProfileActivity"
+            android:exported="false" />
+
         <activity
-            android:name=".ui.login.LoginActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Smart_Group" />
+            android:name=".ui.forgotpassword.ForgotPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.questionnaire.QuestionnaireActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.questionnaire.EditQuestionnaireActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.group.GroupActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

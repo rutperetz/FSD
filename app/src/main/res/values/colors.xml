@@ -8,6 +8,7 @@
     <color name="login_border_gray">#D0D0D0</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="primary_blue">#0B3D91</color>
-
-
+    <color name="red">#DE3B3B</color>
+    <color name="lightWhite">#EEF6FF</color>
+    <color name="gray">#D6D6D6</color>
 </resources>
