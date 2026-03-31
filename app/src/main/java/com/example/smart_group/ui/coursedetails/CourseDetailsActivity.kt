@@ -158,7 +158,18 @@ class CourseDetailsActivity : AppCompatActivity() {
         }
 
         viewGroupText.setOnClickListener {
-            Toast.makeText(this, "Group screen coming soon", Toast.LENGTH_SHORT).show()
+
+            if (studentId.isEmpty()) {
+                Toast.makeText(this, "User not ready yet", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, com.example.smart_group.ui.group.GroupActivity::class.java)
+
+            intent.putExtra("courseId", courseId)
+            intent.putExtra("studentId", studentId)
+
+            startActivity(intent)
         }
 
         backArrow.setOnClickListener {

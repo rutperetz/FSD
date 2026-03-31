@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -219,46 +219,18 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <LinearLayout
-        android:id="@+id/bottomBar"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:background="@drawable/bg_bottom_bar"
-        android:gravity="center"
-        android:layoutDirection="rtl"
-        android:orientation="horizontal"
-        android:paddingStart="40dp"
-        android:paddingEnd="40dp"
+        android:layout_height="wrap_content"
+        android:background="@color/lightBlue"
+        app:itemBackground="@drawable/bottom_nav_background"
+        app:itemIconSize="28dp"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/iconProfile"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_weight="1"
-            android:contentDescription="Profile"
-            android:src="@drawable/outline_account_circle_24"
-            app:tint="@android:color/white" />
-
-        <ImageView
-            android:id="@+id/iconSearch"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_weight="1"
-            android:contentDescription="Search"
-            android:src="@android:drawable/ic_menu_search"
-            app:tint="@android:color/white" />
-
-        <ImageView
-            android:id="@+id/iconHome"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_weight="1"
-            android:contentDescription="Home"
-            android:src="@drawable/baseline_home_24"
-            app:tint="@android:color/white" />
-    </LinearLayout>
-
+        app:menu="@menu/bottom_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>
