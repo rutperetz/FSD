@@ -55,6 +55,10 @@
             android:name=".ui.questionnaire.EditQuestionnaireActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.search.SearchActivity"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

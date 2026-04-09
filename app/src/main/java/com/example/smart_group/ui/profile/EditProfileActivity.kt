@@ -110,7 +110,8 @@ class EditProfileActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_search -> {
-                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, com.example.smart_group.ui.search.SearchActivity::class.java))
+                    finish()
                     true
                 }
 

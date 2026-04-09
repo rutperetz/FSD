@@ -12,6 +12,7 @@ import com.example.smart_group.ui.home.HomeActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 
+
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var vm: ProfileViewModel
@@ -66,7 +67,8 @@ class ProfileActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_search -> {
-                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, com.example.smart_group.ui.search.SearchActivity::class.java))
+                    finish()
                     true
                 }
 
