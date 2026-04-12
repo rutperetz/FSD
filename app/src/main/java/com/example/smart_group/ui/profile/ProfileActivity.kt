@@ -11,7 +11,7 @@ import com.example.smart_group.R
 import com.example.smart_group.ui.home.HomeActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
-
+import com.example.smart_group.ui.questionnaire.EditQuestionnaireActivity
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -27,15 +27,17 @@ class ProfileActivity : AppCompatActivity() {
         val tvUserName = findViewById<TextView>(R.id.tv_user_name)
         val tvEmail = findViewById<TextView>(R.id.tv_email)
         val btnEditProfile = findViewById<MaterialButton>(R.id.btn_edit_profile)
-        val btnQuestionnaire = findViewById<MaterialButton>(R.id.btn_view_questionnaire)
+        val btnViewQuestionnaire = findViewById<MaterialButton>(R.id.btn_view_questionnaire)
+
+        btnViewQuestionnaire.setOnClickListener {
+            startActivity(Intent(this, EditQuestionnaireActivity::class.java))
+        }
 
         btnEditProfile.setOnClickListener {
             startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
-        btnQuestionnaire.setOnClickListener {
-            Toast.makeText(this, "Questionnaire screen not implemented yet", Toast.LENGTH_SHORT).show()
-        }
+
 
         vm.state.observe(this) { state ->
             when (state) {

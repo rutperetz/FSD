@@ -14,6 +14,7 @@ import com.example.smart_group.ui.login.LoginActivity
 import com.google.android.material.button.MaterialButton
 import com.example.smart_group.ui.home.HomeActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.smart_group.ui.questionnaire.EditQuestionnaireActivity
 
 class EditProfileActivity : AppCompatActivity() {
 

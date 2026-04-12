@@ -58,7 +58,9 @@ class RegisterViewModel(
         //בודק אם השדןת מלאים נכון במידה ולא מחזיר הודעה בהתאם
 
         val userNameRegex = Regex("^[A-Za-z]{1,15}$")
-        val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,15}$")
+//        val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,15}$")
+        val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#\$%^&*]{12,15}$")
+
 
         if (cleanedUserName.isEmpty()) {
             _usernameError.value = "Username is required"
@@ -108,9 +110,10 @@ class RegisterViewModel(
             _isLoading.value = true
             try {
                 // 1) Auth
+                // 1) Auth
                 val createdUid = authRepo.register(cleanedEmail, cleanedPassword)
 
-                // 2) users/{uid}
+// 2) users/{uid}
                 val createdUser = User(
                     userId = createdUid,
                     userName = cleanedUserName,
@@ -119,20 +122,37 @@ class RegisterViewModel(
                 )
                 userRepo.addUser(createdUser)
 
-                // 3) students/{studentId} + answers
-                val createdStudentId = UUID.randomUUID().toString()
+// 3) if student already exists by email -> link it
+                val existingStudent = studentRepo.getStudentByEmail(cleanedEmail)
 
-                val createdStudent = Student(
-                    studentId = createdStudentId,
-                    userId = createdUid,
-                    userName = cleanedUserName,
-                    email = cleanedEmail,
-                    answers = convertedAnswers,
-                    normalizedAnswers = emptyList(),
-                    questionnaireCompleted = true
-                )
+                if (existingStudent != null) {
+                    studentRepo.linkStudentToUser(
+                        email = cleanedEmail,
+                        userId = createdUid,
+                        userName = cleanedUserName,
+                        answers = convertedAnswers
+                    )
+                } else {
+                    // create brand new student
+                    val createdStudentId = UUID.randomUUID().toString()
 
-                studentRepo.addStudent(createdStudent)
+                    val createdStudent = Student(
+                        studentId = createdStudentId,
+                        userId = createdUid,
+                        userName = cleanedUserName,
+                        email = cleanedEmail,
+                        answers = convertedAnswers,
+                        normalizedAnswers = emptyList(),
+                        questionnaireCompleted = true
+                    )
+
+                    studentRepo.addStudent(createdStudent)
+                }
+
+                authRepo.logout()
+
+                _toastMessage.value = "Registered successfully"
+                _navigateToLogin.value = true
 
                 _toastMessage.value = "Registered successfully "
                 _navigateToLogin.value = true
@@ -143,7 +163,7 @@ class RegisterViewModel(
                     "already in use" in msg || "exists" in msg -> "This email is already in use"
                     "badly formatted" in msg || "invalid" in msg -> "Invalid email address"
                     "password" in msg && "6" in msg -> "Password is too weak"
-                    else -> "Registration failed. Please try again."
+                    else -> "Registration failed: ${e.message}"
                 }
             } finally {
                 _isLoading.value = false

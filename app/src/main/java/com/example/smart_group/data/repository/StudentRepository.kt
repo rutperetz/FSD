@@ -21,6 +21,32 @@ class StudentRepository(
             .toObjects(Student::class.java)
             .firstOrNull()
 
+    suspend fun getStudentByEmail(email: String): Student? =
+        studentsRef.whereEqualTo("email", email)
+            .get()
+            .await()
+            .toObjects(Student::class.java)
+            .firstOrNull()
+
+    suspend fun linkStudentToUser(
+        email: String,
+        userId: String,
+        userName: String,
+        answers: Answers
+    ) {
+        val existingStudent = getStudentByEmail(email)
+            ?: throw Exception("Student document not found for email=$email")
+
+        val updatedStudent = existingStudent.copy(
+            userId = userId,
+            userName = userName,
+            answers = answers,
+            questionnaireCompleted = true
+        )
+
+        studentsRef.document(existingStudent.studentId).set(updatedStudent).await()
+    }
+
     suspend fun getAllStudents(): List<Student> =
         studentsRef.get().await().toObjects(Student::class.java)
 
