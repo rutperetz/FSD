@@ -39,21 +39,35 @@ class EnrollmentRepository(
 //                document.toObject(Enrollment::class.java)
 //            }
 //    }
-suspend fun getEnrollmentsByStudentId(studentId: String): List<Enrollment> {
-    val courses = db.collection("courses").get().await()
 
-    val result = mutableListOf<Enrollment>()
 
-    for (course in courses.documents) {
-        val enrollments = course.reference
-            .collection("enrollments")
+    // Returns all courses the student is enrolled in
+    suspend fun getEnrollmentsByStudentId(studentId: String): List<Enrollment> {
+        val courses = db.collection("courses").get().await()
+
+        val result = mutableListOf<Enrollment>()
+
+        for (course in courses.documents) {
+            val enrollments = course.reference
+                .collection("enrollments")
+                .whereEqualTo("studentId", studentId)
+                .get()
+                .await()
+
+            result.addAll(enrollments.toObjects(Enrollment::class.java))
+        }
+
+        return result
+    }
+
+    //// Returns enrollment in a specific course (used to check optIn for group registration)
+    suspend fun getEnrollmentByStudent(courseId: String, studentId: String): Enrollment? {
+
+        val result = enrollmentsRef(courseId)
             .whereEqualTo("studentId", studentId)
             .get()
             .await()
 
-        result.addAll(enrollments.toObjects(Enrollment::class.java))
+        return result.toObjects(Enrollment::class.java).firstOrNull()
     }
-
-    return result
-}
 }

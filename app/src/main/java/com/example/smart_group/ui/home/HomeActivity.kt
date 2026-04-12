@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_group.R
 import com.example.smart_group.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
+import com.example.smart_group.ui.coursedetails.CourseDetailsActivity
 class HomeActivity : AppCompatActivity() {
 
     private val viewModel: HomeViewModel by viewModels()
@@ -27,7 +27,12 @@ class HomeActivity : AppCompatActivity() {
         val tvEmptyCourses = findViewById<TextView>(R.id.tvEmptyCourses)
         val progressBar = findViewById<ProgressBar>(R.id.progressBarHome)
 
-        val adapter = HomeAdapter()
+        val adapter = HomeAdapter { course ->
+
+            val intent = Intent(this, CourseDetailsActivity::class.java)
+            intent.putExtra("courseId", course.courseId)
+            startActivity(intent)
+        }
 
         rvCourses.layoutManager = LinearLayoutManager(this)
         rvCourses.adapter = adapter

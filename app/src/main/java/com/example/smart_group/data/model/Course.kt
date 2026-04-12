@@ -1,4 +1,5 @@
 package com.example.smart_group.data.model
+
 import com.google.firebase.Timestamp
 
 data class Course(
@@ -16,7 +17,6 @@ data class GroupSize(
     val min: Int = 0,
     val max: Int = 0
 )
-
 
 enum class GroupingStatus {
     PENDING,

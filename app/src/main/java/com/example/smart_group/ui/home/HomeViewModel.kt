@@ -70,7 +70,6 @@ class HomeViewModel(
 
                         val enrollments = enrollmentRepository
                             .getEnrollmentsByStudentId(student.studentId)
-                            .filter { it.optIn }
 
                         val courseIds = enrollments.map { it.courseId }.distinct()
 
