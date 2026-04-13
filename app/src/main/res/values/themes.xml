@@ -3,9 +3,11 @@
 
     <style name="Theme.Smart_Group" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowAnimationStyle">@style/AppWindowAnimation</item>
+        <item name="android:statusBarColor">@color/primary_blue</item>
+        <item name="android:windowLightStatusBar">false</item>
+
     </style>
 
-    <!-- אנימציות מעבר כלליות לכל המסכים -->
     <style name="AppWindowAnimation">
         <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
         <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>

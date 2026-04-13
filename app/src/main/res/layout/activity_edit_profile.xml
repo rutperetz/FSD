@@ -15,18 +15,19 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:src="@drawable/arrow_back"
-        android:contentDescription="Back"
         android:clickable="true"
+        android:contentDescription="Back"
         android:focusable="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:src="@drawable/arrow_back"
+        app:tint="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/edit_profile_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="80dp"
         android:letterSpacing="0.06"
         android:shadowColor="@color/shadow_black"
         android:shadowDx="0"
@@ -79,9 +80,9 @@
         android:layout_marginStart="36dp"
         android:layout_marginEnd="36dp"
         android:layout_marginTop="4dp"
-        android:text="* 1–15 letters only"
+        android:text="* 1–15 letters only (English)"
         android:textSize="12sp"
-        android:textColor="#666666"
+        android:textColor="@color/gray_dark"
         app:layout_constraintTop_toBottomOf="@id/et_username"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -155,9 +156,9 @@
         android:layout_marginStart="36dp"
         android:layout_marginEnd="36dp"
         android:layout_marginTop="4dp"
-        android:text="* 8–10 characters, letters and numbers"
+        android:text="* 12–15 characters, must include letters and numbers (can use !@#$%^&amp;*)"
         android:textSize="12sp"
-        android:textColor="#666666"
+        android:textColor="@color/gray_dark"
         app:layout_constraintTop_toBottomOf="@id/et_password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/login_background">
 
-    <!-- 🔥 CARD אחד שמכיל הכל -->
     <androidx.cardview.widget.CardView
         android:id="@+id/courseInfoLayout"
         android:layout_width="0dp"
