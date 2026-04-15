@@ -4,28 +4,32 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.smart_group.R
+import com.example.smart_group.data.repository.StudentRepository
 import com.example.smart_group.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class GroupActivity : AppCompatActivity() {
 
     private val viewModel: GroupProposalViewModel by viewModels()
     private lateinit var adapter: CandidateAdapter
 
+    private lateinit var ivCourseImage: ImageView
     private lateinit var tvCourseTitle: TextView
     private lateinit var tvRoundInfo: TextView
     private lateinit var tvReasons: TextView
     private lateinit var rvCandidates: RecyclerView
-    private lateinit var etFeedback: EditText
     private lateinit var btnLike: Button
     private lateinit var btnDislike: Button
     private lateinit var btnBack: ImageView
@@ -34,59 +38,35 @@ class GroupActivity : AppCompatActivity() {
     private lateinit var courseId: String
     private lateinit var currentStudentId: String
 
+    private val studentRepository = StudentRepository()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group)
-
-        courseId = intent.getStringExtra("courseId") ?: ""
-        currentStudentId = intent.getStringExtra("studentId") ?: ""
-
-        if (courseId.isBlank() || currentStudentId.isBlank()) {
-            Toast.makeText(this, "Missing courseId or studentId", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
 
         initViews()
         setupRecyclerView()
         setupClickListeners()
         observeData()
+        setupBottomNav()
 
-        viewModel.loadScreen(courseId, currentStudentId)
+        courseId = intent.getStringExtra("courseId") ?: ""
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
-
-        bottomNav.selectedItemId = R.id.nav_home
-
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-
-                R.id.nav_home -> {
-                    true
-                }
-
-                R.id.nav_search -> {
-                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
-                    true
-                }
-
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    finish()
-                    true
-                }
-
-                else -> false
-            }
+        if (courseId.isBlank()) {
+            Toast.makeText(this, "Missing courseId", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
+
+        loadCurrentStudentAndScreen()
     }
 
     private fun initViews() {
         tvCourseTitle = findViewById(R.id.tvCourseTitle)
         tvRoundInfo = findViewById(R.id.tvRoundInfo)
+        ivCourseImage = findViewById(R.id.ivCourseImage)
         tvReasons = findViewById(R.id.tvReasons)
         rvCandidates = findViewById(R.id.rvCandidates)
-        etFeedback = findViewById(R.id.etFeedback)
         btnLike = findViewById(R.id.btnLike)
         btnDislike = findViewById(R.id.btnDislike)
         btnBack = findViewById(R.id.btnBack)
@@ -122,7 +102,7 @@ class GroupActivity : AppCompatActivity() {
                 courseId = courseId,
                 currentStudentId = currentStudentId,
                 likedProposal = true,
-                comment = etFeedback.text.toString().trim()
+                comment = ""
             )
         }
 
@@ -131,14 +111,45 @@ class GroupActivity : AppCompatActivity() {
                 courseId = courseId,
                 currentStudentId = currentStudentId,
                 likedProposal = false,
-                comment = etFeedback.text.toString().trim()
+                comment = ""
             )
+        }
+    }
+
+    private fun setupBottomNav() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
+
+        bottomNav.selectedItemId = R.id.nav_home
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> true
+
+                R.id.nav_search -> {
+                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    finish()
+                    true
+                }
+
+                else -> false
+            }
         }
     }
 
     private fun observeData() {
         viewModel.course.observe(this) { course ->
             tvCourseTitle.text = course.title
+
+            if (course.imageUrl.isNotBlank()) {
+                Glide.with(this)
+                    .load(course.imageUrl)
+                    .into(ivCourseImage)
+            }
         }
 
         viewModel.currentRoundText.observe(this) { roundText ->
@@ -161,11 +172,39 @@ class GroupActivity : AppCompatActivity() {
 
         viewModel.feedbackSubmitted.observe(this) { submitted ->
             if (submitted == true) {
-                etFeedback.visibility = View.GONE
                 btnLike.visibility = View.GONE
                 btnDislike.visibility = View.GONE
                 tvFeedbackThanks.visibility = View.VISIBLE
             }
+        }
+    }
+
+    private fun loadCurrentStudentAndScreen() {
+        val firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (firebaseUserId.isNullOrBlank()) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        lifecycleScope.launch {
+            val student = studentRepository.getStudentByUserId(firebaseUserId)
+
+            if (student == null) {
+                Toast.makeText(
+                    this@GroupActivity,
+                    "Student not found for current user",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+                return@launch
+            }
+
+            currentStudentId = student.studentId
+            android.util.Log.d("GROUP_DEBUG", "courseId = $courseId")
+            android.util.Log.d("GROUP_DEBUG", "currentStudentId = $currentStudentId")
+            viewModel.loadScreen(courseId, currentStudentId)
         }
     }
 }

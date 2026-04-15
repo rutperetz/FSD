@@ -22,7 +22,6 @@
             android:orientation="vertical"
             android:paddingBottom="24dp">
 
-            <!-- Top logo -->
             <ImageView
                 android:id="@+id/imgLogo"
                 android:layout_width="160dp"
@@ -34,7 +33,6 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/logo" />
 
-            <!-- Back -->
             <ImageView
                 android:id="@+id/btnBack"
                 android:layout_width="26dp"
@@ -49,7 +47,6 @@
                 android:src="@drawable/outline_arrow_back_24"
                 app:tint="#0B3D91" />
 
-            <!-- Header -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/headerContainer"
                 android:layout_width="match_parent"
@@ -57,9 +54,20 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
-                app:cardBackgroundColor="#0A2342"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="4dp">
+
+                <ImageView
+                    android:id="@+id/ivCourseImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Course image"
+                    android:scaleType="centerCrop" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#66000000" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -73,7 +81,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Round 1"
-                        android:textColor="#D6E8FF"
+                        android:textColor="#FFFFFF"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -84,13 +92,13 @@
                         android:layout_marginTop="8dp"
                         android:gravity="center"
                         android:text=""
-                        android:textColor="#5FA8FF"
+                        android:textColor="#FFFFFF"
                         android:textSize="28sp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Group Members -->
             <TextView
                 android:id="@+id/tvMembersTitle"
                 android:layout_width="wrap_content"
@@ -113,7 +121,6 @@
                 android:nestedScrollingEnabled="false"
                 android:paddingBottom="4dp" />
 
-            <!-- Why these students -->
             <TextView
                 android:id="@+id/tvReasonsTitle"
                 android:layout_width="wrap_content"
@@ -139,7 +146,6 @@
                 android:textColor="#173B63"
                 android:textSize="14sp" />
 
-            <!-- Feedback -->
             <TextView
                 android:id="@+id/tvFeedbackTitle"
                 android:layout_width="wrap_content"
@@ -150,23 +156,6 @@
                 android:textColor="#0B3D91"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etFeedback"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_reason_box"
-                android:gravity="top|start"
-                android:hint="Write a short comment..."
-                android:inputType="textMultiLine"
-                android:maxLines="4"
-                android:minLines="3"
-                android:padding="16dp"
-                android:textColor="#173B63"
-                android:textColorHint="#8DA3BF" />
 
             <LinearLayout
                 android:id="@+id/feedbackButtonsContainer"
@@ -230,7 +219,7 @@
         app:itemTextColor="@color/white"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>

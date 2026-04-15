@@ -12,6 +12,7 @@ import com.example.smart_group.data.repository.CandidateDecisionRepository
 import com.example.smart_group.data.repository.CourseRepository
 import com.example.smart_group.data.repository.MatchFeedbackRepository
 import com.example.smart_group.data.repository.MatchRoundRepository
+import com.example.smart_group.data.repository.StudentRepository
 import kotlinx.coroutines.launch
 
 class GroupProposalViewModel : ViewModel() {
@@ -20,6 +21,7 @@ class GroupProposalViewModel : ViewModel() {
     private val matchRoundRepository = MatchRoundRepository()
     private val candidateDecisionRepository = CandidateDecisionRepository()
     private val matchFeedbackRepository = MatchFeedbackRepository()
+    private val studentRepository = StudentRepository()
 
     private val _course = MutableLiveData<Course>()
     val course: LiveData<Course> = _course
@@ -76,14 +78,28 @@ class GroupProposalViewModel : ViewModel() {
                 _currentRoundText.value = "Round ${studentMatch.roundNumber}"
                 _matchReasonsText.value = formatReasons(studentMatch.groupReasons)
 
-                currentCandidates = studentMatch.candidateIds.mapIndexed { index, candidateId ->
-                    CandidateUiModel(
-                        studentId = candidateId,
-                        displayName = "student ${index + 1}",
-                        status = "PENDING"
-                    )
-                }.toMutableList()
+                val candidateList = mutableListOf<CandidateUiModel>()
 
+                for ((index, candidateId) in studentMatch.candidateIds.withIndex()) {
+                    val student = studentRepository.getStudent(candidateId)
+
+                    android.util.Log.d("GROUP_NAME_DEBUG", "candidateId = $candidateId")
+                    android.util.Log.d("GROUP_NAME_DEBUG", "student = $student")
+                    android.util.Log.d("GROUP_NAME_DEBUG", "userName = ${student?.userName}")
+
+                    val displayName = student?.userName?.takeIf { it.isNotBlank() }
+                        ?: "student ${index + 1}"
+
+                    candidateList.add(
+                        CandidateUiModel(
+                            studentId = candidateId,
+                            displayName = displayName,
+                            status = "PENDING"
+                        )
+                    )
+                }
+
+                currentCandidates = candidateList.toMutableList()
                 _candidates.value = currentCandidates.toList()
 
             } catch (e: Exception) {
@@ -191,32 +207,32 @@ class GroupProposalViewModel : ViewModel() {
         val lines = mutableListOf<String>()
 
         groupReasons["availability"]?.let {
-            lines.add("זמינות משותפת: ${formatReasonValue(it)}")
+            lines.add("Shared availability: ${formatReasonValue(it)}")
         }
         groupReasons["gender"]?.let {
-            lines.add("מגדר: ${formatReasonValue(it)}")
+            lines.add("Gender: ${formatReasonValue(it)}")
         }
         groupReasons["genderPreference"]?.let {
-            lines.add("העדפת מגדר: ${formatReasonValue(it)}")
+            lines.add("Gender preference: ${formatReasonValue(it)}")
         }
         groupReasons["language"]?.let {
-            lines.add("שפה: ${formatReasonValue(it)}")
+            lines.add("Language: ${formatReasonValue(it)}")
         }
         groupReasons["taskPreference"]?.let {
-            lines.add("העדפת משימה: ${formatReasonValue(it)}")
+            lines.add("Task preference: ${formatReasonValue(it)}")
         }
         groupReasons["teamPreference"]?.let {
-            lines.add("העדפת צוות: ${formatReasonValue(it)}")
+            lines.add("Team preference: ${formatReasonValue(it)}")
         }
         groupReasons["workMode"]?.let {
-            lines.add("אופן עבודה: ${formatReasonValue(it)}")
+            lines.add("Work mode: ${formatReasonValue(it)}")
         }
         groupReasons["workStyle"]?.let {
-            lines.add("סגנון עבודה: ${formatReasonValue(it)}")
+            lines.add("Work style: ${formatReasonValue(it)}")
         }
 
         return if (lines.isEmpty()) {
-            "לא נמצאו סיבות להצעה"
+            "No match reasons found"
         } else {
             lines.joinToString("\n")
         }

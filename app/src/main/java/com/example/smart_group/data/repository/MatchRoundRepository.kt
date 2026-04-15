@@ -13,31 +13,52 @@ class MatchRoundRepository {
         studentId: String
     ): Result<StudentGroupMatch> {
         return try {
-
-            // ניגשים ל־proposal של הסטודנט
-            val candidatesSnapshot = db.collection("courses")
+            val snapshot = db.collection("courses")
                 .document(courseId)
-                .collection("proposals")
-                .document(studentId)
-                .collection("candidates")
+                .collection("matchRounds")
                 .get()
                 .await()
 
-            if (candidatesSnapshot.isEmpty) {
-                return Result.failure(Exception("No candidates found"))
+            if (snapshot.isEmpty) {
+                return Result.failure(Exception("No match rounds found"))
             }
 
-            val candidateIds = candidatesSnapshot.documents.mapNotNull { doc ->
-                doc.getString("candidateStudentId")
+            val roundDoc = snapshot.documents.firstOrNull()
+                ?: return Result.failure(Exception("No match round document found"))
+
+            val roundNumber = (roundDoc.getLong("roundNumber") ?: 1L).toInt()
+
+            val matchGroups = roundDoc.get("matchGroups") as? List<*>
+                ?: return Result.failure(Exception("No match groups found"))
+
+            var candidateIds: List<String> = emptyList()
+            var groupReasons: Map<String, Any> = emptyMap()
+
+            for (group in matchGroups) {
+                if (group is Map<*, *>) {
+                    val memberIds = (group["memberIds"] as? List<*>)
+                        ?.filterIsInstance<String>()
+                        .orEmpty()
+
+                    if (studentId in memberIds) {
+                        candidateIds = memberIds.filter { it != studentId }
+
+                        @Suppress("UNCHECKED_CAST")
+                        groupReasons = group["groupReasons"] as? Map<String, Any> ?: emptyMap()
+
+                        break
+                    }
+                }
             }
 
-            // אין לנו כרגע groupReasons בפיירבייס → נשים ריק
-            val groupReasons = emptyMap<String, Any>()
+            if (candidateIds.isEmpty()) {
+                return Result.failure(Exception("Student is not assigned to any group in current round"))
+            }
 
-            return Result.success(
+            Result.success(
                 StudentGroupMatch(
-                    roundId = "proposal_based",
-                    roundNumber = 1, // זמני
+                    roundId = roundDoc.id,
+                    roundNumber = roundNumber,
                     candidateIds = candidateIds,
                     groupReasons = groupReasons
                 )
@@ -47,4 +68,4 @@ class MatchRoundRepository {
             Result.failure(e)
         }
     }
-    }
+}
