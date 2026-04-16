@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F9FC">
+    android:background="@drawable/login_background">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -16,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- ⚠️ ילד אחד בלבד -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,29 +32,32 @@
                 android:paddingTop="16dp">
 
 
-                <ImageView
-                    android:id="@+id/img_logo"
-                    android:layout_width="140dp"
-                    android:layout_height="60dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/logo"
-                    android:contentDescription="App Logo" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/img_logo"-->
+<!--                    android:layout_width="140dp"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:adjustViewBounds="true"-->
+<!--                    android:scaleType="fitCenter"-->
+<!--                    android:src="@drawable/logo"-->
+<!--                    android:contentDescription="App Logo" />-->
 
 
                 <ImageView
                     android:id="@+id/btnBack"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/arrow_back"
-                    android:contentDescription="Back"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
                     android:clickable="true"
+                    android:contentDescription="Back"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
+                    android:src="@drawable/arrow_back"
+                    app:tint="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
             </LinearLayout>
-            <!-- 🔹 COURSE HEADER -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/headerContainer"
                 android:layout_width="match_parent"
