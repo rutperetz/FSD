@@ -119,6 +119,16 @@
                             android:text="Mar 17, 2026 at 23:59"
                             android:textSize="18sp"
                             android:textColor="@color/black"/>
+
+                        <TextView
+                            android:id="@+id/deadlineNote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="* Grouping every 24 hours (round 2+)"
+                            android:textSize="12sp"
+                            android:textColor="@color/gray_dark"
+                            android:layout_marginTop="4dp"/>
+
                     </LinearLayout>
 
                     <ImageView

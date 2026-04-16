@@ -158,10 +158,27 @@ class CourseDetailsViewModel : ViewModel() {
 
                 // טעינת הכל במקום אחד
                 loadEnrollment(courseId, student.studentId)
-                loadCourse(courseId)
+                //loadCourse(courseId)
+                startListeningToCourse(courseId)
 
             } catch (e: Exception) {
                 toastMessage.value = "Failed to load student"
+            }
+        }
+    }
+
+    fun startListeningToCourse(courseId: String) {
+        repo.courseRepository.listenToCourse(courseId) { updatedCourse ->
+
+            course.postValue(updatedCourse)
+
+            // 🔥 חשוב מאוד לעדכן גם deadline
+            if (updatedCourse.deadline != null) {
+                val now = System.currentTimeMillis()
+                val deadlineMillis = updatedCourse.deadline.toDate().time
+                isDeadlinePassed.postValue(deadlineMillis < now)
+            } else {
+                isDeadlinePassed.postValue(false)
             }
         }
     }

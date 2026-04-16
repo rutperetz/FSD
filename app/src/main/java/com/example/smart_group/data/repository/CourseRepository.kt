@@ -39,4 +39,14 @@ class CourseRepository(
     suspend fun deleteCourse(courseId: String) {
         coursesRef.document(courseId).delete().await()
     }
+
+    fun listenToCourse(courseId: String, onChange: (Course) -> Unit) {
+        coursesRef.document(courseId)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null && snapshot.exists()) {
+                    val course = snapshot.toObject(Course::class.java)
+                    course?.let { onChange(it) }
+                }
+            }
+    }
 }

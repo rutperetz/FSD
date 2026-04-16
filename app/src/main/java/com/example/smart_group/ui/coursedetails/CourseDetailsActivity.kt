@@ -102,12 +102,15 @@ class CourseDetailsActivity : AppCompatActivity() {
             if (course != null) {
                 findViewById<TextView>(R.id.courseTitle).text = course.title
 
-                val deadlineTextView = findViewById<TextView>(R.id.deadlineText)
-                deadlineTextView.setTextColor(getColor(android.R.color.black))
-
-                if (course.deadline != null) {
-                    deadlineTextView.text = "No deadline"
-                }
+//                val deadlineTextView = findViewById<TextView>(R.id.deadlineText)
+//                deadlineTextView.setTextColor(getColor(android.R.color.black))
+//
+//                if (course.deadline == null) {
+//                    deadlineTextView.text = "No deadline"
+//                } else {
+//                    val formatter = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+//                    deadlineTextView.text = formatter.format(course.deadline.toDate())
+//                }
 
                 findViewById<TextView>(R.id.groupSizeText).text =
                     "${course.groupSize.min}-${course.groupSize.max} students"

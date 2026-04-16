@@ -12,6 +12,7 @@ import com.example.smart_group.ui.home.HomeActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.example.smart_group.ui.questionnaire.EditQuestionnaireActivity
+import android.view.View
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -47,6 +48,12 @@ class ProfileActivity : AppCompatActivity() {
                 is ProfileState.Success -> {
                     tvUserName.text = state.user.userName
                     tvEmail.text = state.user.email
+
+                    if (state.user.role.name == "STUDENT") {
+                        btnViewQuestionnaire.visibility = View.VISIBLE
+                    } else {
+                        btnViewQuestionnaire.visibility = View.GONE
+                    }
                 }
 
                 is ProfileState.Error -> {
