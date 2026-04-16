@@ -83,17 +83,17 @@ class GroupProposalViewModel : ViewModel() {
                 for ((index, candidateId) in studentMatch.candidateIds.withIndex()) {
                     val student = studentRepository.getStudent(candidateId)
 
-                    android.util.Log.d("GROUP_NAME_DEBUG", "candidateId = $candidateId")
-                    android.util.Log.d("GROUP_NAME_DEBUG", "student = $student")
-                    android.util.Log.d("GROUP_NAME_DEBUG", "userName = ${student?.userName}")
-
                     val displayName = student?.userName?.takeIf { it.isNotBlank() }
-                        ?: "student ${index + 1}"
+                        ?: "Student ${index + 1}"
+
+                    val email = student?.email?.takeIf { it.isNotBlank() }
+                        ?: "No email"
 
                     candidateList.add(
                         CandidateUiModel(
                             studentId = candidateId,
                             displayName = displayName,
+                            email = email,
                             status = "PENDING"
                         )
                     )
@@ -108,19 +108,6 @@ class GroupProposalViewModel : ViewModel() {
         }
     }
 
-    fun approve(courseId: String, currentStudentId: String, candidate: CandidateUiModel) {
-        saveDecision(courseId, currentStudentId, candidate, "APPROVED")
-
-        currentCandidates = currentCandidates.map { currentItem ->
-            if (currentItem.studentId == candidate.studentId) {
-                currentItem.copy(status = "APPROVED")
-            } else {
-                currentItem
-            }
-        }.toMutableList()
-
-        _candidates.value = currentCandidates.toList()
-    }
 
     fun decline(courseId: String, currentStudentId: String, candidate: CandidateUiModel) {
         saveDecision(courseId, currentStudentId, candidate, "DECLINED")
@@ -169,10 +156,10 @@ class GroupProposalViewModel : ViewModel() {
             val result = matchFeedbackRepository.saveFeedback(feedback)
 
             if (result.isSuccess) {
-                _message.value = "המשוב נשלח בהצלחה. תודה!"
+                _message.value = ""
                 _feedbackSubmitted.value = true
             } else {
-                _message.value = result.exceptionOrNull()?.message ?: "שמירת המשוב נכשלה"
+                _message.value = result.exceptionOrNull()?.message ?: "Failed to save feedback"
                 _feedbackSubmitted.value = false
             }
         }

@@ -33,7 +33,6 @@ class GroupActivity : AppCompatActivity() {
     private lateinit var btnLike: Button
     private lateinit var btnDislike: Button
     private lateinit var btnBack: ImageView
-    private lateinit var tvFeedbackThanks: TextView
 
     private lateinit var courseId: String
     private lateinit var currentStudentId: String
@@ -70,15 +69,12 @@ class GroupActivity : AppCompatActivity() {
         btnLike = findViewById(R.id.btnLike)
         btnDislike = findViewById(R.id.btnDislike)
         btnBack = findViewById(R.id.btnBack)
-        tvFeedbackThanks = findViewById(R.id.tvFeedbackThanks)
+
     }
 
     private fun setupRecyclerView() {
         adapter = CandidateAdapter(
             items = emptyList(),
-            onApprove = { candidate ->
-                viewModel.approve(courseId, currentStudentId, candidate)
-            },
             onDecline = { candidate ->
                 viewModel.decline(courseId, currentStudentId, candidate)
             },
@@ -98,6 +94,8 @@ class GroupActivity : AppCompatActivity() {
         }
 
         btnLike.setOnClickListener {
+            updateFeedbackSelection(liked = true)
+
             viewModel.submitFeedback(
                 courseId = courseId,
                 currentStudentId = currentStudentId,
@@ -107,6 +105,8 @@ class GroupActivity : AppCompatActivity() {
         }
 
         btnDislike.setOnClickListener {
+            updateFeedbackSelection(liked = false)
+
             viewModel.submitFeedback(
                 courseId = courseId,
                 currentStudentId = currentStudentId,
@@ -115,7 +115,6 @@ class GroupActivity : AppCompatActivity() {
             )
         }
     }
-
     private fun setupBottomNav() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
 
@@ -141,6 +140,16 @@ class GroupActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateFeedbackSelection(liked: Boolean) {
+        if (liked) {
+            btnLike.alpha = 1.0f
+            btnDislike.alpha = 0.5f
+        } else {
+            btnLike.alpha = 0.5f
+            btnDislike.alpha = 1.0f
+        }
+    }
+
     private fun observeData() {
         viewModel.course.observe(this) { course ->
             tvCourseTitle.text = course.title
@@ -151,6 +160,7 @@ class GroupActivity : AppCompatActivity() {
                     .into(ivCourseImage)
             }
         }
+
 
         viewModel.currentRoundText.observe(this) { roundText ->
             tvRoundInfo.text = roundText
@@ -172,9 +182,11 @@ class GroupActivity : AppCompatActivity() {
 
         viewModel.feedbackSubmitted.observe(this) { submitted ->
             if (submitted == true) {
-                btnLike.visibility = View.GONE
-                btnDislike.visibility = View.GONE
-                tvFeedbackThanks.visibility = View.VISIBLE
+                Toast.makeText(
+                    this,
+                    "Feedback submitted successfully. Thank you!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
