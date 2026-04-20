@@ -1,4 +1,4 @@
-const schema = require("./answerSchema.js");
+const schema = require("../../schemas/answerSchema.js");
 // -------------------------
 // Normalize answers into binary vector
 // -------------------------

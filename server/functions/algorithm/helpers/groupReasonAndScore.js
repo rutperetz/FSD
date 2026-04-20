@@ -1,5 +1,5 @@
 
-const schema = require('./answerSchema.js');
+const schema = require('../../schemas/answerSchema.js');
 // ---------------------------
 // Group score
 // ---------------------------

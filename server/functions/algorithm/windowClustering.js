@@ -1,5 +1,5 @@
 
-const { explainGroupReason, computeGroupScore } = require('../groupReasonAndScore');
+const { explainGroupReason, computeGroupScore } = require('./helpers/groupReasonAndScore');
 
 // ------------------------------------------------------
 // Mutual preference check
@@ -177,7 +177,7 @@ function windowClustering(vectors, matrix, threshold, minSize, maxSize, used) {
                     const groupIndices = [i, ...combo];
 
                     // Check mutual preference
-                    if (!checkMutualPreference(groupIndices, neighbors, expandedCandidates.length )) continue;
+                    if (!checkMutualPreference(groupIndices, neighbors, expandedCandidates.length)) continue;
 
                     // Compute group score
                     const score = computeGroupScore(groupIndices, matrix);
@@ -217,8 +217,8 @@ function windowClustering(vectors, matrix, threshold, minSize, maxSize, used) {
     // Try to assign unassigned students to existing groups if they meet the threshold
     for (const idx of unassignedCopy) {
         if (neighbors[idx].length === 0) continue; // No neighbors, can't cluster
-        targetGroup = null;
-        targetScore = threshold; // Only consider groups above the threshold
+        let targetGroup = null;
+        let targetScore = threshold; // Only consider groups above the threshold
         for (const group of groups) {
             if (group.memberIds.length >= maxSize) continue;  // Skip full groups
             if (group.memberIds.some(memberIdx => matrix[idx][memberIdx] === 0)) continue; // Must have some similarity with all group members

@@ -1,9 +1,9 @@
-const dbService = require('../db/dbService.js');
-const buildSimilarityMatrix = require("../similarityMatrix.js");
-const windowClustering = require("./windowClustering");
-const { feedbackProcessor, lockGroups } = require("../feedbackProcessor.js");
-const schema = require('../answerSchema.js');
-const normalizeAnswers = require('../normalizeAnswers.js');
+//const dbService = require('../db/dbService.js');
+const buildSimilarityMatrix = require("./helpers/similarityMatrix.js");
+const windowClustering = require("./windowClustering.js");
+const { feedbackProcessor, lockGroups } = require("./helpers/feedbackProcessor.js");
+const normalizeAnswers = require('./helpers/normalizeAnswers.js');
+const algorithmConfig = require("../../functions/config/algorithmConfig.js");
 
 // -----------------------------------------------------------------
 // פונקציות עזר להמרות בין IDs לאינדקסים במערך
@@ -41,51 +41,41 @@ function mapFeedbackToIndices(feedbackWithIds, idToIndex) {
 // -----------------------------------------------------------------
 // הפונקציה המרכזית: מנהלת את הסבב, הנתונים והשמירה
 // -----------------------------------------------------------------
-async function startRound(courseId) {
+async function startRound(courseId, dbService) {
     // 1. שליפת הגדרות הקורס מ-DB
     const settings = await dbService.getCourseSettings(courseId);
     const roundNum = settings.currentRound;
-    const { minSize, maxSize, baseWeights } = settings;
-    const strictThreshold = 0.7; // סף נוקשה לסיבוב הראשון
+    const { minSize, maxSize } = settings;
+    const strictThreshold = algorithmConfig.threshold;
 
     console.log(`Starting Round ${roundNum} for course ${courseId}`);
 
     // 2. טיפול בווקטורים - שליפה מ-DB או יצירה ונרמול מחדש
-    let vectorsData = await dbService.getNormalizedVectors(courseId);
     let vectorsArray = [];
     let idToIndex = [];
-
-    if (!vectorsData) {
-        console.log("No normalized vectors found. Generating mapping and vectors...");
-        const rawStudents = await dbService.getRawCourseData(courseId);
-
-        const vectorsMap = {};
-        rawStudents.forEach(student => {
-            vectorsMap[student.studentId] = normalizeAnswers(student.answers);
-            idToIndex.push(student.studentId);
-        });
-
-       // await dbService.saveNormalizedVectors(courseId, vectorsMap, idToIndex);
-
-        vectorsArray = idToIndex.map(id => vectorsMap[id]);
-    } else {
-        console.log("Loaded mapped vectors from DB.");
-        idToIndex = vectorsData.idToIndex;
-        vectorsArray = idToIndex.map(id => vectorsData.vectorsMap[id]);
-    }
-
-    const n = vectorsArray.length;
     let finalGroupsWithIds = [];
     let unassignedWithIds = [];
-    let currentWeights = baseWeights;
+    let currentWeights = algorithmConfig.weights;
     const roundId = `${courseId}_R${roundNum}`;
 
     // -----------------------------------------------------------------
     // לוגיקה לסבב ראשון (Round 1)
     // -----------------------------------------------------------------
     if (roundNum === 1) {
+        const rawStudents = await dbService.getRawCourseData(courseId);
+        console.log(" Generating mapping and vectors...")
+        const vectorsMap = {};
+        rawStudents.forEach(student => {
+            vectorsMap[student.studentId] = normalizeAnswers(student.answers);
+            idToIndex.push(student.studentId);
+        });
+
+        await dbService.saveNormalizedVectors(courseId, vectorsMap, idToIndex);
+
+        vectorsArray = idToIndex.map(id => vectorsMap[id]);
+        const n = vectorsArray.length;
         // בניית מטריצה בסיסית - אין פידבקים קודמים או רשימות שחורות עדיין
-        const matrix = buildSimilarityMatrix(vectorsArray, currentWeights, schema);
+        const matrix = buildSimilarityMatrix(vectorsArray, currentWeights);
         const used = new Array(n).fill(false);
 
         // הרצה כפולה: קודם עם סף נוקשה, אח"כ חלון שאריות
@@ -104,6 +94,18 @@ async function startRound(courseId) {
     // לוגיקה לסבבים מתקדמים (Round 2+)
     // -----------------------------------------------------------------
     else {
+        let vectorsData = await dbService.getNormalizedVectors(courseId);
+        
+        if (!vectorsData) {
+            console.log("No normalized vectors found");
+            
+        } else {
+            console.log("Loaded mapped vectors from DB.");
+            idToIndex = vectorsData.idToIndex;
+            vectorsArray = idToIndex.map(id => vectorsData.vectorsMap[id]);
+        }
+
+        const n = vectorsArray.length;
         // א. שליפת נתוני עבר: סבב קודם, רשימה שחורה כוללת
         const previousRound = await dbService.getPreviousRound(courseId, roundNum - 1);
         if (!previousRound) throw new Error(`Cannot start round ${roundNum} - missing data from round ${roundNum - 1}`);
@@ -111,7 +113,7 @@ async function startRound(courseId) {
         // יצירת עותקים נקיים בזיכרון (Deep Copy) כדי לא לדרוס את ההיסטוריה בקובץ
         let matchGroupsWithIds = JSON.parse(JSON.stringify(previousRound.matchGroups));
         let matchWeights = { ...previousRound.matchWeights };
-        letfeedbackFromUser = JSON.parse(JSON.stringify(previousRound.feedback));
+        let feedbackFromUser = JSON.parse(JSON.stringify(previousRound.feedback));
         // ב. תרגום הפידבקים והקבוצות הקודמות בחזרה לאינדקסים של המטריצה
         const feedbackIndices = mapFeedbackToIndices(feedbackFromUser, idToIndex);
 
@@ -143,6 +145,11 @@ async function startRound(courseId) {
             }
         });
 
+        // יצירת מערך used עבור הסטודנטים שכבר נעולים בקבוצות
+        const used = new Array(n).fill(false);
+        previousGroupsAsIndices.forEach(g => {
+            g.memberIds.forEach(idx => { used[idx] = true; });
+        });
         // ו. הרצת אלגוריתם השיבוץ רק על הסטודנטים הפנויים (!used)
         const { groups: groupsStrict, used: usedStrict } = windowClustering(vectorsArray, matrix, strictThreshold, minSize, maxSize, used);
         const { groups: groupsRelaxed, used: usedRelaxed } = windowClustering(vectorsArray, matrix, 0, minSize, maxSize, usedStrict);

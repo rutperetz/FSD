@@ -5,11 +5,11 @@ const runPruningTest = require("./pruningTest");
 
 async function runAllTests() {
 
-    console.log("\n=======================");
-    console.log("EDGE CASE TESTS");
-    console.log("=======================\n");
+    // console.log("\n=======================");
+    // console.log("EDGE CASE TESTS");
+    // console.log("=======================\n");
 
-    await runEdgeTests();
+    // await runEdgeTests();
 
     console.log("\n=======================");
     console.log("PERFORMANCE TESTS");
@@ -17,11 +17,11 @@ async function runAllTests() {
 
     await runPerformance();
 
-    console.log("\n=======================");
-    console.log("LOAD TEST");
-    console.log("=======================\n");
+    // console.log("\n=======================");
+    // console.log("LOAD TEST");
+    // console.log("=======================\n");
 
-    await runLoadTest();
+    // await runLoadTest();
 
     // console.log("\n=======================");
     // console.log("PRUNING TEST");

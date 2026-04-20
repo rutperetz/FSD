@@ -88,7 +88,7 @@ function lockGroups(groups, feedback, minSize) {
             }
 
         }
-    } 
+    }
     // return only locked groups
     groups = groups.filter(g => g.groupStatus);
     return groups;

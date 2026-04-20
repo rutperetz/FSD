@@ -34,7 +34,7 @@ async function performanceTest() {
 
     console.log("LOAD + PERFORMANCE TEST");
 
-    const sizes = [50, 100, 200, 400, 600];
+    const sizes = [10,30,50,100, 150,200, 250, 300,400,500, 600,700,800]
 
     for (const n of sizes) {
 
