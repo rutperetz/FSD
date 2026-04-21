@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.smart_group.data.model.CandidateDecision
 import com.example.smart_group.data.model.CandidateUiModel
 import com.example.smart_group.data.model.Course
-import com.example.smart_group.data.model.MatchFeedback
+import com.example.smart_group.data.model.GroupingStatus
 import com.example.smart_group.data.repository.CandidateDecisionRepository
 import com.example.smart_group.data.repository.CourseRepository
 import com.example.smart_group.data.repository.MatchFeedbackRepository
@@ -41,6 +41,12 @@ class GroupProposalViewModel : ViewModel() {
     private val _currentRoundText = MutableLiveData<String>()
     val currentRoundText: LiveData<String> = _currentRoundText
 
+    private val _noMatchMessage = MutableLiveData<String>()
+    val noMatchMessage: LiveData<String> = _noMatchMessage
+
+    private val _isGroupFinalized = MutableLiveData<Boolean>()
+    val isGroupFinalized: LiveData<Boolean> = _isGroupFinalized
+
     private var currentCandidates: MutableList<CandidateUiModel> = mutableListOf()
     private var currentRoundId: String = ""
 
@@ -63,20 +69,36 @@ class GroupProposalViewModel : ViewModel() {
                 )
 
                 if (studentMatchResult.isFailure) {
-                    _message.value = studentMatchResult.exceptionOrNull()?.message
-                        ?: "Failed to load match data"
+                    val currentRound = course.currentRound
+
+                    _currentRoundText.value = "Round $currentRound"
+                    _candidates.value = emptyList()
+                    _matchReasonsText.value = ""
+                    _isGroupFinalized.value = false
+                    _noMatchMessage.value = buildNoMatchMessage(course.groupingStatus)
+
                     return@launch
                 }
 
                 val studentMatch = studentMatchResult.getOrNull()
+
                 if (studentMatch == null) {
-                    _message.value = "Match data not found"
+                    val currentRound = course.currentRound
+
+                    _currentRoundText.value = "Round $currentRound"
+                    _candidates.value = emptyList()
+                    _matchReasonsText.value = ""
+                    _isGroupFinalized.value = false
+                    _noMatchMessage.value = buildNoMatchMessage(course.groupingStatus)
+
                     return@launch
                 }
 
                 currentRoundId = studentMatch.roundId
+                _noMatchMessage.value = ""
                 _currentRoundText.value = "Round ${studentMatch.roundNumber}"
                 _matchReasonsText.value = formatReasons(studentMatch.groupReasons)
+                _isGroupFinalized.value = studentMatch.groupStatus
 
                 val candidateList = mutableListOf<CandidateUiModel>()
 
@@ -108,7 +130,6 @@ class GroupProposalViewModel : ViewModel() {
         }
     }
 
-
     fun decline(courseId: String, currentStudentId: String, candidate: CandidateUiModel) {
         saveDecision(courseId, currentStudentId, candidate, "DECLINED")
 
@@ -121,14 +142,22 @@ class GroupProposalViewModel : ViewModel() {
         }.toMutableList()
 
         _candidates.value = currentCandidates.toList()
+        saveRejectedStudents(courseId, currentStudentId)
     }
 
-    fun removeCandidate(candidate: CandidateUiModel) {
-        currentCandidates = currentCandidates.filter { currentItem ->
-            currentItem.studentId != candidate.studentId
+    fun undoDecline(courseId: String, currentStudentId: String, candidate: CandidateUiModel) {
+        saveDecision(courseId, currentStudentId, candidate, "PENDING")
+
+        currentCandidates = currentCandidates.map { currentItem ->
+            if (currentItem.studentId == candidate.studentId) {
+                currentItem.copy(status = "PENDING")
+            } else {
+                currentItem
+            }
         }.toMutableList()
 
         _candidates.value = currentCandidates.toList()
+        saveRejectedStudents(courseId, currentStudentId)
     }
 
     fun submitFeedback(
@@ -144,16 +173,12 @@ class GroupProposalViewModel : ViewModel() {
                 return@launch
             }
 
-            val feedback = MatchFeedback(
+            val result = matchFeedbackRepository.saveApproveGroup(
                 courseId = courseId,
                 roundId = currentRoundId,
                 studentId = currentStudentId,
-                likedProposal = likedProposal,
-                comment = comment.trim(),
-                submittedAt = System.currentTimeMillis()
+                approveGroup = likedProposal
             )
-
-            val result = matchFeedbackRepository.saveFeedback(feedback)
 
             if (result.isSuccess) {
                 _message.value = ""
@@ -161,6 +186,30 @@ class GroupProposalViewModel : ViewModel() {
             } else {
                 _message.value = result.exceptionOrNull()?.message ?: "Failed to save feedback"
                 _feedbackSubmitted.value = false
+            }
+        }
+    }
+
+    private fun saveRejectedStudents(courseId: String, currentStudentId: String) {
+        viewModelScope.launch {
+            if (currentRoundId.isBlank()) {
+                return@launch
+            }
+
+            val rejectedIds = currentCandidates
+                .filter { it.status == "DECLINED" }
+                .map { it.studentId }
+
+            val result = matchFeedbackRepository.saveRejectedStudents(
+                courseId = courseId,
+                roundId = currentRoundId,
+                studentId = currentStudentId,
+                rejectStudents = rejectedIds
+            )
+
+            if (result.isFailure) {
+                _message.value =
+                    result.exceptionOrNull()?.message ?: "Failed to save rejected students"
             }
         }
     }
@@ -186,6 +235,18 @@ class GroupProposalViewModel : ViewModel() {
                 _message.value = "${candidate.displayName} $decision"
             } else {
                 _message.value = result.exceptionOrNull()?.message ?: "Failed to save decision"
+            }
+        }
+    }
+
+    private fun buildNoMatchMessage(groupingStatus: GroupingStatus): String {
+        return when (groupingStatus) {
+            GroupingStatus.COMPLETED -> {
+                "No match has been found for you.\nPlease contact the lecturer."
+            }
+            GroupingStatus.IN_PROGRESS,
+            GroupingStatus.PENDING -> {
+                "No match has been found for you yet.\nPlease wait for the next round."
             }
         }
     }

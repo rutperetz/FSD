@@ -34,6 +34,12 @@ class GroupActivity : AppCompatActivity() {
     private lateinit var btnDislike: Button
     private lateinit var btnBack: ImageView
 
+    private lateinit var tvMembersTitle: TextView
+    private lateinit var tvReasonsTitle: TextView
+    private lateinit var tvFeedbackTitle: TextView
+    private lateinit var feedbackButtonsContainer: View
+    private lateinit var tvNoMatchMessage: TextView
+
     private lateinit var courseId: String
     private lateinit var currentStudentId: String
 
@@ -70,16 +76,22 @@ class GroupActivity : AppCompatActivity() {
         btnDislike = findViewById(R.id.btnDislike)
         btnBack = findViewById(R.id.btnBack)
 
+        tvMembersTitle = findViewById(R.id.tvMembersTitle)
+        tvReasonsTitle = findViewById(R.id.tvReasonsTitle)
+        tvFeedbackTitle = findViewById(R.id.tvFeedbackTitle)
+        feedbackButtonsContainer = findViewById(R.id.feedbackButtonsContainer)
+        tvNoMatchMessage = findViewById(R.id.tvNoMatchMessage)
     }
 
     private fun setupRecyclerView() {
         adapter = CandidateAdapter(
             items = emptyList(),
-            onDecline = { candidate ->
-                viewModel.decline(courseId, currentStudentId, candidate)
-            },
-            onRemove = { candidate ->
-                viewModel.removeCandidate(candidate)
+            onDeclineToggle = { candidate, isDeclined ->
+                if (isDeclined) {
+                    viewModel.decline(courseId, currentStudentId, candidate)
+                } else {
+                    viewModel.undoDecline(courseId, currentStudentId, candidate)
+                }
             }
         )
 
@@ -115,6 +127,7 @@ class GroupActivity : AppCompatActivity() {
             )
         }
     }
+
     private fun setupBottomNav() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
 
@@ -151,6 +164,7 @@ class GroupActivity : AppCompatActivity() {
     }
 
     private fun observeData() {
+
         viewModel.course.observe(this) { course ->
             tvCourseTitle.text = course.title
 
@@ -160,7 +174,6 @@ class GroupActivity : AppCompatActivity() {
                     .into(ivCourseImage)
             }
         }
-
 
         viewModel.currentRoundText.observe(this) { roundText ->
             tvRoundInfo.text = roundText
@@ -172,6 +185,30 @@ class GroupActivity : AppCompatActivity() {
 
         viewModel.candidates.observe(this) { candidates ->
             adapter.updateData(candidates)
+
+            if (candidates.isNotEmpty()) {
+                showMatchState()
+            }
+        }
+
+
+        viewModel.noMatchMessage.observe(this) { message ->
+            if (message.isNotBlank()) {
+                showNoMatchState(message)
+            }
+        }
+
+
+        viewModel.isGroupFinalized.observe(this) { isFinalized ->
+            adapter.setGroupFinalized(isFinalized)
+
+            if (isFinalized) {
+                tvFeedbackTitle.visibility = View.GONE
+                feedbackButtonsContainer.visibility = View.GONE
+            } else {
+                tvFeedbackTitle.visibility = View.VISIBLE
+                feedbackButtonsContainer.visibility = View.VISIBLE
+            }
         }
 
         viewModel.message.observe(this) { message ->
@@ -189,6 +226,30 @@ class GroupActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+
+    private fun showNoMatchState(message: String) {
+        tvNoMatchMessage.visibility = View.VISIBLE
+        tvNoMatchMessage.text = message
+
+        tvMembersTitle.visibility = View.GONE
+        rvCandidates.visibility = View.GONE
+
+        tvReasonsTitle.visibility = View.GONE
+        tvReasons.visibility = View.GONE
+
+        tvFeedbackTitle.visibility = View.GONE
+        feedbackButtonsContainer.visibility = View.GONE
+    }
+
+    private fun showMatchState() {
+        tvNoMatchMessage.visibility = View.GONE
+
+        tvMembersTitle.visibility = View.VISIBLE
+        rvCandidates.visibility = View.VISIBLE
+
+        tvReasonsTitle.visibility = View.VISIBLE
+        tvReasons.visibility = View.VISIBLE
     }
 
     private fun loadCurrentStudentAndScreen() {

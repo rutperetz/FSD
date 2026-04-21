@@ -1,5 +1,6 @@
 package com.example.smart_group.ui.group
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +14,15 @@ import com.example.smart_group.data.model.CandidateUiModel
 
 class CandidateAdapter(
     private var items: List<CandidateUiModel>,
-    private val onDecline: (CandidateUiModel) -> Unit,
-    private val onRemove: (CandidateUiModel) -> Unit
+    private val onDeclineToggle: (CandidateUiModel, Boolean) -> Unit
 ) : RecyclerView.Adapter<CandidateAdapter.CandidateViewHolder>() {
+
+    private var isGroupFinalized: Boolean = false
+
+    fun setGroupFinalized(value: Boolean) {
+        isGroupFinalized = value
+        notifyDataSetChanged()
+    }
 
     inner class CandidateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvStudentName: TextView = itemView.findViewById(R.id.tvStudentName)
@@ -23,40 +30,51 @@ class CandidateAdapter(
         private val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
         private val layoutDecline: LinearLayout = itemView.findViewById(R.id.layoutDecline)
         private val btnDecline: Button = itemView.findViewById(R.id.btnDecline)
-        private val btnRemove: Button = itemView.findViewById(R.id.btnRemove)
 
         fun bind(item: CandidateUiModel) {
             tvStudentName.text = item.displayName
             tvStudentEmail.text = item.email
 
-            val status = item.status.orEmpty().uppercase()
+            val isDeclined = item.status.orEmpty().uppercase() in listOf("DECLINED", "REJECTED")
 
-            when (status) {
-                "DECLINED", "REJECTED" -> {
-                    tvStatus.text = "Declined"
+            if (isGroupFinalized) {
+                tvStatus.visibility = View.GONE
+            } else {
+                tvStatus.visibility = View.VISIBLE
+                tvStatus.text = if (isDeclined) "Declined" else "Pending"
+
+                if (isDeclined) {
                     tvStatus.setBackgroundResource(R.drawable.bg_status_rejected)
                     tvStatus.setTextColor(
                         ContextCompat.getColor(itemView.context, android.R.color.white)
                     )
 
-                    layoutDecline.visibility = View.GONE
-                    btnRemove.visibility = View.VISIBLE
-
-                    btnRemove.setOnClickListener { onRemove(item) }
-                }
-
-                else -> {
-                    tvStatus.text = "Pending"
+                    btnDecline.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(itemView.context, android.R.color.holo_red_light)
+                    )
+                    btnDecline.setTextColor(
+                        ContextCompat.getColor(itemView.context, android.R.color.white)
+                    )
+                } else {
                     tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
                     tvStatus.setTextColor(
                         ContextCompat.getColor(itemView.context, R.color.primary_blue)
                     )
 
-                    layoutDecline.visibility = View.VISIBLE
-                    btnRemove.visibility = View.GONE
-
-                    btnDecline.setOnClickListener { onDecline(item) }
+                    btnDecline.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(itemView.context, R.color.lightBlue)
+                    )
+                    btnDecline.setTextColor(
+                        ContextCompat.getColor(itemView.context, R.color.primary_blue)
+                    )
                 }
+            }
+
+            layoutDecline.visibility = if (isGroupFinalized) View.GONE else View.VISIBLE
+
+            btnDecline.setOnClickListener {
+                val newDeclinedState = !isDeclined
+                onDeclineToggle(item, newDeclinedState)
             }
         }
     }
