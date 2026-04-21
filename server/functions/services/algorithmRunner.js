@@ -19,15 +19,7 @@ exports.runAlgorithm = onRequest(async (req, res) => {
         // -----------------------
         // תנאי סיום
         // -----------------------
-        const { minSize } = await dbService.getCourseSettings(courseId);
-
-        const totalStudents =
-            result.matchGroups.reduce((sum, g) => sum + g.memberIds.length, 0) +
-            result.matchUnassigned.length;
-
-        const noGroups = result.matchGroups.length === 0;
-
-        if (totalStudents < minSize || noGroups || result.roundNumber >= 3) {
+        if (result) {
 
             await courseRef.update({
                 groupingStatus: "COMPLETED"
@@ -39,13 +31,12 @@ exports.runAlgorithm = onRequest(async (req, res) => {
         // -----------------------
         // סבב נוסף
         // -----------------------
-        const nextRound = result.roundNumber + 1;
+        const nextRound = round+ 1;
         const nextRun = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         const newTaskId = await createTask(courseId, nextRun, nextRound);
 
         await courseRef.update({
-            currentRound: nextRound,
             taskId: newTaskId
         });
 

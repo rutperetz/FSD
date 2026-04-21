@@ -62,31 +62,54 @@ function updateMatrixWithRejections(matrix, feedback) {
 // -------------------------
 function lockGroups(groups, feedback, minSize) {
     for (const group of groups) {
-        if (group.groupStatus) continue; // Already locked
-        else {
-            const lockedMembers = new Set();
-            const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
-            for (let i = 0; i < approvers.length; i++) {
-                for (let j = i + 1; j < approvers.length; j++) {
-                    const a = approvers[i];
-                    const b = approvers[j];
+        if (group.groupStatus) continue;
 
-                    const aFeedback = feedback[a.toString()];
-                    const bFeedback = feedback[b.toString()];
-                    // Only if no one rejected the other
-                    if (!aFeedback.rejectStudents.includes(b) &&
-                        !bFeedback.rejectStudents.includes(a)) {
-                        lockedMembers.add(a);
-                        lockedMembers.add(b);
-                    }
+        const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
+
+        function isCompatible(student, current) {
+            const sFeedback = feedback[student];
+
+            for (const member of current) {
+                const mFeedback = feedback[member];
+
+                if (sFeedback.rejectStudents.includes(member) ||
+                    mFeedback.rejectStudents.includes(student)) {
+                    return false;
                 }
             }
-            // If enough locked members, finalize the group
-            if (lockedMembers.size >= minSize) {
-                group.memberIds = Array.from(lockedMembers);
-                group.groupStatus = true;
+            return true;
+        }
+
+        let bestGroup = [];
+
+        function backtrack(start, current) {
+            // ✔ עדכון הפתרון הכי טוב שנמצא
+            if (current.length > bestGroup.length) {
+                bestGroup = [...current];
             }
 
+            // ✔ גיזום — גם אם ניקח את כולם לא נעקוף את best
+            if (current.length + (approvers.length - start) <= bestGroup.length) {
+                return;
+            }
+
+            for (let i = start; i < approvers.length; i++) {
+                const student = approvers[i];
+
+                if (!isCompatible(student, current)) continue;
+
+                current.push(student);
+                backtrack(i + 1, current);
+                current.pop();
+            }
+        }
+
+        backtrack(0, []);
+
+        // ✔ רק אם עומד במינימום — ננעל
+        if (bestGroup.length >= minSize) {
+            group.memberIds = bestGroup;
+            group.groupStatus = true;
         }
     }
     // return only locked groups
@@ -94,6 +117,7 @@ function lockGroups(groups, feedback, minSize) {
     return groups;
 
 }
+
 // -------------------------
 // Process approvals 
 // -------------------------

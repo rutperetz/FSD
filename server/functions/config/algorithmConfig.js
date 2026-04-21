@@ -6,7 +6,8 @@ const algorithmConfig = {
             "workStyle": 0.2,
             "language": 0.15,
             "taskPreference": 0.15
-        }
+    },
+           "maxRounds": 3
 }
 
 module.exports = algorithmConfig;
