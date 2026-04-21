@@ -4,66 +4,138 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.smart_group.R
+import com.example.smart_group.data.repository.StudentRepository
 import com.example.smart_group.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class GroupActivity : AppCompatActivity() {
 
     private val viewModel: GroupProposalViewModel by viewModels()
     private lateinit var adapter: CandidateAdapter
 
+    private lateinit var ivCourseImage: ImageView
     private lateinit var tvCourseTitle: TextView
     private lateinit var tvRoundInfo: TextView
     private lateinit var tvReasons: TextView
     private lateinit var rvCandidates: RecyclerView
-    private lateinit var etFeedback: EditText
     private lateinit var btnLike: Button
     private lateinit var btnDislike: Button
     private lateinit var btnBack: ImageView
-    private lateinit var tvFeedbackThanks: TextView
+
+    private lateinit var tvMembersTitle: TextView
+    private lateinit var tvReasonsTitle: TextView
+    private lateinit var tvFeedbackTitle: TextView
+    private lateinit var feedbackButtonsContainer: View
+    private lateinit var tvNoMatchMessage: TextView
 
     private lateinit var courseId: String
     private lateinit var currentStudentId: String
+
+    private val studentRepository = StudentRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group)
 
-        courseId = intent.getStringExtra("courseId") ?: ""
-        currentStudentId = intent.getStringExtra("studentId") ?: ""
-
-        if (courseId.isBlank() || currentStudentId.isBlank()) {
-            Toast.makeText(this, "Missing courseId or studentId", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
         initViews()
         setupRecyclerView()
         setupClickListeners()
         observeData()
+        setupBottomNav()
 
-        viewModel.loadScreen(courseId, currentStudentId)
+        courseId = intent.getStringExtra("courseId") ?: ""
 
+        if (courseId.isBlank()) {
+            Toast.makeText(this, "Missing courseId", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        loadCurrentStudentAndScreen()
+    }
+
+    private fun initViews() {
+        tvCourseTitle = findViewById(R.id.tvCourseTitle)
+        tvRoundInfo = findViewById(R.id.tvRoundInfo)
+        ivCourseImage = findViewById(R.id.ivCourseImage)
+        tvReasons = findViewById(R.id.tvReasons)
+        rvCandidates = findViewById(R.id.rvCandidates)
+        btnLike = findViewById(R.id.btnLike)
+        btnDislike = findViewById(R.id.btnDislike)
+        btnBack = findViewById(R.id.btnBack)
+
+        tvMembersTitle = findViewById(R.id.tvMembersTitle)
+        tvReasonsTitle = findViewById(R.id.tvReasonsTitle)
+        tvFeedbackTitle = findViewById(R.id.tvFeedbackTitle)
+        feedbackButtonsContainer = findViewById(R.id.feedbackButtonsContainer)
+        tvNoMatchMessage = findViewById(R.id.tvNoMatchMessage)
+    }
+
+    private fun setupRecyclerView() {
+        adapter = CandidateAdapter(
+            items = emptyList(),
+            onDeclineToggle = { candidate, isDeclined ->
+                if (isDeclined) {
+                    viewModel.decline(courseId, currentStudentId, candidate)
+                } else {
+                    viewModel.undoDecline(courseId, currentStudentId, candidate)
+                }
+            }
+        )
+
+        rvCandidates.layoutManager = LinearLayoutManager(this)
+        rvCandidates.adapter = adapter
+        rvCandidates.isNestedScrollingEnabled = false
+    }
+
+    private fun setupClickListeners() {
+        btnBack.setOnClickListener {
+            finish()
+        }
+
+        btnLike.setOnClickListener {
+            updateFeedbackSelection(liked = true)
+
+            viewModel.submitFeedback(
+                courseId = courseId,
+                currentStudentId = currentStudentId,
+                likedProposal = true,
+                comment = ""
+            )
+        }
+
+        btnDislike.setOnClickListener {
+            updateFeedbackSelection(liked = false)
+
+            viewModel.submitFeedback(
+                courseId = courseId,
+                currentStudentId = currentStudentId,
+                likedProposal = false,
+                comment = ""
+            )
+        }
+    }
+
+    private fun setupBottomNav() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
 
         bottomNav.selectedItemId = R.id.nav_home
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-
-                R.id.nav_home -> {
-                    true
-                }
+                R.id.nav_home -> true
 
                 R.id.nav_search -> {
                     Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
@@ -81,64 +153,26 @@ class GroupActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViews() {
-        tvCourseTitle = findViewById(R.id.tvCourseTitle)
-        tvRoundInfo = findViewById(R.id.tvRoundInfo)
-        tvReasons = findViewById(R.id.tvReasons)
-        rvCandidates = findViewById(R.id.rvCandidates)
-        etFeedback = findViewById(R.id.etFeedback)
-        btnLike = findViewById(R.id.btnLike)
-        btnDislike = findViewById(R.id.btnDislike)
-        btnBack = findViewById(R.id.btnBack)
-        tvFeedbackThanks = findViewById(R.id.tvFeedbackThanks)
-    }
-
-    private fun setupRecyclerView() {
-        adapter = CandidateAdapter(
-            items = emptyList(),
-            onApprove = { candidate ->
-                viewModel.approve(courseId, currentStudentId, candidate)
-            },
-            onDecline = { candidate ->
-                viewModel.decline(courseId, currentStudentId, candidate)
-            },
-            onRemove = { candidate ->
-                viewModel.removeCandidate(candidate)
-            }
-        )
-
-        rvCandidates.layoutManager = LinearLayoutManager(this)
-        rvCandidates.adapter = adapter
-        rvCandidates.isNestedScrollingEnabled = false
-    }
-
-    private fun setupClickListeners() {
-        btnBack.setOnClickListener {
-            finish()
-        }
-
-        btnLike.setOnClickListener {
-            viewModel.submitFeedback(
-                courseId = courseId,
-                currentStudentId = currentStudentId,
-                likedProposal = true,
-                comment = etFeedback.text.toString().trim()
-            )
-        }
-
-        btnDislike.setOnClickListener {
-            viewModel.submitFeedback(
-                courseId = courseId,
-                currentStudentId = currentStudentId,
-                likedProposal = false,
-                comment = etFeedback.text.toString().trim()
-            )
+    private fun updateFeedbackSelection(liked: Boolean) {
+        if (liked) {
+            btnLike.alpha = 1.0f
+            btnDislike.alpha = 0.5f
+        } else {
+            btnLike.alpha = 0.5f
+            btnDislike.alpha = 1.0f
         }
     }
 
     private fun observeData() {
+
         viewModel.course.observe(this) { course ->
             tvCourseTitle.text = course.title
+
+            if (course.imageUrl.isNotBlank()) {
+                Glide.with(this)
+                    .load(course.imageUrl)
+                    .into(ivCourseImage)
+            }
         }
 
         viewModel.currentRoundText.observe(this) { roundText ->
@@ -151,6 +185,30 @@ class GroupActivity : AppCompatActivity() {
 
         viewModel.candidates.observe(this) { candidates ->
             adapter.updateData(candidates)
+
+            if (candidates.isNotEmpty()) {
+                showMatchState()
+            }
+        }
+
+
+        viewModel.noMatchMessage.observe(this) { message ->
+            if (message.isNotBlank()) {
+                showNoMatchState(message)
+            }
+        }
+
+
+        viewModel.isGroupFinalized.observe(this) { isFinalized ->
+            adapter.setGroupFinalized(isFinalized)
+
+            if (isFinalized) {
+                tvFeedbackTitle.visibility = View.GONE
+                feedbackButtonsContainer.visibility = View.GONE
+            } else {
+                tvFeedbackTitle.visibility = View.VISIBLE
+                feedbackButtonsContainer.visibility = View.VISIBLE
+            }
         }
 
         viewModel.message.observe(this) { message ->
@@ -161,11 +219,65 @@ class GroupActivity : AppCompatActivity() {
 
         viewModel.feedbackSubmitted.observe(this) { submitted ->
             if (submitted == true) {
-                etFeedback.visibility = View.GONE
-                btnLike.visibility = View.GONE
-                btnDislike.visibility = View.GONE
-                tvFeedbackThanks.visibility = View.VISIBLE
+                Toast.makeText(
+                    this,
+                    "Feedback submitted successfully. Thank you!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+        }
+    }
+
+    private fun showNoMatchState(message: String) {
+        tvNoMatchMessage.visibility = View.VISIBLE
+        tvNoMatchMessage.text = message
+
+        tvMembersTitle.visibility = View.GONE
+        rvCandidates.visibility = View.GONE
+
+        tvReasonsTitle.visibility = View.GONE
+        tvReasons.visibility = View.GONE
+
+        tvFeedbackTitle.visibility = View.GONE
+        feedbackButtonsContainer.visibility = View.GONE
+    }
+
+    private fun showMatchState() {
+        tvNoMatchMessage.visibility = View.GONE
+
+        tvMembersTitle.visibility = View.VISIBLE
+        rvCandidates.visibility = View.VISIBLE
+
+        tvReasonsTitle.visibility = View.VISIBLE
+        tvReasons.visibility = View.VISIBLE
+    }
+
+    private fun loadCurrentStudentAndScreen() {
+        val firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (firebaseUserId.isNullOrBlank()) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        lifecycleScope.launch {
+            val student = studentRepository.getStudentByUserId(firebaseUserId)
+
+            if (student == null) {
+                Toast.makeText(
+                    this@GroupActivity,
+                    "Student not found for current user",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+                return@launch
+            }
+
+            currentStudentId = student.studentId
+            android.util.Log.d("GROUP_DEBUG", "courseId = $courseId")
+            android.util.Log.d("GROUP_DEBUG", "currentStudentId = $currentStudentId")
+            viewModel.loadScreen(courseId, currentStudentId)
         }
     }
 }

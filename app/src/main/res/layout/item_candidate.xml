@@ -15,98 +15,99 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Top Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- Profile Image -->
+            <ImageView
+                android:id="@+id/ivProfile"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_user_placeholder"
+                android:background="@drawable/bg_circle"
+                android:clipToOutline="true" />
+
+            <!-- Name + Email -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvStudentName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Student Name"
+                    android:textColor="#0B3D91"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvStudentEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="student@email.com"
+                    android:textColor="#6B7C93"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Status -->
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_status_pending"
-                android:paddingStart="12dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="6dp"
+                android:paddingStart="10dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="4dp"
                 android:text="Pending"
                 android:textColor="#0B3D91"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvStudentName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:text="Student 1"
-                android:textColor="#0B3D91"
-                android:textSize="18sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvActionHint"
+        <!-- Actions -->
+        <LinearLayout
+            android:id="@+id/layoutDecline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="end"
-            android:text="Choose whether to approve or decline this student."
-            android:textColor="#6B7C93"
-            android:textSize="13sp" />
-
-        <LinearLayout
-            android:id="@+id/layoutApproveDecline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
+            android:gravity="end"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnApprove"
-                android:layout_width="88dp"
-                android:layout_height="38dp"
-                android:backgroundTint="#4CAF50"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:padding="0dp"
-                android:text="Approve"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="12sp" />
-
-            <Button
                 android:id="@+id/btnDecline"
-                android:layout_width="88dp"
-                android:layout_height="38dp"
-                android:layout_marginStart="10dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
                 android:backgroundTint="#E85D5D"
-                android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:padding="0dp"
                 android:text="Decline"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textSize="12sp" />
+                android:textStyle="bold" />
         </LinearLayout>
 
+        <!-- Remove Button -->
         <Button
             android:id="@+id/btnRemove"
-            android:layout_width="100dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="14dp"
-            android:backgroundTint="#ECECEC"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:padding="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@android:color/transparent"
             android:text="Remove"
             android:textAllCaps="false"
-            android:textColor="#333333"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            android:textColor="#E85D5D"
+            android:visibility="gone"
+            app:strokeColor="#E85D5D"
+            app:strokeWidth="1dp" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

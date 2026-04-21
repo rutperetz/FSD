@@ -7,11 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.smart_group.data.model.CandidateDecision
 import com.example.smart_group.data.model.CandidateUiModel
 import com.example.smart_group.data.model.Course
-import com.example.smart_group.data.model.MatchFeedback
+import com.example.smart_group.data.model.GroupingStatus
 import com.example.smart_group.data.repository.CandidateDecisionRepository
 import com.example.smart_group.data.repository.CourseRepository
 import com.example.smart_group.data.repository.MatchFeedbackRepository
 import com.example.smart_group.data.repository.MatchRoundRepository
+import com.example.smart_group.data.repository.StudentRepository
 import kotlinx.coroutines.launch
 
 class GroupProposalViewModel : ViewModel() {
@@ -20,6 +21,7 @@ class GroupProposalViewModel : ViewModel() {
     private val matchRoundRepository = MatchRoundRepository()
     private val candidateDecisionRepository = CandidateDecisionRepository()
     private val matchFeedbackRepository = MatchFeedbackRepository()
+    private val studentRepository = StudentRepository()
 
     private val _course = MutableLiveData<Course>()
     val course: LiveData<Course> = _course
@@ -38,6 +40,12 @@ class GroupProposalViewModel : ViewModel() {
 
     private val _currentRoundText = MutableLiveData<String>()
     val currentRoundText: LiveData<String> = _currentRoundText
+
+    private val _noMatchMessage = MutableLiveData<String>()
+    val noMatchMessage: LiveData<String> = _noMatchMessage
+
+    private val _isGroupFinalized = MutableLiveData<Boolean>()
+    val isGroupFinalized: LiveData<Boolean> = _isGroupFinalized
 
     private var currentCandidates: MutableList<CandidateUiModel> = mutableListOf()
     private var currentRoundId: String = ""
@@ -61,49 +69,65 @@ class GroupProposalViewModel : ViewModel() {
                 )
 
                 if (studentMatchResult.isFailure) {
-                    _message.value = studentMatchResult.exceptionOrNull()?.message
-                        ?: "Failed to load match data"
+                    val currentRound = course.currentRound
+
+                    _currentRoundText.value = "Round $currentRound"
+                    _candidates.value = emptyList()
+                    _matchReasonsText.value = ""
+                    _isGroupFinalized.value = false
+                    _noMatchMessage.value = buildNoMatchMessage(course.groupingStatus)
+
                     return@launch
                 }
 
                 val studentMatch = studentMatchResult.getOrNull()
+
                 if (studentMatch == null) {
-                    _message.value = "Match data not found"
+                    val currentRound = course.currentRound
+
+                    _currentRoundText.value = "Round $currentRound"
+                    _candidates.value = emptyList()
+                    _matchReasonsText.value = ""
+                    _isGroupFinalized.value = false
+                    _noMatchMessage.value = buildNoMatchMessage(course.groupingStatus)
+
                     return@launch
                 }
 
                 currentRoundId = studentMatch.roundId
+                _noMatchMessage.value = ""
                 _currentRoundText.value = "Round ${studentMatch.roundNumber}"
                 _matchReasonsText.value = formatReasons(studentMatch.groupReasons)
+                _isGroupFinalized.value = studentMatch.groupStatus
 
-                currentCandidates = studentMatch.candidateIds.mapIndexed { index, candidateId ->
-                    CandidateUiModel(
-                        studentId = candidateId,
-                        displayName = "student ${index + 1}",
-                        status = "PENDING"
+                val candidateList = mutableListOf<CandidateUiModel>()
+
+                for ((index, candidateId) in studentMatch.candidateIds.withIndex()) {
+                    val student = studentRepository.getStudent(candidateId)
+
+                    val displayName = student?.userName?.takeIf { it.isNotBlank() }
+                        ?: "Student ${index + 1}"
+
+                    val email = student?.email?.takeIf { it.isNotBlank() }
+                        ?: "No email"
+
+                    candidateList.add(
+                        CandidateUiModel(
+                            studentId = candidateId,
+                            displayName = displayName,
+                            email = email,
+                            status = "PENDING"
+                        )
                     )
-                }.toMutableList()
+                }
 
+                currentCandidates = candidateList.toMutableList()
                 _candidates.value = currentCandidates.toList()
 
             } catch (e: Exception) {
                 _message.value = e.message ?: "Failed to load group screen"
             }
         }
-    }
-
-    fun approve(courseId: String, currentStudentId: String, candidate: CandidateUiModel) {
-        saveDecision(courseId, currentStudentId, candidate, "APPROVED")
-
-        currentCandidates = currentCandidates.map { currentItem ->
-            if (currentItem.studentId == candidate.studentId) {
-                currentItem.copy(status = "APPROVED")
-            } else {
-                currentItem
-            }
-        }.toMutableList()
-
-        _candidates.value = currentCandidates.toList()
     }
 
     fun decline(courseId: String, currentStudentId: String, candidate: CandidateUiModel) {
@@ -118,14 +142,22 @@ class GroupProposalViewModel : ViewModel() {
         }.toMutableList()
 
         _candidates.value = currentCandidates.toList()
+        saveRejectedStudents(courseId, currentStudentId)
     }
 
-    fun removeCandidate(candidate: CandidateUiModel) {
-        currentCandidates = currentCandidates.filter { currentItem ->
-            currentItem.studentId != candidate.studentId
+    fun undoDecline(courseId: String, currentStudentId: String, candidate: CandidateUiModel) {
+        saveDecision(courseId, currentStudentId, candidate, "PENDING")
+
+        currentCandidates = currentCandidates.map { currentItem ->
+            if (currentItem.studentId == candidate.studentId) {
+                currentItem.copy(status = "PENDING")
+            } else {
+                currentItem
+            }
         }.toMutableList()
 
         _candidates.value = currentCandidates.toList()
+        saveRejectedStudents(courseId, currentStudentId)
     }
 
     fun submitFeedback(
@@ -141,23 +173,43 @@ class GroupProposalViewModel : ViewModel() {
                 return@launch
             }
 
-            val feedback = MatchFeedback(
+            val result = matchFeedbackRepository.saveApproveGroup(
                 courseId = courseId,
                 roundId = currentRoundId,
                 studentId = currentStudentId,
-                likedProposal = likedProposal,
-                comment = comment.trim(),
-                submittedAt = System.currentTimeMillis()
+                approveGroup = likedProposal
             )
 
-            val result = matchFeedbackRepository.saveFeedback(feedback)
-
             if (result.isSuccess) {
-                _message.value = "המשוב נשלח בהצלחה. תודה!"
+                _message.value = ""
                 _feedbackSubmitted.value = true
             } else {
-                _message.value = result.exceptionOrNull()?.message ?: "שמירת המשוב נכשלה"
+                _message.value = result.exceptionOrNull()?.message ?: "Failed to save feedback"
                 _feedbackSubmitted.value = false
+            }
+        }
+    }
+
+    private fun saveRejectedStudents(courseId: String, currentStudentId: String) {
+        viewModelScope.launch {
+            if (currentRoundId.isBlank()) {
+                return@launch
+            }
+
+            val rejectedIds = currentCandidates
+                .filter { it.status == "DECLINED" }
+                .map { it.studentId }
+
+            val result = matchFeedbackRepository.saveRejectedStudents(
+                courseId = courseId,
+                roundId = currentRoundId,
+                studentId = currentStudentId,
+                rejectStudents = rejectedIds
+            )
+
+            if (result.isFailure) {
+                _message.value =
+                    result.exceptionOrNull()?.message ?: "Failed to save rejected students"
             }
         }
     }
@@ -187,36 +239,48 @@ class GroupProposalViewModel : ViewModel() {
         }
     }
 
+    private fun buildNoMatchMessage(groupingStatus: GroupingStatus): String {
+        return when (groupingStatus) {
+            GroupingStatus.COMPLETED -> {
+                "No match has been found for you.\nPlease contact the lecturer."
+            }
+            GroupingStatus.IN_PROGRESS,
+            GroupingStatus.PENDING -> {
+                "No match has been found for you yet.\nPlease wait for the next round."
+            }
+        }
+    }
+
     private fun formatReasons(groupReasons: Map<String, Any>): String {
         val lines = mutableListOf<String>()
 
         groupReasons["availability"]?.let {
-            lines.add("זמינות משותפת: ${formatReasonValue(it)}")
+            lines.add("Shared availability: ${formatReasonValue(it)}")
         }
         groupReasons["gender"]?.let {
-            lines.add("מגדר: ${formatReasonValue(it)}")
+            lines.add("Gender: ${formatReasonValue(it)}")
         }
         groupReasons["genderPreference"]?.let {
-            lines.add("העדפת מגדר: ${formatReasonValue(it)}")
+            lines.add("Gender preference: ${formatReasonValue(it)}")
         }
         groupReasons["language"]?.let {
-            lines.add("שפה: ${formatReasonValue(it)}")
+            lines.add("Language: ${formatReasonValue(it)}")
         }
         groupReasons["taskPreference"]?.let {
-            lines.add("העדפת משימה: ${formatReasonValue(it)}")
+            lines.add("Task preference: ${formatReasonValue(it)}")
         }
         groupReasons["teamPreference"]?.let {
-            lines.add("העדפת צוות: ${formatReasonValue(it)}")
+            lines.add("Team preference: ${formatReasonValue(it)}")
         }
         groupReasons["workMode"]?.let {
-            lines.add("אופן עבודה: ${formatReasonValue(it)}")
+            lines.add("Work mode: ${formatReasonValue(it)}")
         }
         groupReasons["workStyle"]?.let {
-            lines.add("סגנון עבודה: ${formatReasonValue(it)}")
+            lines.add("Work style: ${formatReasonValue(it)}")
         }
 
         return if (lines.isEmpty()) {
-            "לא נמצאו סיבות להצעה"
+            "No match reasons found"
         } else {
             lines.joinToString("\n")
         }
