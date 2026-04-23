@@ -1,8 +1,12 @@
 const schema = require('../../schemas/answerSchema.js');
-// -------------------------
-// Hard constraints check
-// -------------------------
+// ------------------------------------------------------------
+// Hard constraints: if any of these fail → similarity = 0
+// Includes:
+//   1. Gender preference (A → B and B → A)
+//   2. Availability overlap
+// ------------------------------------------------------------
 function hardConstraintsFail(vecA, vecB) {
+    if (!vecA || !vecB) return true;
     // -------------------------
     // Gender preference (A → B)
     // -------------------------
@@ -39,6 +43,7 @@ function hardConstraintsFail(vecA, vecB) {
 
     // -------------------------
     // Availability overlap
+    // Must share at least one available time slot
     // -------------------------
     const availabilityIdx = schema.fields.availability.indices;
 
@@ -81,6 +86,7 @@ function computeCompatibility(vecA, vecB, weights) {
 
     for (const [fieldName, field] of Object.entries(schema.fields)) {
         const weight = weights[fieldName];
+        // Gender & genderPreference handled in hard constraints
         if (fieldName === "gender" || fieldName === "genderPreference") continue;
 
         // Multi-choice → Jaccard
@@ -104,13 +110,14 @@ function computeCompatibility(vecA, vecB, weights) {
     return score;
 }
 
-// -------------------------
-// Build similarity matrix
-// -------------------------
+// ------------------------------------------------------------
+// Build full similarity matrix (n × n)
+// matrix[i][j] = compatibility score
+// ------------------------------------------------------------
 function buildSimilarityMatrix(vectors, weights) {
     const n = vectors.length;
 
-    //empty matrix
+    // Initialize empty matrix
     const matrix = Array.from({ length: n }, () => Array(n).fill(0));
 
 

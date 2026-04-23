@@ -1,14 +1,26 @@
 const schema = require("../../schemas/answerSchema.js");
-// -------------------------
-// Normalize answers into binary vector
-// -------------------------
+// ------------------------------------------------------------
+// Normalize raw user answers into a binary feature vector.
+// Each field in the schema contributes one or more indices:
+//   - "single": exactly one index is 1, the rest 0
+//   - "multi": multiple indices may be 1
+// ------------------------------------------------------------
 function normalizeAnswers(ans) {
-    const vector = new Array(
-        Object.values(schema.indices).flatMap(idx =>
-            Array.isArray(idx) ? idx : Object.values(idx)
-        ).length
-    ).fill(0);
 
+    if (!ans || typeof ans !== "object") {
+        // Return empty vector if answers are missing
+        return [];
+    }
+
+
+    // Compute total vector length based on schema indices
+    const totalLength = Object.values(schema.indices)
+        .flatMap(idx => Array.isArray(idx) ? idx : Object.values(idx))
+        .length;
+
+    const vector = new Array(totalLength).fill(0);
+
+    // Iterate through schema fields and encode answers
     for (const [fieldName, field] of Object.entries(schema.fields)) {
         const userValue = ans[fieldName];
 

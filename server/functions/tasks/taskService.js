@@ -1,28 +1,48 @@
 const { CloudTasksClient } = require("@google-cloud/tasks");
 
-const PROJECT = process.env.GCLOUD_PROJECT || "smartgroup-48a3d";
-const LOCATION = "europe-west3";
-const QUEUE = "runGrouping";
+// ------------------------------------------------------------
+// Cloud Tasks configuration
+// Works both in Firebase Functions emulator and in production.
+// ------------------------------------------------------------
+const PROJECT = process.env.GCLOUD_PROJECT;
+const LOCATION = process.env.TASKS_LOCATION;
+const QUEUE = process.env.TASKS_QUEUE;
 
 let client;
 
+// ------------------------------------------------------------
+// Initialize CloudTasksClient
+// Emulator mode → connect to local task emulator
+// Production → use default credentials
+// ------------------------------------------------------------
 if (process.env.FUNCTIONS_EMULATOR === "true") {
     client = new CloudTasksClient({
         servicePath: "127.0.0.1",
         port: 9499,
         sslCreds: require("@grpc/grpc-js").credentials.createInsecure(),
     });
-    console.log("🛠️ CloudTasksClient initialized for Emulator");
+    console.log("CloudTasksClient initialized for Emulator");
 } else {
     client = new CloudTasksClient();
 }
 
+// ------------------------------------------------------------
+// Create a scheduled Cloud Task
+// Schedules runAlgorithm(courseId, round) at a specific time.
+// ------------------------------------------------------------
 async function createTask(courseId, runTime, round) {
+
+    if (!courseId || typeof round !== "number" || !(runTime instanceof Date)) {
+        throw new Error("Invalid parameters for createTask()");
+    }
+
     const parent = client.queuePath(PROJECT, LOCATION, QUEUE);
+
+    // URL changes depending on emulator vs production
     const url = process.env.FUNCTIONS_EMULATOR === "true"
         ? `http://127.0.0.1:5001/${PROJECT}/us-central1/runAlgorithm`
-        : `https://${LOCATION}-${PROJECT}.cloudfunctions.net/runAlgorithm`;
-
+        : FUNCTION_URL;
+    
     const taskId = `course-${courseId}-${Date.now()}`;
     const taskPath = client.taskPath(PROJECT, LOCATION, QUEUE, taskId);
 
@@ -39,38 +59,42 @@ async function createTask(courseId, runTime, round) {
         }
     };
 
+    // Production requires OIDC token for authenticated invocation
     if (process.env.FUNCTIONS_EMULATOR !== "true") {
         task.httpRequest.oidcToken = {
             serviceAccountEmail: `${PROJECT}@appspot.gserviceaccount.com`
         };
     }
 
-    console.log(`📡 Attempting to create task: ${taskId}`);
+    console.log(`Attempting to create task: ${taskId}`);
 
     try {
         const [response] = await client.createTask({ parent, task });
-        console.log(`✅ Task created successfully: ${response.name}`);
+        console.log(` Task created successfully: ${response.name}`);
         return taskId;
     } catch (error) {
-        // --- התיקון כאן ---
+        // Emulator often throws ECONNRESET even when task is created successfully
         if (process.env.FUNCTIONS_EMULATOR === "true") {
-            console.warn(`⚠️ Emulator Connection Issue (ECONNRESET): ${error.message}`);
-            console.log(`🧪 Returning taskId [${taskId}] anyway to allow Firestore update.`);
-            return taskId; // אנחנו מחזירים את ה-ID למרות הכישלון הטכני
-        }
+            console.warn(`Emulator Connection Issue (ECONNRESET): ${error.message}`);
+            console.log(`Returning taskId [${taskId}] anyway to allow Firestore update.`);
+            return taskId;
 
-        console.error("❌ Production Error:", error.message);
-        throw error; // בפרודקשן אנחנו כן רוצים שזה ייכשל
+            console.error("Production Error:", error.message);
+            throw error;
+        }
     }
 }
 
+// ------------------------------------------------------------
+// Delete a Cloud Task (production only)
+// ------------------------------------------------------------
 async function deleteTask(taskId) {
     if (!taskId || process.env.FUNCTIONS_EMULATOR === "true") return;
     try {
         const name = client.taskPath(PROJECT, LOCATION, QUEUE, taskId);
         await client.deleteTask({ name });
     } catch (error) {
-        console.warn(`⚠️ Delete failed: ${error.message}`);
+        console.warn(`Delete failed: ${error.message}`);
     }
 }
 

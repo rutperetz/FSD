@@ -1,59 +1,78 @@
 
 const schema = require('../../schemas/answerSchema.js');
-// ---------------------------
-// Group score
-// ---------------------------
+// ------------------------------------------------------------
+// Compute average pairwise similarity score for a group
+// ------------------------------------------------------------
 function computeGroupScore(groupIndices, matrix) {
+    
+    if (!Array.isArray(groupIndices) || !matrix) return 0;
+
     let sum = 0;
     let count = 0;
 
     for (let i = 0; i < groupIndices.length; i++) {
         for (let j = i + 1; j < groupIndices.length; j++) {
-            sum += matrix[groupIndices[i]][groupIndices[j]];
+            const a = groupIndices[i];
+            const b = groupIndices[j];
+
+            // Ensure matrix rows exist
+            if (!matrix[a] || !matrix[b]) continue;
+
+            sum += matrix[a][b];
             count++;
         }
+
+        return count === 0 ? 0 : sum / count;
     }
-
-    return count === 0 ? 0 : sum / count;
 }
-
-// ---------------------------
-// Group reason explanation
-// ---------------------------
+// ------------------------------------------------------------
+// Explain why a group was formed based on shared answers
+//  For each field in the schema:
+//   - "single": find a label all members selected
+//   - "multi": collect all labels shared by all members
+// ------------------------------------------------------------
 
 function explainGroupReason(groupIndices, vectors) {
-    const result = {};
+        const result = {};
 
-    for (const [fieldName, field] of Object.entries(schema.fields)) {
-        if (field.type === "single") {
-            result[fieldName] = null;
+        if (!Array.isArray(groupIndices) || !vectors) return result;
 
-            for (const label of field.labels) {
-                const idx = field.indices[label];
-                const allHave = groupIndices.every(i => vectors[i][idx] === 1);
+        for (const [fieldName, field] of Object.entries(schema.fields)) {
+            // -----------------------------
+            // SINGLE-CHOICE FIELD
+            // -----------------------------
+            if (field.type === "single") {
+                result[fieldName] = null;
 
-                if (allHave) {
-                    result[fieldName] = label;
-                    break;
+                for (const label of field.labels) {
+                    const idx = field.indices[label];
+                    const allHave = groupIndices.every(i => vectors[i][idx] === 1);
+
+                    if (allHave) {
+                        result[fieldName] = label;
+                        break;
+                    }
                 }
+            }
+
+            // -----------------------------
+            // MULTI-CHOICE FIELD
+            // -----------------------------
+            if (field.type === "multi") {
+                result[fieldName] = [];
+
+                field.labels.forEach((label, pos) => {
+                    const idx = field.indices[pos];
+                    const allHave = groupIndices.every(i => vectors[i][idx] === 1);
+
+                    if (allHave) {
+                        result[fieldName].push(label);
+                    }
+                });
             }
         }
 
-        if (field.type === "multi") {
-            result[fieldName] = [];
-
-            field.labels.forEach((label, pos) => {
-                const idx = field.indices[pos];
-                const allHave = groupIndices.every(i => vectors[i][idx] === 1);
-
-                if (allHave) {
-                    result[fieldName].push(label);
-                }
-            });
-        }
-    }
-
-    return result;
+        return result;
 }
-
+    
 module.exports = { explainGroupReason, computeGroupScore };

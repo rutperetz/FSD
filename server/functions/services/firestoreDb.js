@@ -1,11 +1,21 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
+// ------------------------------------------------------------
+// Firestore DB Service
+// Provides all database operations required by the algorithm.
 const dbService = {
 
+    // --------------------------------------------------------
+    // Load course settings (group size + current round)
+    // --------------------------------------------------------
     async getCourseSettings(courseId) {
         const doc = await db.collection("courses").doc(courseId).get();
         const data = doc.data();
+
+        if (!data || !data.groupSize) {
+            throw new Error(`Invalid course settings for course ${courseId}`);
+        }
 
         return {
             minSize: data.groupSize.min,
@@ -14,9 +24,10 @@ const dbService = {
         };
     },
 
-    // ---------------------------
-    // ROUND 1 DATA
-    // ---------------------------
+
+    // --------------------------------------------------------
+    // ROUND 1: Load raw student answers (only opt-in students)
+    // --------------------------------------------------------
     async getRawCourseData(courseId) {
 
         const enrollSnap = await db.collection("courses")
@@ -32,6 +43,7 @@ const dbService = {
 
         for (const id of studentIds) {
             const studentDoc = await db.collection("students").doc(id).get();
+            
             students.push({
                 studentId: id,
                 answers: studentDoc.data().answers
@@ -41,6 +53,9 @@ const dbService = {
         return students;
     },
 
+    // --------------------------------------------------------
+    // Save normalized vectors + index mapping
+    // --------------------------------------------------------
     async saveNormalizedVectors(courseId, vectorsMap, idToIndex) {
         await db.collection("courses").doc(courseId).update({
             vectorsMap,
@@ -48,6 +63,9 @@ const dbService = {
         });
     },
 
+    // --------------------------------------------------------
+    // Load normalized vectors for later rounds
+    // --------------------------------------------------------
     async getNormalizedVectors(courseId) {
         const doc = await db.collection("courses").doc(courseId).get();
         return {
@@ -56,9 +74,9 @@ const dbService = {
         };
     },
 
-    // ---------------------------
-    // ROUNDS
-    // ---------------------------
+    // --------------------------------------------------------
+    // Save round result (groups, unassigned, weights, feedback)
+    // --------------------------------------------------------
     async saveRoundResult(courseId, roundData) {
 
         await db.collection("courses")
@@ -68,6 +86,9 @@ const dbService = {
             .set(roundData);
     },
 
+    // --------------------------------------------------------
+    // Load previous round data
+    // --------------------------------------------------------
     async getPreviousRound(courseId, roundNum) {
         const doc = await db.collection("courses")
             .doc(courseId)
@@ -78,6 +99,10 @@ const dbService = {
         return doc.exists ? doc.data() : null;
     },
 
+    // --------------------------------------------------------
+    // Build global blacklist from all rounds
+    // Each rejection becomes a permanent "from → to" block
+    // --------------------------------------------------------
     async getRejectionHistory(courseId) {
         const rounds = await db.collection("courses")
             .doc(courseId)
@@ -85,9 +110,9 @@ const dbService = {
             .get();
 
         const blacklist = [];
-
         rounds.forEach(doc => {
             const r = doc.data();
+            if (!r || !r.feedback) return;
 
             Object.entries(r.feedback || {}).forEach(([studentId, fb]) => {
                 fb.rejectStudents.forEach(target => {

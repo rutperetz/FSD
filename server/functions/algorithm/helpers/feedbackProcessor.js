@@ -1,13 +1,89 @@
 const buildSimilarityMatrix = require("./similarityMatrix");
 
+
 // -------------------------
-// Update weights based on feedback
+// Lock groups based on approvals
 // -------------------------
+function lockGroups(groups, feedback, minSize) {
+    for (const group of groups) {
+        if (group.groupStatus) continue;
+
+        const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
+
+        function isCompatible(student, current) {
+            const sFeedback = feedback[student];
+
+            for (const member of current) {
+                const mFeedback = feedback[member];
+
+                if (sFeedback.rejectStudents.includes(member) ||
+                    mFeedback.rejectStudents.includes(student)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        let bestGroup = [];
+
+        function backtrack(start, current) {
+            // update bestGroup if current is better
+            if (current.length > bestGroup.length) {
+                bestGroup = [...current];
+            }
+
+            // Pruning: if even taking all remaining approvers won't improve bestGroup, return
+            if (current.length + (approvers.length - start) <= bestGroup.length) {
+                return;
+            }
+
+            for (let i = start; i < approvers.length; i++) {
+                const student = approvers[i];
+
+                if (!isCompatible(student, current)) continue;
+
+                current.push(student);
+                backtrack(i + 1, current);
+                current.pop();
+            }
+        }
+
+        backtrack(0, []);
+
+        // Lock the group if it meets the minimum size requirement
+        if (bestGroup.length >= minSize) {
+            group.memberIds = bestGroup;
+            group.groupStatus = true;
+        }
+    }
+    // return only locked groups
+    groups = groups.filter(g => g.groupStatus);
+    return groups;
+
+}
+
+// ------------------------------------------------------------
+// Update weights based on feedback (FUTURE FEATURE)
+// Currently disabled unless rejectReasons contains real data.
+// ------------------------------------------------------------
 function updateWeights(weights, feedback, alpha = 0.1) {
+    if (!feedback) return { ...weights };
+
+    // Guard: if rejectReasons are empty for all students → do NOT modify weights
+    const hasActiveRejectReasons = Object.values(feedback).some(
+        f => f.rejectReasons && Object.keys(f.rejectReasons).length > 0
+    );
+
+    if (!hasActiveRejectReasons) {
+        // Feature intentionally disabled for now
+        return { ...weights };
+    }
+
     const newWeights = {};
     const deltas = {};
     const categoryRejections = {};
     const totalFeedback = Object.keys(feedback).length;
+    
     // Count rejections per field
     for (const studentKey in feedback) {
         const rejectReasons = feedback[studentKey].rejectReasons;
@@ -43,84 +119,26 @@ function updateWeights(weights, feedback, alpha = 0.1) {
 }
 
 // -------------------------
-// Apply rejections to similarity matrix
+// Apply rejections global blacklist to similarity matrix
 // -------------------------
-function updateMatrixWithRejections(matrix, feedback) {
-    for (const studentKey in feedback) {
-        const studentIndex = parseInt(studentKey);
-        const rejected = feedback[studentKey].rejectStudents || [];
+function applyGlobalBlacklist(matrix, globalBlacklist, idToIndexMap) {
+    if (!matrix || !globalBlacklist) return;
 
-        rejected.forEach(otherIndex => {
-            matrix[studentIndex][otherIndex] = 0;
-            matrix[otherIndex][studentIndex] = 0;
-        });
-    }
+    globalBlacklist.forEach(entry => {
+        const fromIdx = idToIndexMap[entry.from];
+        const toIdx = idToIndexMap[entry.to];
+
+        if (matrix[fromIdx] && matrix[toIdx]) {
+            matrix[fromIdx][toIdx] = 0;
+            matrix[toIdx][fromIdx] = 0;
+        }
+    });
 }
 
-// -------------------------
-// Lock groups based on approvals
-// -------------------------
-function lockGroups(groups, feedback, minSize) {
-    for (const group of groups) {
-        if (group.groupStatus) continue;
 
-        const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
-
-        function isCompatible(student, current) {
-            const sFeedback = feedback[student];
-
-            for (const member of current) {
-                const mFeedback = feedback[member];
-
-                if (sFeedback.rejectStudents.includes(member) ||
-                    mFeedback.rejectStudents.includes(student)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        let bestGroup = [];
-
-        function backtrack(start, current) {
-            // ✔ עדכון הפתרון הכי טוב שנמצא
-            if (current.length > bestGroup.length) {
-                bestGroup = [...current];
-            }
-
-            // ✔ גיזום — גם אם ניקח את כולם לא נעקוף את best
-            if (current.length + (approvers.length - start) <= bestGroup.length) {
-                return;
-            }
-
-            for (let i = start; i < approvers.length; i++) {
-                const student = approvers[i];
-
-                if (!isCompatible(student, current)) continue;
-
-                current.push(student);
-                backtrack(i + 1, current);
-                current.pop();
-            }
-        }
-
-        backtrack(0, []);
-
-        // ✔ רק אם עומד במינימום — ננעל
-        if (bestGroup.length >= minSize) {
-            group.memberIds = bestGroup;
-            group.groupStatus = true;
-        }
-    }
-    // return only locked groups
-    groups = groups.filter(g => g.groupStatus);
-    return groups;
-
-}
-
-// -------------------------
-// Process approvals 
-// -------------------------
+// ------------------------------------------------------------
+// Strengthen similarity between mutually approving members
+// ------------------------------------------------------------
 function processApprovals(matrix, groups, feedback) {
     for (const group of groups) {
         const approvers = group.memberIds.filter(s => feedback[s]?.approveGroup);
@@ -141,16 +159,18 @@ function processApprovals(matrix, groups, feedback) {
         }
     }
 }
-// -------------------------
-// made the details for the cluster round
-// -------------------------
-function feedbackProcessor(vectors, groups, feedback, weights) {
+
+// ------------------------------------------------------------
+// Main feedback processor
+// Rebuilds similarity matrix and applies feedback effects
+// ------------------------------------------------------------
+function feedbackProcessor(vectors, groups, feedback, weights, globalBlacklist, idToIndexMap) {
     // 1. Update weights
     const updatedWeights = updateWeights(weights, feedback);
     //2. recompute similarity matrix
     const newMatrix = buildSimilarityMatrix(vectors, updatedWeights);
     //3. apply rejections
-    updateMatrixWithRejections(newMatrix, feedback);
+    applyGlobalBlacklist(newMatrix,globalBlacklist, idToIndexMap);
     //4. apply approvals 
     processApprovals(newMatrix, groups, feedback);
 

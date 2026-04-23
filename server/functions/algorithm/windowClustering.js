@@ -2,8 +2,9 @@
 const { explainGroupReason, computeGroupScore } = require('./helpers/groupReasonAndScore');
 
 // ------------------------------------------------------
-// Mutual preference check
-// Ensures every member appears in the windows preferences of every other member
+// Utility: Mutual preference check
+// Ensures every member appears in the windows preferences
+//  of every other member
 // ------------------------------------------------------
 function checkMutualPreference(groupIndices, neighbors, windowSize) {
     for (const i of groupIndices) {
@@ -19,8 +20,9 @@ function checkMutualPreference(groupIndices, neighbors, windowSize) {
 }
 
 // ------------------------------------------------------
-// Utility: test whether two indices mutually prefer each other within
-// the current window slice. Used for early pruning during combo generation.
+// Utility: test whether two indices mutually 
+// prefer each other within the current window slice. 
+// Used for early pruning during combo generation.
 // ------------------------------------------------------
 function isMutualPair(i, j, neighbors, windowSize) {
     const prefsI = neighbors[i].slice(0, windowSize).map(x => x.idx);
@@ -30,8 +32,9 @@ function isMutualPair(i, j, neighbors, windowSize) {
 }
 
 // ------------------------------------------------------
-// Generate valid combinations of size k from array arr while pruning
-// on the fly.  Any partial combo that violates a "hard" constraint is
+// Utility: Generate valid combinations of size k from array arr
+//  while pruning on the fly.  
+// Any partial combo that violates a "hard" constraint is
 // abandoned early, avoiding exponential blow‑up for large groups.
 // Hard constraints are:
 //   * no zero-similarity pairs (matrix entry == 0)
@@ -47,16 +50,16 @@ function combinations(arr, k, neighbors, matrix, windowSize) {
         for (let i = start; i < arr.length; i++) {
             const candidate = arr[i];
 
-            // prune based on relationships between candidate and existing
-            // combo members
+            // prune based on relationships between candidate 
+            // and existing combo members
             let bad = false;
             for (const existing of combo) {
                 if (matrix[existing][candidate] === 0 || matrix[candidate][existing] === 0) {
-                    bad = true; // no similarity => group will fail later
+                    bad = true; // Hard constraint: no zero similarity
                     break;
                 }
                 if (!isMutualPair(existing, candidate, neighbors, windowSize)) {
-                    bad = true; // not mutually preferred
+                    bad = true;   // Hard constraint: mutual preference within window
                     break;
                 }
             }
@@ -71,10 +74,12 @@ function combinations(arr, k, neighbors, matrix, windowSize) {
     return result;
 }
 
+
 // ------------------------------------------------------
-// Dynamic buffer calculation
-// Expands the window more for students with low similarity scores
-// ------------------------------------------------------
+// Utility: Dynamic buffer calculation
+// Expands the window more for students with low similarity
+// to increase their chances of finding a valid group.
+// -----------------------------------------------------------------------------------------------------------
 function computeDynamicBuffer(maxSize, neighbors, studentIdx, baseBuffer) {
     const top = neighbors[studentIdx].slice(0, maxSize).map(n => n.score);
     const avg = top.reduce((a, b) => a + b, 0) / top.length;
@@ -85,54 +90,52 @@ function computeDynamicBuffer(maxSize, neighbors, studentIdx, baseBuffer) {
 }
 
 // ------------------------------------------------------
-// Tie Expansion (with buffer)
+//Utility: Tie Expansion (with buffer)
 // Ensures that if the last neighbor in the window has score X,
 // all neighbors with score X (up to buffer limit) are included.
 // ------------------------------------------------------
 function expandWindowForTies(neighborsList, windowSize, bufferLimit) {
-    // Base window slice
     const base = neighborsList.slice(0, windowSize);
     if (base.length === 0) return [];
-    // Score of the last element in the base window
     const lastScore = base[base.length - 1].score;
 
-    // All neighbors with the same score
     const tied = neighborsList.filter(n => n.score === lastScore);
 
     // Combine base + tied, but respect buffer limit
     const combined = [...new Set([...base, ...tied])];
-
-    // Limit expansion to bufferLimit
     const limited = combined.slice(0, bufferLimit);
 
     return limited.map(x => x.idx);
 }
 
 // ------------------------------------------------------
-// Window Clustering with:
-// - Dynamic window
-// - Tie expansion
-// - Combination search
-// - Best-size search
+// Window-based clustering algorithm with:
+//  - dynamic window expansion
+//  - tie handling
+//  - combination search
+//  - best-group selection per anchor
 // ------------------------------------------------------
 function windowClustering(vectors, matrix, threshold, minSize, maxSize, used) {
     const n = vectors.length;
     const groups = [];
+    if (!Array.isArray(vectors) || !Array.isArray(matrix) || n === 0) {
+        return { groups: [], used };
+    }
 
     // For each user, get sorted list of neighbors
     const neighbors = new Array(n);
     for (let i = 0; i < n; i++) {
-        const row = matrix[i];
+        const row = matrix[i] || [];
 
         neighbors[i] = row
-            .map((score, idx) => ({ idx, score })) // Create array of {idx, score} pairs
-            .filter(x => x.idx !== i && x.score > 0) // Exclude self and zero scores
-            .sort((a, b) => b.score - a.score);// Sort by val descending
+            .map((score, idx) => ({ idx, score })) 
+            .filter(x => x.idx !== i && x.score > 0) 
+            .sort((a, b) => b.score - a.score);
 
     }
 
     // Base buffer = 10% of class size (minimum 10)
-    const baseBuffer = Math.max(10, n * 0.1);
+    const baseBuffer = Math.max(10, Math.floor(n * 0.1));
 
     for (let i = 0; i < n; i++) {
         if (used[i] || neighbors[i].length === 0) continue;
@@ -170,7 +173,7 @@ function windowClustering(vectors, matrix, threshold, minSize, maxSize, used) {
 
                 if (candidates.length < size - 1) continue;
 
-                // Generate all possible combinations of neighbors (pruned using matrix & preferences)
+                // Generate all possible combinations of neighbors 
                 const combos = combinations(candidates, size - 1, neighbors, matrix, expandedCandidates.length);
 
                 for (const combo of combos) {
@@ -188,6 +191,7 @@ function windowClustering(vectors, matrix, threshold, minSize, maxSize, used) {
                         bestGroup = groupIndices;
                     }
                 }
+                // Ensure window grows at least beyond current expanded slice
                 windowSize = Math.max(windowSize + 1, expandedCandidates.length + 1);
             }
 

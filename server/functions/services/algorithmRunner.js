@@ -5,21 +5,36 @@ const { startRound } = require("../algorithm/roundManager");
 const dbService = require("./firestoreDb");
 const { createTask } = require("../tasks/taskService");
 
+// ------------------------------------------------------------
+// runAlgorithm
+// Entry point for triggering a grouping round.
+// Responsibilities:
+//   - Update course status
+//   - Run the algorithm for the current round
+//   - Detect completion
+//   - Schedule next round if needed
+// ------------------------------------------------------------
+
 exports.runAlgorithm = onRequest(async (req, res) => {
 
     try {
         const { courseId, round } = req.body;
+        if (!courseId || typeof round !== "number") {
+            return res.status(400).send("Missing or invalid parameters");
+        }
 
         const courseRef = admin.firestore().collection("courses").doc(courseId);
 
+        // Mark course as in-progress and set current round
         await courseRef.update({ groupingStatus: "IN_PROGRESS" ,currentRound: round });
 
-        const result = await startRound(courseId, dbService);
+        // Run the algorithm for this round
+        const stopGrouping = await startRound(courseId, dbService);
 
-        // -----------------------
-        // תנאי סיום
-        // -----------------------
-        if (result) {
+        // --------------------------------------------------------
+        // Completion condition
+        // --------------------------------------------------------
+        if (stopGrouping) {
 
             await courseRef.update({
                 groupingStatus: "COMPLETED"
@@ -28,10 +43,12 @@ exports.runAlgorithm = onRequest(async (req, res) => {
             return res.send("Finished");
         }
 
-        // -----------------------
-        // סבב נוסף
-        // -----------------------
-        const nextRound = round+ 1;
+        // --------------------------------------------------------
+        // Schedule next round
+        // --------------------------------------------------------
+        const nextRound = round + 1;
+        
+        // Schedule for 24 hours later
         const nextRun = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         const newTaskId = await createTask(courseId, nextRun, nextRound);
@@ -42,8 +59,9 @@ exports.runAlgorithm = onRequest(async (req, res) => {
 
         res.send("Next round scheduled");
 
-    } catch (e) {
-        console.error(e);
-        res.status(500).send("Error");
+    } catch (error) {
+        console.error("runAlgorithm error:", error);
+        res.status(500).send("Internal error");
     }
+
 });

@@ -1,3 +1,11 @@
+// ------------------------------------------------------------
+// Algorithm configuration
+// Controls global behavior of the grouping algorithm:
+//   - threshold: minimum group compatibility score
+//   - weights: importance of each field in similarity calculation
+//   - maxRounds: maximum number of grouping iterations allowed
+// ------------------------------------------------------------
+
 const algorithmConfig = {
         "threshold": 0.7,
         "weights": {

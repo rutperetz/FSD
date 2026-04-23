@@ -1,4 +1,9 @@
-// answerSchema.js
+// ------------------------------------------------------------
+// Answer schema definition
+// Defines all questionnaire fields, their types, and labels.
+// Indices are generated dynamically to map each label to a
+// unique position in the binary feature vector.
+// ------------------------------------------------------------
 
 const schema = {
     fields: {
@@ -67,7 +72,6 @@ for (const fieldName in schema.fields) {
     }
 }
 
-// Copy indices to schema.indices for backward compatibility
 schema.indices = Object.fromEntries(
     Object.entries(schema.fields).map(([key, field]) => [key, field.indices])
 );
