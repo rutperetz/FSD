@@ -17,16 +17,16 @@ UserRepository(
             .await()
             .toObject(User::class.java)
 
-    suspend fun getAllUsers(): List<User> =
-        usersRef.get().await().toObjects(User::class.java)
+//    suspend fun getAllUsers(): List<User> =
+//        usersRef.get().await().toObjects(User::class.java)
 
     suspend fun addUser(user: User) {
         usersRef.document(user.userId).set(user).await()
     }
 
-    suspend fun updateUser(user: User) {
-        usersRef.document(user.userId).set(user).await()
-    }
+//    suspend fun updateUser(user: User) {
+//        usersRef.document(user.userId).set(user).await()
+//    }
 
     suspend fun updateUserFields(
         userId: String,
@@ -49,14 +49,14 @@ UserRepository(
         }
     }
 
-    suspend fun deleteUser(userId: String) {
-        val userDoc = usersRef
-            .whereEqualTo("userId", userId)
-            .get()
-            .await()
-            .documents
-            .firstOrNull() ?: return
-
-        userDoc.reference.delete().await()
-    }
+//    suspend fun deleteUser(userId: String) {
+//        val userDoc = usersRef
+//            .whereEqualTo("userId", userId)
+//            .get()
+//            .await()
+//            .documents
+//            .firstOrNull() ?: return
+//
+//        userDoc.reference.delete().await()
+//    }
 }

@@ -27,7 +27,6 @@ class LoginActivity : AppCompatActivity() {
         val registerText = findViewById<TextView>(R.id.register_link_text)
         val forgotPasswordText = findViewById<TextView>(R.id.forgot_password_link_text)
 
-        //לחיצה כל כפתור הLOGIN
         loginBtn.setOnClickListener {
             viewModel.login(
                 emailRaw = emailInput.text.toString(),
@@ -35,17 +34,14 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
-        //לחיצה על המילה REGISTER
         registerText.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        //לחיצה על שכחתי סיסמא
         forgotPasswordText.setOnClickListener {
             startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
 
-        //מאזין לתוצאות שבאו מהVIEWMODLE
         //Toast messages
         viewModel.toastMessage.observe(this) { msg ->
             if (msg != null) {
@@ -54,31 +50,24 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        //Loading-disable button
         viewModel.isLoading.observe(this) { loading ->
             loginBtn.isEnabled = !loading
         }
 
-        // Student navigation
         viewModel.navigateToStudent.observe(this) { go ->
             if (go) {
-                Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, HomeActivity::class.java))
                 finish()
-
                 viewModel.onStudentNavigated()
             }
         }
 
-// Admin navigation
         viewModel.navigateToAdmin.observe(this) { go ->
             if (go) {
-                Toast.makeText(this, "Login successful ✅", Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, HomeActivity::class.java))
                 finish()
-
                 viewModel.onAdminNavigated()
             }
         }
