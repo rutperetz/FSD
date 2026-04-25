@@ -12,7 +12,7 @@ class AuthRepository(
         return result.user?.uid ?: throw Exception("Missing user id")
     }
 
-    //  register
+    //register
     suspend fun register(email: String, password: String): String {
         val result = auth.createUserWithEmailAndPassword(email, password).await()
         return result.user?.uid ?: throw Exception("Missing user id")
@@ -21,11 +21,13 @@ class AuthRepository(
 
     fun getCurrentEmail(): String? = auth.currentUser?.email
 
+    //edit profile
     suspend fun updateEmail(newEmail: String) {
         val user = auth.currentUser ?: throw Exception("No logged-in user")
         user.verifyBeforeUpdateEmail(newEmail).await()
     }
 
+    //edit profile
     suspend fun updatePassword(newPassword: String) {
         val user = auth.currentUser ?: throw Exception("No logged-in user")
         user.updatePassword(newPassword).await()
@@ -36,14 +38,15 @@ class AuthRepository(
         user.reload().await()
     }
 
-    fun isCurrentUserEmailVerified(): Boolean {
-        return auth.currentUser?.isEmailVerified == true
-    }
+//    fun isCurrentUserEmailVerified(): Boolean {
+//        return auth.currentUser?.isEmailVerified == true
+//    }
 
     fun logout() {
         auth.signOut()
     }
 
+    //forgot password
     suspend fun sendPasswordResetEmail(email: String) {
         auth.sendPasswordResetEmail(email).await()
     }

@@ -2,27 +2,26 @@ package com.example.smart_group
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.animation.AlphaAnimation
+import android.view.animation.AnimationSet
 import android.view.animation.ScaleAnimation
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smart_group.ui.login.LoginActivity
-
 
 class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        val logo = findViewById<android.widget.ImageView>(R.id.logo)
-        // Fade in animation
+
+        val logo = findViewById<ImageView>(R.id.logo)
+
         val fadeIn = AlphaAnimation(0f, 1f).apply {
             duration = 1500
             fillAfter = true
         }
 
-        // Zoom animation
         val scale = ScaleAnimation(
             0.8f, 1f,
             0.8f, 1f,
@@ -33,12 +32,16 @@ class SplashActivity : AppCompatActivity() {
             fillAfter = true
         }
 
-        logo.startAnimation(fadeIn)
-        logo.startAnimation(scale)
-        Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+        val animationSet = AnimationSet(true).apply {
+            addAnimation(fadeIn)
+            addAnimation(scale)
+        }
+
+        logo.startAnimation(animationSet)
+
+        logo.postDelayed({
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
-        }, 3000)
+        }, 2000)
     }
 }

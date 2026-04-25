@@ -31,6 +31,7 @@ class LoginViewModel(
         val email = emailRaw.trim()
         val password = passwordRaw
 
+        // validation
         if (email.isEmpty() && password.isEmpty()) {
             _toastMessage.value = "Please enter your email and password"
             return
@@ -64,7 +65,7 @@ class LoginViewModel(
                 val user = try {
                     userRepository.getUser(uid)
                 } catch (e: Exception) {
-                    _toastMessage.value = "Login succeeded but failed to load user data: ${e.message}"
+                    _toastMessage.value = "Login succeeded but failed to load user data"
                     null
                 }
 
@@ -80,7 +81,7 @@ class LoginViewModel(
                 }
 
             } catch (e: Exception) {
-                _toastMessage.value = "Firebase login failed: ${e.message}"
+                _toastMessage.value = "Login failed. Please try again"
             } finally {
                 _isLoading.value = false
             }
@@ -107,11 +108,9 @@ class LoginViewModel(
     }
 
     private fun validatePassword(password: String): String? {
-
-//        val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d).{12,15}$")
         val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#\$%^&*]{12,15}$")
         if (!passwordRegex.matches(password)) {
-            return "Password must be 8–10 characters and include letters and numbers"
+            return "Password must be 12–15 characters, include letters and numbers (can use !@#\$%^&amp;*)"
         }
         return null
     }

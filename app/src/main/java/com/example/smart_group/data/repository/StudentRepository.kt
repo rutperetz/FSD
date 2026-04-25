@@ -47,16 +47,16 @@ class StudentRepository(
         studentsRef.document(existingStudent.studentId).set(updatedStudent).await()
     }
 
-    suspend fun getAllStudents(): List<Student> =
-        studentsRef.get().await().toObjects(Student::class.java)
+//    suspend fun getAllStudents(): List<Student> =
+//        studentsRef.get().await().toObjects(Student::class.java)
 
     suspend fun addStudent(student: Student) {
         studentsRef.document(student.studentId).set(student).await()
     }
 
-    suspend fun updateStudent(student: Student) {
-        studentsRef.document(student.studentId).set(student).await()
-    }
+//    suspend fun updateStudent(student: Student) {
+//        studentsRef.document(student.studentId).set(student).await()
+//    }
 
     suspend fun updateStudentFieldsByUserId(
         userId: String,
@@ -74,9 +74,9 @@ class StudentRepository(
         }
     }
 
-    suspend fun deleteStudent(studentId: String) {
-        studentsRef.document(studentId).delete().await()
-    }
+//    suspend fun deleteStudent(studentId: String) {
+//        studentsRef.document(studentId).delete().await()
+//    }
 
     suspend fun getAnswersByUserId(userId: String): Answers? {
         val student = getStudentByUserId(userId)
