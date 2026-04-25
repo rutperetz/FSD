@@ -11,8 +11,8 @@ class StudentRepository(
 ) {
     private val studentsRef = db.collection("students")
 
-//    suspend fun getStudent(studentId: String): Student? =
-//        studentsRef.document(studentId).get().await().toObject(Student::class.java)
+    suspend fun getStudent(studentId: String): Student? =
+        studentsRef.document(studentId).get().await().toObject(Student::class.java)
 
     suspend fun getStudentByUserId(userId: String): Student? =
         studentsRef.whereEqualTo("userId", userId)

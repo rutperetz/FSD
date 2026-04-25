@@ -96,7 +96,7 @@
         android:paddingBottom="12dp"
         app:backgroundTint="@color/lightBlue"
         android:elevation="6dp"
-        android:text="LOG IN"
+        android:text="LOGIN"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:cornerRadius="12dp"

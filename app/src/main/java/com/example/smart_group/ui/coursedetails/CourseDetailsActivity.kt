@@ -36,8 +36,6 @@ class CourseDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_course_details)
-
-        // 🔥 חיבור ל־XML עם findViewById
         signUpButton = findViewById(R.id.signUpButton)
         cancelButton = findViewById(R.id.cancelButton)
         viewGroupText = findViewById(R.id.viewGroupText)
@@ -60,7 +58,6 @@ class CourseDetailsActivity : AppCompatActivity() {
         setupClicks()
         setupRoleUI()
 
-
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
         bottomNav.selectedItemId = R.id.nav_home
         bottomNav.setOnItemSelectedListener { item ->
@@ -69,7 +66,8 @@ class CourseDetailsActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_search -> {
-                    Toast.makeText(this, "Search screen not implemented yet", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, com.example.smart_group.ui.search.SearchActivity::class.java))
+                    finish()
                     true
                 }
                 R.id.nav_profile -> {
@@ -98,20 +96,8 @@ class CourseDetailsActivity : AppCompatActivity() {
             studentId = id
         }
         vm.course.observe(this) { course ->
-
             if (course != null) {
                 findViewById<TextView>(R.id.courseTitle).text = course.title
-
-//                val deadlineTextView = findViewById<TextView>(R.id.deadlineText)
-//                deadlineTextView.setTextColor(getColor(android.R.color.black))
-//
-//                if (course.deadline == null) {
-//                    deadlineTextView.text = "No deadline"
-//                } else {
-//                    val formatter = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
-//                    deadlineTextView.text = formatter.format(course.deadline.toDate())
-//                }
-
                 findViewById<TextView>(R.id.groupSizeText).text =
                     "${course.groupSize.min}-${course.groupSize.max} students"
                 val image = findViewById<ImageView>(R.id.courseBanner)
@@ -125,7 +111,6 @@ class CourseDetailsActivity : AppCompatActivity() {
         vm.isDeadlinePassed.observe(this) { passed ->
 
             val deadlineTextView = findViewById<TextView>(R.id.deadlineText)
-
             if (passed) {
                 deadlineTextView.text = "Registration closed"
                 deadlineTextView.setTextColor(getColor(R.color.red))
@@ -136,7 +121,6 @@ class CourseDetailsActivity : AppCompatActivity() {
                     deadlineTextView.text = formatter.format(course.deadline.toDate())
                 }
             }
-
             isDeadlinePassed = passed
             updateButtonsUI(vm.isRegistered.value == true)
         }
@@ -161,17 +145,17 @@ class CourseDetailsActivity : AppCompatActivity() {
         }
 
         viewGroupText.setOnClickListener {
-
             if (studentId.isEmpty()) {
                 Toast.makeText(this, "User not ready yet", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
+            if (!isDeadlinePassed) {
+                Toast.makeText(this, "Group allocation is not available yet", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val intent = Intent(this, com.example.smart_group.ui.group.GroupActivity::class.java)
-
             intent.putExtra("courseId", courseId)
             intent.putExtra("studentId", studentId)
-
             startActivity(intent)
         }
 
@@ -187,8 +171,6 @@ class CourseDetailsActivity : AppCompatActivity() {
 
                 val calendar = java.util.Calendar.getInstance()
                 calendar.timeInMillis = selectedDate
-
-                // 🔥 עכשיו פותחים TimePicker
                 val timePicker = android.app.TimePickerDialog(
                     this,
                     { _, hourOfDay, minute ->
@@ -221,14 +203,10 @@ class CourseDetailsActivity : AppCompatActivity() {
         btnEditGroupSize.setOnClickListener {
 
             val dialogView = layoutInflater.inflate(R.layout.dialog_group_size, null)
-
             val minInput = dialogView.findViewById<EditText>(R.id.minInput)
             val maxInput = dialogView.findViewById<EditText>(R.id.maxInput)
-
             val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSave)
             val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
-
-            // 🔥 שליפת הערכים הנוכחיים מה-ViewModel (שמגיעים מפיירבייס)
             val currentCourse = vm.course.value
 
             if (currentCourse != null) {
@@ -237,8 +215,6 @@ class CourseDetailsActivity : AppCompatActivity() {
 
                 minInput.setText(min.toString())
                 maxInput.setText(max.toString())
-
-                // אופציונלי - לשים סמן בסוף
                 minInput.setSelection(minInput.text.length)
                 maxInput.setSelection(maxInput.text.length)
             }
@@ -246,36 +222,25 @@ class CourseDetailsActivity : AppCompatActivity() {
             val dialog = AlertDialog.Builder(this)
                 .setView(dialogView)
                 .create()
-
-            // 🔥 כפתור שמירה
             btnSave.setOnClickListener {
 
                 val min = minInput.text.toString().toIntOrNull()
                 val max = maxInput.text.toString().toIntOrNull()
-
-                // ❌ ולידציה
                 if (min == null || max == null) {
                     Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-
                 if (min <= 0 || max <= 0) {
                     Toast.makeText(this, "Values must be greater than 0", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-
                 if (min >= max) {
                     Toast.makeText(this, "Min must be smaller than Max", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-
-                // 🔥 עדכון דרך ViewModel (MVVM נכון)
                 vm.updateGroupSize(courseId, min, max)
-
                 dialog.dismiss()
             }
-
-            // 🔥 ביטול
             btnCancel.setOnClickListener {
                 dialog.dismiss()
             }
@@ -284,28 +249,20 @@ class CourseDetailsActivity : AppCompatActivity() {
         }
     }
 
-    //UI לכפתורי הרשמה וביטול ומניעה לחיצה כפולה
     private fun updateButtonsUI(isRegistered: Boolean) {
-
         if (isDeadlinePassed) {
-            // ❌ הדדליין עבר → שני כפתורים אפורים
             signUpButton.alpha = 0.4f
             cancelButton.alpha = 0.4f
-
-            signUpButton.isEnabled = true   // נשאר true כדי להציג Toast
+            signUpButton.isEnabled = true
             cancelButton.isEnabled = true
             return
         }
-
         if (isRegistered) {
-            // ✔ כבר רשום
             signUpButton.isEnabled = true
             signUpButton.alpha = 0.4f
             cancelButton.isEnabled = true
             cancelButton.alpha = 1f
-
         } else {
-            // ✔ לא רשום
             signUpButton.isEnabled = true
             signUpButton.alpha = 1f
             cancelButton.isEnabled = true
@@ -316,32 +273,21 @@ class CourseDetailsActivity : AppCompatActivity() {
     private fun setupRoleUI() {
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
         val userRepo = com.example.smart_group.data.repository.UserRepository()
 
         lifecycleScope.launch {
-
             val user = userRepo.getUser(userId) ?: return@launch
-
             if (user.role.name == "ADMIN") {
-
-                // ❌ להסתיר
                 signUpButton.visibility = View.GONE
                 cancelButton.visibility = View.GONE
                 viewGroupText.visibility = View.GONE
-
-                // ✅ להראות עריכה
                 findViewById<ImageView>(R.id.btnEditDeadline).visibility = View.VISIBLE
                 findViewById<ImageView>(R.id.btnEditGroupSize).visibility = View.VISIBLE
 
             } else {
-
-                // ✅ סטודנט
                 signUpButton.visibility = View.VISIBLE
                 cancelButton.visibility = View.VISIBLE
                 viewGroupText.visibility = View.VISIBLE
-
-                // ❌ בלי עריכה
                 findViewById<ImageView>(R.id.btnEditDeadline).visibility = View.GONE
                 findViewById<ImageView>(R.id.btnEditGroupSize).visibility = View.GONE
             }
