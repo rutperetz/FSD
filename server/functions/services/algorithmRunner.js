@@ -1,6 +1,6 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
-
+const functions = require("firebase-functions");
 const { startRound } = require("../algorithm/roundManager");
 const dbService = require("./firestoreDb");
 const { createTask } = require("../tasks/taskService");
