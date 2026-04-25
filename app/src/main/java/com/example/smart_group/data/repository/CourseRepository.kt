@@ -1,7 +1,5 @@
 package com.example.smart_group.data.repository
 
-
-
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.smart_group.data.model.Course
 import kotlinx.coroutines.tasks.await
