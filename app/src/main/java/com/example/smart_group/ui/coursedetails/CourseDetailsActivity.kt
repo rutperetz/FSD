@@ -43,14 +43,8 @@ class CourseDetailsActivity : AppCompatActivity() {
         btnEditDeadline = findViewById(R.id.btnEditDeadline)
         btnEditGroupSize = findViewById(R.id.btnEditGroupSize)
 
-        // קבלת נתונים
         courseId = intent.getStringExtra("courseId") ?: ""
-        //studentId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-        //vm.loadEnrollment(courseId, studentId)
-        //vm.loadCourse(courseId)
-
-       // loadStudentAndContinue()
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         vm.loadStudentAndData(userId, courseId)
 
@@ -293,29 +287,4 @@ class CourseDetailsActivity : AppCompatActivity() {
             }
         }
     }
-
-//    private fun loadStudentAndContinue() {
-//
-//        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-//
-//        val repo = com.example.smart_group.data.repository.StudentRepository()
-//
-//        lifecycleScope.launch {
-//
-//            val student = repo.getStudentByUserId(userId)
-//
-//            if (student == null) {
-//                Toast.makeText(this@CourseDetailsActivity, "Student not found", Toast.LENGTH_SHORT).show()
-//                return@launch
-//            }
-//
-//            studentId = student.studentId
-//
-//            vm.loadEnrollment(courseId, studentId)
-//            vm.loadCourse(courseId)
-//        }
-//    }
-
-
-
 }

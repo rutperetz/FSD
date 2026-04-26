@@ -35,7 +35,6 @@ class ProfileViewModel(
                 val uid = authRepo.getCurrentUserId()
                     ?: throw Exception("No logged-in user")
 
-                // מרעננים את FirebaseAuth כדי לקבל מייל מעודכן אם המשתמש כבר אישר את המייל החדש
                 authRepo.reloadCurrentUser()
 
                 val authEmail = authRepo.getCurrentEmail()
@@ -44,7 +43,6 @@ class ProfileViewModel(
                 val firestoreUser = userRepo.getUser(uid)
                     ?: throw Exception("User document not found in Firestore")
 
-                // אם ב-Auth יש מייל חדש, מסנכרנים אותו ל-Firestore
                 val finalUser =
                     if (authEmail != firestoreUser.email) {
                         userRepo.updateUserFields(uid, email = authEmail)

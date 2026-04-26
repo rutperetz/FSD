@@ -85,7 +85,7 @@ class RegisterViewModel(
             return
         }
         if (!passRegex.matches(cleanedPassword)) {
-            _passwordError.value = "Password must be 12-15 characters and include letters and numbers"
+            _passwordError.value = "Password must be 12–15 characters, include letters and numbers (can use !@#\$%^&amp;*)"
             return
         }
 
