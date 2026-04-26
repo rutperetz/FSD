@@ -16,6 +16,7 @@ import com.example.smart_group.R
 import com.example.smart_group.ui.home.HomeActivity
 import com.example.smart_group.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.smart_group.ui.coursedetails.CourseDetailsActivity
 
 
 
@@ -33,7 +34,12 @@ class SearchActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.progressBarSearch)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
 
-        val adapter = SearchAdapter()
+//        val adapter = SearchAdapter()
+        val adapter = SearchAdapter { course ->
+            val intent = Intent(this, CourseDetailsActivity::class.java)
+            intent.putExtra("courseId", course.courseId)
+            startActivity(intent)
+        }
 
         rvSearchCourses.layoutManager = LinearLayoutManager(this)
         rvSearchCourses.adapter = adapter

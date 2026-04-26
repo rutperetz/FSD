@@ -12,7 +12,6 @@
 
 
 
-    <!-- Toast / Validation Messages -->
     <string name="msg_enter_email">Please enter your email</string>
     <string name="msg_invalid_email">Invalid email address</string>
     <string name="msg_reset_email_sent">If an account exists for this email, a password reset link has been sent.</string>
@@ -21,10 +20,8 @@
     <string name="fill_out_questionnaire">Fill out questionnaire</string>
 
 
-    <!-- Questionnaire - common -->
     <string name="save">Save</string>
 
-    <!-- Questionnaire - questions -->
     <string name="q_gender">Gender</string>
     <string name="q_gender_pref">Gender Preference for Group Members</string>
     <string name="q_availability">Work Availability (select all that apply)</string>
@@ -33,7 +30,6 @@
     <string name="q_language">Preferred Language</string>
     <string name="q_task_management">Task Management Preference</string>
 
-    <!-- Questionnaire - options -->
     <string name="opt_male">Male</string>
     <string name="opt_female">Female</string>
 

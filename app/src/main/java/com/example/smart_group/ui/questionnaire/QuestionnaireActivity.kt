@@ -18,10 +18,8 @@ class QuestionnaireActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questionnaire)
 
-        // back arrow (ב-XML שלך זה iv_back)
-        findViewById<ImageView>(R.id.iv_back).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.back_arrow).setOnClickListener { finish() }
 
-        // multi-select toggle (exclude gender + genderPreference because they're RadioGroup singles)
         val multiIds = listOf(
             R.id.rb_av_morning, R.id.rb_av_afternoon, R.id.rb_av_evening, R.id.rb_av_weekend,
             R.id.rb_style_individual, R.id.rb_style_collaborative,
@@ -40,17 +38,14 @@ class QuestionnaireActivity : AppCompatActivity() {
             }
         }
 
-        // כששומרים מקומית ב-VM (Saved) -> נחזיר תוצאות ל-Register
         vm.state.observe(this) { st ->
             if (st is QuestionnaireUiState.Saved) {
                 val data = Intent().apply {
                     putExtra("QUESTIONNAIRE_COMPLETED", true)
 
-                    // SINGLE
                     putExtra("gender", st.answers.gender)
                     putExtra("genderPreference", st.answers.genderPreference)
 
-                    // MULTI
                     putStringArrayListExtra("availability", ArrayList(st.answers.availability))
                     putStringArrayListExtra("workStyle", ArrayList(st.answers.workStyle))
                     putStringArrayListExtra("workMode", ArrayList(st.answers.workMode))
@@ -67,12 +62,10 @@ class QuestionnaireActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_save).setOnClickListener {
             clearAllErrors()
 
-            // Gender (tag)
             val genderId = findViewById<RadioGroup>(R.id.rg_gender).checkedRadioButtonId
             val gender =
                 if (genderId != -1) findViewById<RadioButton>(genderId).tag.toString() else ""
 
-            // Gender Preference (tag) - single
             val prefId = findViewById<RadioGroup>(R.id.rg_gender_pref).checkedRadioButtonId
             val genderPreference =
                 if (prefId != -1) findViewById<RadioButton>(prefId).tag.toString() else ""
@@ -106,7 +99,6 @@ class QuestionnaireActivity : AppCompatActivity() {
                 )
             )
 
-            // required red flags
             setFieldError(R.id.tv_gender_title, R.id.tv_gender_required, answers.gender.isBlank())
             setFieldError(
                 R.id.tv_gender_pref_title,

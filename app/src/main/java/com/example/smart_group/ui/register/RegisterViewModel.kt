@@ -55,7 +55,6 @@ class RegisterViewModel(
         _usernameError.value = null
         _emailError.value = null
         _passwordError.value = null
-        //בודק אם השדןת מלאים נכון במידה ולא מחזיר הודעה בהתאם
 
         val userNameRegex = Regex("^[A-Za-z]{1,15}$")
 //        val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,15}$")
@@ -94,7 +93,6 @@ class RegisterViewModel(
             return
         }
 
-        // המרה מ-Map -> Answers (תואם schema)
         val convertedAnswers = Answers(
             gender = (questionnaireAnswers["gender"] as? String) ?: "",
             genderPreference = (questionnaireAnswers["genderPreference"] as? String) ?: "",
@@ -109,11 +107,8 @@ class RegisterViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // 1) Auth
-                // 1) Auth
                 val createdUid = authRepo.register(cleanedEmail, cleanedPassword)
 
-// 2) users/{uid}
                 val createdUser = User(
                     userId = createdUid,
                     userName = cleanedUserName,
@@ -122,7 +117,6 @@ class RegisterViewModel(
                 )
                 userRepo.addUser(createdUser)
 
-// 3) if student already exists by email -> link it
                 val existingStudent = studentRepo.getStudentByEmail(cleanedEmail)
 
                 if (existingStudent != null) {
@@ -133,7 +127,6 @@ class RegisterViewModel(
                         answers = convertedAnswers
                     )
                 } else {
-                    // create brand new student
                     val createdStudentId = UUID.randomUUID().toString()
 
                     val createdStudent = Student(

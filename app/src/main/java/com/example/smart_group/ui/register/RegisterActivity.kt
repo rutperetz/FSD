@@ -20,7 +20,6 @@ class RegisterActivity : ComponentActivity() {
 
     private var questionnaireCompleted: Boolean = false
 
-    //  נשמור כאן את כל תשובות השאלון לפי הסכמה (keys קבועים)
     private var questionnaireAnswers: Map<String, Any>? = null
 
     private val questionnaireLauncher =
@@ -37,19 +36,15 @@ class RegisterActivity : ComponentActivity() {
 
                 if (completed) {
 
-                    //  SINGLE
                     val gender = data?.getStringExtra("gender") ?: ""
                     val genderPreference = data?.getStringExtra("genderPreference") ?: ""
 
-                    // MULTI
                     val availability = data?.getStringArrayListExtra("availability") ?: arrayListOf()
                     val workStyle = data?.getStringArrayListExtra("workStyle") ?: arrayListOf()
                     val workMode = data?.getStringArrayListExtra("workMode") ?: arrayListOf()
                     val language = data?.getStringArrayListExtra("language") ?: arrayListOf()
                     val taskPreference = data?.getStringArrayListExtra("taskPreference") ?: arrayListOf()
 
-                    //  נשמור את זה במבנה שמוכן לשמירה בפיירסטור
-                    // (ניצמד לסכמה בדיוק)
                     questionnaireAnswers = mapOf(
                         "gender" to gender,
                         "genderPreference" to genderPreference,
@@ -87,11 +82,9 @@ class RegisterActivity : ComponentActivity() {
         val signUpBtn = findViewById<MaterialButton>(R.id.signup_btn)
         val tvFillQuestionnaire = findViewById<TextView>(R.id.tv_fill_questionnaire)
 
-        // underline like a link (until completed)
         tvFillQuestionnaire.paintFlags =
             tvFillQuestionnaire.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
-        // Navigate to questionnaire with result
         tvFillQuestionnaire.setOnClickListener {
             val intent = Intent(this, QuestionnaireActivity::class.java)
             questionnaireLauncher.launch(intent)
@@ -104,7 +97,6 @@ class RegisterActivity : ComponentActivity() {
 
         signUpBtn.setOnClickListener {
 
-            // חובה למלא שאלון לפני הרשמה
             if (!questionnaireCompleted || questionnaireAnswers == null) {
                 Toast.makeText(
                     this,
@@ -123,7 +115,6 @@ class RegisterActivity : ComponentActivity() {
 
         }
 
-        // MVVM errors
         regVm.usernameError.observe(this) { err -> usernameBox.error = err }
         regVm.emailError.observe(this) { err -> emailBox.error = err }
         regVm.passwordError.observe(this) { err -> passwordBox.error = err }

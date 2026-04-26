@@ -5,13 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 data class QuestionnaireAnswers(
-    val gender: String,                 // "male"/"female"
-    val genderPreference: String,        // "men"/"women"/"no_preference"
-    val availability: List<String>,      // ["morning", ...]
-    val workStyle: List<String>,         // ["individual", ...]
-    val workMode: List<String>,          // ["oncampus", "remote"]
-    val language: List<String>,          // ["Hebrew", "English", "Arabic"]
-    val taskPreference: List<String>     // ["fixed", "flexible"]
+    val gender: String,
+    val genderPreference: String,
+    val availability: List<String>,
+    val workStyle: List<String>,
+    val workMode: List<String>,
+    val language: List<String>,
+    val taskPreference: List<String>
 )
 
 sealed class QuestionnaireUiState {

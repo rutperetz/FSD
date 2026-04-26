@@ -36,7 +36,7 @@ class EditQuestionnaireActivity : AppCompatActivity() {
     }
 
     private fun setupHeader() {
-        findViewById<ImageView>(R.id.iv_back).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.back_arrow).setOnClickListener { finish() }
         findViewById<TextView>(R.id.tv_title).text = "Edit Questionnaire"
     }
 
