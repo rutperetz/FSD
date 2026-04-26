@@ -10,7 +10,10 @@ data class Course(
     val deadline: Timestamp? = null,
     val groupingStatus: GroupingStatus = GroupingStatus.PENDING,
     val currentRound: Int = 0,
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val vectorsMap: Map<String, List<Int>> = emptyMap(),
+    val taskId: String= "",
+    val idToIndex: List<String> =emptyList()
 )
 
 data class GroupSize(
