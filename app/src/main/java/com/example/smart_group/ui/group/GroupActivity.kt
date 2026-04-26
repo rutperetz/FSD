@@ -130,22 +130,27 @@ class GroupActivity : AppCompatActivity() {
 
     private fun setupBottomNav() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
+
         bottomNav.selectedItemId = R.id.nav_home
+
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
                     true
                 }
+
                 R.id.nav_search -> {
                     startActivity(Intent(this, com.example.smart_group.ui.search.SearchActivity::class.java))
                     finish()
                     true
                 }
+
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     finish()
                     true
                 }
+
                 else -> false
             }
         }

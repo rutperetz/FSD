@@ -254,33 +254,34 @@ class GroupProposalViewModel : ViewModel() {
     private fun formatReasons(groupReasons: Map<String, Any>): String {
         val lines = mutableListOf<String>()
 
-        groupReasons["availability"]?.let {
-            lines.add("Shared availability: ${formatReasonValue(it)}")
-        }
-        groupReasons["gender"]?.let {
-            lines.add("Gender: ${formatReasonValue(it)}")
-        }
-        groupReasons["genderPreference"]?.let {
-            lines.add("Gender preference: ${formatReasonValue(it)}")
-        }
-        groupReasons["language"]?.let {
-            lines.add("Language: ${formatReasonValue(it)}")
-        }
-        groupReasons["taskPreference"]?.let {
-            lines.add("Task preference: ${formatReasonValue(it)}")
-        }
-        groupReasons["teamPreference"]?.let {
-            lines.add("Team preference: ${formatReasonValue(it)}")
-        }
-        groupReasons["workMode"]?.let {
-            lines.add("Work mode: ${formatReasonValue(it)}")
-        }
-        groupReasons["workStyle"]?.let {
-            lines.add("Work style: ${formatReasonValue(it)}")
+        fun addLine(title: String, value: Any?) {
+            if (value == null) return
+
+            val text = when (value) {
+                is List<*> -> value.filterNotNull().joinToString(", ")
+                else -> value.toString()
+            }.trim()
+
+            if (text.isNotBlank() &&
+                text != "[]" &&
+                text.lowercase() != "null" &&
+                text.lowercase() != "none"
+            ) {
+                lines.add("$title: $text")
+            }
         }
 
+        addLine("Shared availability", groupReasons["availability"])
+        addLine("Gender", groupReasons["gender"])
+        addLine("Gender preference", groupReasons["genderPreference"])
+        addLine("Language", groupReasons["language"])
+        addLine("Task preference", groupReasons["taskPreference"])
+        addLine("Team preference", groupReasons["teamPreference"])
+        addLine("Work mode", groupReasons["workMode"])
+        addLine("Work style", groupReasons["workStyle"])
+
         return if (lines.isEmpty()) {
-            "No match reasons found"
+            "No common match reasons found"
         } else {
             lines.joinToString("\n")
         }
