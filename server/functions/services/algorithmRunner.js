@@ -15,7 +15,13 @@ const { createTask } = require("../tasks/taskService");
 //   - Schedule next round if needed
 // ------------------------------------------------------------
 
-exports.runAlgorithm = onRequest(async (req, res) => {
+exports.runAlgorithm = onRequest({
+    memory: "512Mi",
+    cpu: 1,
+    timeoutSeconds: 300,
+    minInstances: 0,
+    invoker: "public" 
+}, async(req, res) => {
 
     try {
         const { courseId, round } = req.body;

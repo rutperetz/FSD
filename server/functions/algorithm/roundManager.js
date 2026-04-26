@@ -3,7 +3,7 @@ const buildSimilarityMatrix = require("./helpers/similarityMatrix.js");
 const windowClustering = require("./windowClustering.js");
 const { feedbackProcessor, lockGroups } = require("./helpers/feedbackProcessor.js");
 const normalizeAnswers = require('./helpers/normalizeAnswers.js');
-const algorithmConfig = require("../../functions/config/algorithmConfig.js");
+const algorithmConfig = require("../config/algorithmConfig.js");
 const e = require("express");
 
 
@@ -33,7 +33,7 @@ function mapFeedbackToIndices(feedbackWithIds, idToIndex) {
             approveGroup: data.approveGroup,
             rejectStudents: data.rejectStudents
                 .map(rId => idToIndexMap[rId])
-                .filter(idx => idx !== undefined), // סינון של סטודנטים שכבר לא קיימים
+                .filter(idx => idx !== undefined), 
             rejectReasons: data.rejectReasons
         };
     }

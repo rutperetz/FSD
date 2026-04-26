@@ -3,13 +3,22 @@
 // Must be called exactly once per Cloud Functions instance.
 // ------------------------------------------------------------
 const admin = require("firebase-admin");
-admin.initializeApp();
+const { setGlobalOptions } = require("firebase-functions/v2");
 
+setGlobalOptions({
+    region: "europe-west3",
+    memory: "512Mi"
+});
+
+if (admin.apps.length === 0) {
+    admin.initializeApp();
+}
+
+const { handleCourseDeadlineChange } = require("./triggers/courseTrigger");
+const { runAlgorithm } = require("./services/algorithmRunner");
 // ------------------------------------------------------------
 // Export Cloud Functions
 // ------------------------------------------------------------
-const { handleCourseDeadlineChange } = require("./triggers/courseTrigger");
-const { runAlgorithm } = require("./services/algorithmRunner");
 
 // Firestore trigger: reacts to course deadline changes
 exports.handleCourseDeadlineChange = handleCourseDeadlineChange;

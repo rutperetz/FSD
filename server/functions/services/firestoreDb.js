@@ -1,15 +1,18 @@
 const admin = require("firebase-admin");
-const db = admin.firestore();
 
 // ------------------------------------------------------------
 // Firestore DB Service
 // Provides all database operations required by the algorithm.
 const dbService = {
+    async getDb() {
+        return admin.firestore();
+    },
 
     // --------------------------------------------------------
     // Load course settings (group size + current round)
     // --------------------------------------------------------
     async getCourseSettings(courseId) {
+        const db = await this.getDb();
         const doc = await db.collection("courses").doc(courseId).get();
         const data = doc.data();
 
@@ -29,6 +32,7 @@ const dbService = {
     // ROUND 1: Load raw student answers (only opt-in students)
     // --------------------------------------------------------
     async getRawCourseData(courseId) {
+        const db = await this.getDb();
 
         const enrollSnap = await db.collection("courses")
             .doc(courseId)
@@ -37,17 +41,24 @@ const dbService = {
 
         const studentIds = enrollSnap.docs
             .filter(d => d.data().optIn === true)
-            .map(d => d.id);
+            .map(d => d.data().studentId);
 
         const students = [];
 
         for (const id of studentIds) {
+            if (!id) continue;
             const studentDoc = await db.collection("students").doc(id).get();
-            
-            students.push({
-                studentId: id,
-                answers: studentDoc.data().answers
-            });
+            const studentData = studentDoc.data();
+            if (studentData) {
+                students.push({
+                    studentId: id,
+                    answers: studentData.answers
+                
+                });
+            }
+            else {
+            console.warn(` Student document with ID ${id} not found in 'students' collection!`);
+            }
         }
 
         return students;
@@ -57,6 +68,7 @@ const dbService = {
     // Save normalized vectors + index mapping
     // --------------------------------------------------------
     async saveNormalizedVectors(courseId, vectorsMap, idToIndex) {
+        const db = await this.getDb();
         await db.collection("courses").doc(courseId).update({
             vectorsMap,
             idToIndex
@@ -67,6 +79,7 @@ const dbService = {
     // Load normalized vectors for later rounds
     // --------------------------------------------------------
     async getNormalizedVectors(courseId) {
+        const db = await this.getDb();
         const doc = await db.collection("courses").doc(courseId).get();
         return {
             vectorsMap: doc.data().vectorsMap,
@@ -78,7 +91,7 @@ const dbService = {
     // Save round result (groups, unassigned, weights, feedback)
     // --------------------------------------------------------
     async saveRoundResult(courseId, roundData) {
-
+        const db = await this.getDb();
         await db.collection("courses")
             .doc(courseId)
             .collection("matchRounds")
@@ -90,6 +103,7 @@ const dbService = {
     // Load previous round data
     // --------------------------------------------------------
     async getPreviousRound(courseId, roundNum) {
+        const db = await this.getDb();
         const doc = await db.collection("courses")
             .doc(courseId)
             .collection("matchRounds")
@@ -104,6 +118,7 @@ const dbService = {
     // Each rejection becomes a permanent "from → to" block
     // --------------------------------------------------------
     async getRejectionHistory(courseId) {
+        const db = await this.getDb();
         const rounds = await db.collection("courses")
             .doc(courseId)
             .collection("matchRounds")
