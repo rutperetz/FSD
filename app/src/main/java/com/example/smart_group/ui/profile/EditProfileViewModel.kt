@@ -113,35 +113,30 @@ class EditProfileViewModel(
                 val isEmailChanged = email != currentEmail
                 val isPasswordChanged = password.isNotEmpty()
 
-                // אם לא שינו כלום - פשוט לחזור לפרופיל
                 if (!isUserNameChanged && !isEmailChanged && !isPasswordChanged) {
                     _state.value = EditProfileState.NavigateBackToProfile
                     return@launch
                 }
 
-                // 1. עדכון שם משתמש - מיד ב-Firestore
                 if (isUserNameChanged) {
                     userRepo.updateUserFields(uid, userName = userName)
                     studentRepo.updateStudentFieldsByUserId(uid, userName = userName)
                 }
 
-                // 2. עדכון סיסמה - רק ב-Auth
                 if (isPasswordChanged) {
                     authRepo.updatePassword(password)
                 }
 
-                // 3. עדכון מייל - לא לעדכן Firestore עדיין!
-                // קודם שולחים אימות דרך Firebase Auth
                 if (isEmailChanged) {
                     authRepo.updateEmail(email)
-
+                    userRepo.updateUserFields(uid, email = email)
+                    studentRepo.updateStudentFieldsByUserId(uid, email = email)
                     _state.value = EditProfileState.NavigateToLogin(
                         "Verification email sent. Please verify your new email and then log in again."
                     )
                     return@launch
                 }
 
-                // אם הגענו לכאן - היה שינוי בשם משתמש או בסיסמה בלבד
                 _state.value = EditProfileState.NavigateToLogin(
                     "Profile updated successfully. Please log in again."
                 )
@@ -175,9 +170,9 @@ class EditProfileViewModel(
     }
 
     private fun validatePassword(password: String): String? {
-        val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,15}$")
+        val passwordRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#\$%^&*]{12,15}$")
         return if (!passwordRegex.matches(password)) {
-            "Password must be 12-15 characters and include letters and numbers"
+            "Password must be 12–15 characters, include letters and numbers (can use !@#\$%^&amp;*)"
         } else {
             null
         }
