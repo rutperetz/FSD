@@ -16,6 +16,7 @@ if (admin.apps.length === 0) {
 
 const { handleCourseDeadlineChange } = require("./triggers/courseTrigger");
 const { runAlgorithm } = require("./services/algorithmRunner");
+const { dailyDeadlineChecker } = require("./triggers/schedulerService");
 // ------------------------------------------------------------
 // Export Cloud Functions
 // ------------------------------------------------------------
@@ -25,3 +26,6 @@ exports.handleCourseDeadlineChange = handleCourseDeadlineChange;
 
 // HTTPS function: runs a grouping round (invoked by Cloud Tasks)
 exports.runAlgorithm = runAlgorithm;
+
+// Scheduled function: checks for courses with approaching deadlines
+exports.dailyDeadlineChecker = dailyDeadlineChecker;    

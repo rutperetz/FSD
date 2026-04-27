@@ -15,7 +15,7 @@ exports.handleCourseDeadlineChange = onDocumentWritten(
     "courses/{courseId}",
     async (event) => {
         console.log("Trigger execution started");
-
+        const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
         const courseId = event.params.courseId;
 
         // Extract before/after snapshots safely
@@ -62,35 +62,43 @@ exports.handleCourseDeadlineChange = onDocumentWritten(
         if (isNewDocument || hasDeadlineChanged) {
             console.log(isNewDocument ? "Detected NEW document." : "Detected DEADLINE change.");
 
-            // ----------------------------------------------------
-            // Delete old task if exists
-            // ----------------------------------------------------
+            // --------------------------------------------------------
+            // 3. If there was a previous task, delete it
+            // --------------------------------------------------------
             if (beforeData?.taskId) {
                 console.log(`Removing old task: ${beforeData.taskId}`);
-                try { await deleteTask(beforeData.taskId); } catch (e) { }
+            try { await deleteTask(beforeData.taskId); } catch (e) { }
+            
+                // Clear taskId in Firestore to prevent confusion
+                await afterSnapshot.ref.update({ taskId: null });
             }
 
-            // ----------------------------------------------------
-            // Create new task only if deadline is valid and future
-            // ----------------------------------------------------
-            if (newDeadline && newDeadline > new Date()) {
+            const now = new Date();
+            const isWithin30Days = newDeadline && (newDeadline.getTime() - now.getTime()) <= THIRTY_DAYS_MS;
+            const isFuture = newDeadline && newDeadline > now;
+
+            // --------------------------------------------------------
+            // 4. If new deadline is within 30 days, create a new task immediately
+            //    Otherwise, rely on the daily scheduler to pick it up later
+            // --------------------------------------------------------
+            if (isFuture && isWithin30Days) {
                 try {
-                    console.log("Creating Cloud Task...");
+                    console.log("Deadline is within 30 days. Creating Cloud Task...");
                     const taskId = await createTask(courseId, newDeadline, 1);
-                    console.log(`Task created successfully: ${taskId}`);
-
-                    // Update Firestore with new taskId
-                    await afterSnapshot.ref.update({
-                        taskId
-                    });
-                    console.log("Firestore document updated with taskId.");
+                    await afterSnapshot.ref.update({ taskId });
+                    console.log(`Task created and Firestore updated: ${taskId}`);
                 } catch (err) {
-                    console.error("Error in task creation chain:", err);
+                    console.error("Error creating task:", err);
                 }
+            } else if (isFuture && !isWithin30Days) {
+                // מקרה: תזמון רחוק (חדש או שינוי לרחוק)
+                console.log("Deadline is more than 30 days away. Scheduler will handle it later.");
             } else {
-                console.log("Skip: Deadline is missing or in the past.");
+                console.log("Skip: Deadline is in the past.");
             }
-        } else {
+        }
+        
+        else {
             console.log("Result: No functional change detected. Doing nothing.");
         }
     }

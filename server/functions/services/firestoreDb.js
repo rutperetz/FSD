@@ -137,6 +137,23 @@ const dbService = {
         });
 
         return blacklist;
+    },
+
+    // --------------------------------------------------------
+    // Scheduler helper: Find courses with deadlines in the next 30 days that need task scheduling      
+    //---------------------------------------------------------
+
+    async getCoursesNeedingTasks(thirtyDaysFromNow) {
+        const db = await this.getDb();
+        const now = new Date();
+
+        const snapshot = await db.collection("courses")
+            .where("groupingStatus", "==", "PENDING")
+            .where("deadline", "<=", thirtyDaysFromNow)
+            .where("deadline", ">", now)
+            .get();
+
+        return snapshot.docs; 
     }
 };
 
