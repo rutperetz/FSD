@@ -12,8 +12,9 @@ data class Course(
     val currentRound: Int = 0,
     val imageUrl: String = "",
     val vectorsMap: Map<String, List<Int>> = emptyMap(),
-    val taskId: String= "",
+    val taskId: String? = null,
     val idToIndex: List<String> =emptyList()
+
 )
 
 data class GroupSize(

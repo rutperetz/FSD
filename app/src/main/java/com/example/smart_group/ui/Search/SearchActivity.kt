@@ -34,7 +34,6 @@ class SearchActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.progressBarSearch)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
 
-//        val adapter = SearchAdapter()
         val adapter = SearchAdapter { course ->
             val intent = Intent(this, CourseDetailsActivity::class.java)
             intent.putExtra("courseId", course.courseId)
