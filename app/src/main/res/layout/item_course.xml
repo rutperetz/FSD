@@ -13,36 +13,17 @@
         android:layout_width="match_parent"
         android:layout_height="190dp">
 
-<!--        <ImageView-->
-<!--            android:id="@+id/imgCourse"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:scaleType="centerCrop"-->
-<!--            android:src="@drawable/img_code" />-->
-<!--        -->
-<!--        <TextView-->
-<!--            android:id="@+id/tvCourseTitle"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:text="FSD"-->
-<!--            android:textColor="@android:color/white"-->
-<!--            android:textSize="34sp"-->
-<!--            android:textStyle="bold" />-->
-        <!-- תמונה -->
         <ImageView
             android:id="@+id/imgCourse"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"/>
 
-        <!-- 🔥 הגרדיאנט בדיוק כמו במסך קורס -->
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/banner_gradient"/>
 
-        <!-- שם הקורס -->
         <TextView
             android:id="@+id/tvCourseTitle"
             android:layout_width="wrap_content"

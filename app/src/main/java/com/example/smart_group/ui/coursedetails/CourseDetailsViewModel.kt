@@ -77,22 +77,6 @@ class CourseDetailsViewModel : ViewModel() {
         }
     }
 
-//    fun loadCourse(courseId: String) {
-//        viewModelScope.launch {
-//            val data = repo.courseRepository.getCourse(courseId)
-//            course.value = data
-//
-//            if (data?.deadline != null) {
-//                val now = System.currentTimeMillis()
-//                val deadlineMillis = data.deadline.toDate().time
-//
-//                isDeadlinePassed.value = deadlineMillis < now
-//            } else {
-//                isDeadlinePassed.value = false
-//            }
-//        }
-//    }
-
     fun updateDeadline(newTimestamp: com.google.firebase.Timestamp) {
         viewModelScope.launch {
             val current = course.value ?: return@launch
