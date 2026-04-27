@@ -8,7 +8,6 @@ data class Student(
 
     val answers: Answers = Answers(),
 
-    val normalizedAnswers: List<Int> = emptyList(),
 
     val questionnaireCompleted: Boolean = false
 )

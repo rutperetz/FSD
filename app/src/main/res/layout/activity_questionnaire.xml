@@ -21,18 +21,6 @@
         app:tint="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-<!--    <ImageView-->
-<!--        android:id="@+id/iv_back"-->
-<!--        android:layout_width="48dp"-->
-<!--        android:layout_height="48dp"-->
-<!--        android:layout_marginTop="24dp"-->
-<!--        android:clickable="true"-->
-<!--        android:contentDescription="@string/back"-->
-<!--        android:focusable="true"-->
-<!--        android:padding="12dp"-->
-<!--        android:src="@drawable/arrow_back"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <TextView
         android:id="@+id/tv_title"
