@@ -1,6 +1,6 @@
 package com.example.smart_group.data.repository
 
-import com.google.firebase.firestore.FieldValue
+import com.example.smart_group.data.model.StudentFeedback
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -77,6 +77,35 @@ class MatchFeedbackRepository {
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun getStudentFeedback(
+        courseId: String,
+        roundId: String,
+        studentId: String
+    ): StudentFeedback {
+        return try {
+            val doc = db.collection("courses")
+                .document(courseId)
+                .collection("matchRounds")
+                .document(roundId)
+                .get()
+                .await()
+
+            val feedbackMap = doc.get("feedback") as? Map<*, *>
+            val studentFeedbackMap = feedbackMap?.get(studentId) as? Map<*, *>
+
+            StudentFeedback(
+                approveGroup = studentFeedbackMap?.get("approveGroup") as? Boolean ?: true,
+                rejectStudents = (studentFeedbackMap?.get("rejectStudents") as? List<*>)
+                    ?.filterIsInstance<String>()
+                    ?: emptyList(),
+                rejectReasons = com.example.smart_group.data.model.RejectReasons()
+            )
+
+        } catch (e: Exception) {
+            StudentFeedback()
         }
     }
 }

@@ -50,11 +50,13 @@ class GroupProposalViewModel : ViewModel() {
     private var currentCandidates: MutableList<CandidateUiModel> = mutableListOf()
     private var currentRoundId: String = ""
 
+    private val _approvedGroup = MutableLiveData<Boolean?>()
+    val approvedGroup: LiveData<Boolean?> = _approvedGroup
+
     fun loadScreen(courseId: String, currentStudentId: String) {
         viewModelScope.launch {
             try {
                 _feedbackSubmitted.value = false
-
                 val course = courseRepository.getCourse(courseId)
                 if (course != null) {
                     _course.value = course
@@ -95,11 +97,20 @@ class GroupProposalViewModel : ViewModel() {
                 }
 
                 currentRoundId = studentMatch.roundId
+
+                val studentFeedback = matchFeedbackRepository.getStudentFeedback(
+                    courseId = courseId,
+                    roundId = currentRoundId,
+                    studentId = currentStudentId
+                )
+
+                val rejectedStudents = studentFeedback.rejectStudents
+
                 _noMatchMessage.value = ""
                 _currentRoundText.value = "Round ${studentMatch.roundNumber}"
                 _matchReasonsText.value = formatReasons(studentMatch.groupReasons)
                 _isGroupFinalized.value = studentMatch.groupStatus
-
+                _approvedGroup.value = studentFeedback.approveGroup
                 val candidateList = mutableListOf<CandidateUiModel>()
 
                 for ((index, candidateId) in studentMatch.candidateIds.withIndex()) {
@@ -116,7 +127,11 @@ class GroupProposalViewModel : ViewModel() {
                             studentId = candidateId,
                             displayName = displayName,
                             email = email,
-                            status = "PENDING"
+                            status =
+                                if (candidateId in rejectedStudents)
+                                    "DECLINED"
+                                else
+                                    "PENDING"
                         )
                     )
                 }
@@ -164,7 +179,8 @@ class GroupProposalViewModel : ViewModel() {
         courseId: String,
         currentStudentId: String,
         likedProposal: Boolean,
-        comment: String
+        comment: String,
+
     ) {
         viewModelScope.launch {
             if (currentRoundId.isBlank()) {
@@ -183,6 +199,7 @@ class GroupProposalViewModel : ViewModel() {
             if (result.isSuccess) {
                 _message.value = ""
                 _feedbackSubmitted.value = true
+                _approvedGroup.value = likedProposal
             } else {
                 _message.value = result.exceptionOrNull()?.message ?: "Failed to save feedback"
                 _feedbackSubmitted.value = false

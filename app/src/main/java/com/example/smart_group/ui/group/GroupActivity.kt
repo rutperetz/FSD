@@ -219,6 +219,17 @@ class GroupActivity : AppCompatActivity() {
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             }
         }
+        viewModel.approvedGroup.observe(this) { approved ->
+            when (approved) {
+                true -> updateFeedbackSelection(liked = true)
+                false -> updateFeedbackSelection(liked = false)
+                null -> {
+                    btnLike.alpha = 1.0f
+                    btnDislike.alpha = 1.0f
+                }
+            }
+        }
+
 
         viewModel.feedbackSubmitted.observe(this) { submitted ->
             if (submitted == true) {
