@@ -135,7 +135,6 @@ class RegisterViewModel(
                         userName = cleanedUserName,
                         email = cleanedEmail,
                         answers = convertedAnswers,
-                        normalizedAnswers = emptyList(),
                         questionnaireCompleted = true
                     )
 
