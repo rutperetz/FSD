@@ -33,23 +33,23 @@ class CandidateDecisionRepository {
         }
     }
 
-    suspend fun getDecisionsForStudent(
-        courseId: String,
-        studentId: String
-    ): Result<List<CandidateDecision>> {
-        return try {
-            val decisions = db.collection("courses")
-                .document(courseId)
-                .collection("proposals")
-                .document(studentId)
-                .collection("candidates")
-                .get()
-                .await()
-                .toObjects(CandidateDecision::class.java)
-
-            Result.success(decisions)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+//    suspend fun getDecisionsForStudent(
+//        courseId: String,
+//        studentId: String
+//    ): Result<List<CandidateDecision>> {
+//        return try {
+//            val decisions = db.collection("courses")
+//                .document(courseId)
+//                .collection("proposals")
+//                .document(studentId)
+//                .collection("candidates")
+//                .get()
+//                .await()
+//                .toObjects(CandidateDecision::class.java)
+//
+//            Result.success(decisions)
+//        } catch (e: Exception) {
+//            Result.failure(e)
+//        }
+//    }
 }
