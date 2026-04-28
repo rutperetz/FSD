@@ -183,26 +183,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_hint_text" />
 
-    <TextView
-        android:id="@+id/logout_text"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="18dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/log_out"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/save_changes_btn"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav"/>
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="0dp"

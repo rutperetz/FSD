@@ -99,22 +99,22 @@ class CourseDetailsViewModel : ViewModel() {
         }
     }
 
-    fun loadStudentAndData(userId: String, courseId: String) {
+    fun loadData(userId: String, courseId: String) {
         viewModelScope.launch {
             try {
-                val student = repo.studentRepository.getStudentByUserId(userId)
-                if (student == null) {
-                    toastMessage.value = "Student not found"
-                    return@launch
-                }
-                studentIdLiveData.value = student.studentId
-                loadEnrollment(courseId, student.studentId)
                 startListeningToCourse(courseId)
+                val student = repo.studentRepository.getStudentByUserId(userId)
+
+                if (student != null) {
+                    studentIdLiveData.value = student.studentId
+                    loadEnrollment(courseId, student.studentId)
+                }
+
             } catch (e: Exception) {
-                toastMessage.value = "Failed to load student"
             }
         }
     }
+
 
     fun startListeningToCourse(courseId: String) {
         repo.courseRepository.listenToCourse(courseId) { updatedCourse ->

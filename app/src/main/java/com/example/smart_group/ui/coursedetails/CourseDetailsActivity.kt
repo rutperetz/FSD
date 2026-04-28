@@ -46,7 +46,7 @@ class CourseDetailsActivity : AppCompatActivity() {
         courseId = intent.getStringExtra("courseId") ?: ""
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        vm.loadStudentAndData(userId, courseId)
+        vm.loadData(userId, courseId)
 
         setupObservers()
         setupClicks()
@@ -114,6 +114,8 @@ class CourseDetailsActivity : AppCompatActivity() {
                     val formatter = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
                     deadlineTextView.text = formatter.format(course.deadline.toDate())
                 }
+                deadlineTextView.setTextColor(getColor(R.color.black))
+
             }
             isDeadlinePassed = passed
             updateButtonsUI(vm.isRegistered.value == true)

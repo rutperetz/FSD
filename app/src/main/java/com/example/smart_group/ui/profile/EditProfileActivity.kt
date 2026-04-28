@@ -31,7 +31,6 @@ class EditProfileActivity : AppCompatActivity() {
         val etEmail = findViewById<EditText>(R.id.et_email)
         val etPassword = findViewById<EditText>(R.id.et_password)
         val btnSave = findViewById<MaterialButton>(R.id.save_changes_btn)
-        val tvLogout = findViewById<TextView>(R.id.logout_text)
 
         vm.toastMessage.observe(this) { msg ->
             if (!msg.isNullOrBlank()) {
@@ -67,7 +66,6 @@ class EditProfileActivity : AppCompatActivity() {
                     btnSave.isEnabled = true
 
                     Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
-                    vm.logout()
 
                     val intent = Intent(this, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -89,13 +87,6 @@ class EditProfileActivity : AppCompatActivity() {
             )
         }
 
-        tvLogout.setOnClickListener {
-            vm.logout()
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-        }
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
 
         bottomNav.selectedItemId = R.id.nav_profile

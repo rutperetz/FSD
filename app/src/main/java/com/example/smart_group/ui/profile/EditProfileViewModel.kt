@@ -148,9 +148,6 @@ class EditProfileViewModel(
         }
     }
 
-    fun logout() {
-        authRepo.logout()
-    }
 
     private fun validateUserName(userName: String): String? {
         val userNameRegex = Regex("^[A-Za-z]{1,15}$")

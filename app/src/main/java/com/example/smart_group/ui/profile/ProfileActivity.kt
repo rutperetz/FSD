@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.example.smart_group.ui.questionnaire.EditQuestionnaireActivity
 import android.view.View
+import com.example.smart_group.ui.login.LoginActivity
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -27,6 +28,15 @@ class ProfileActivity : AppCompatActivity() {
         val tvEmail = findViewById<TextView>(R.id.tv_email)
         val btnEditProfile = findViewById<MaterialButton>(R.id.btn_edit_profile)
         val btnViewQuestionnaire = findViewById<MaterialButton>(R.id.btn_view_questionnaire)
+        val logout = findViewById<TextView>(R.id.logout_text)
+
+        logout.setOnClickListener {
+            vm.logout()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
 
         btnViewQuestionnaire.setOnClickListener {
             startActivity(Intent(this, EditQuestionnaireActivity::class.java))
@@ -41,7 +51,6 @@ class ProfileActivity : AppCompatActivity() {
         vm.state.observe(this) { state ->
             when (state) {
                 is ProfileState.Loading -> {
-                    // optional loader
                 }
 
                 is ProfileState.Success -> {
@@ -57,6 +66,16 @@ class ProfileActivity : AppCompatActivity() {
 
                 is ProfileState.Error -> {
                     Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
+                }
+                is EditProfileState.NavigateToLogin -> {
+
+                    Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
+                    vm.logout()
+
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
                 }
             }
         }

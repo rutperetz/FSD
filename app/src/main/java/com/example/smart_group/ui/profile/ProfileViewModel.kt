@@ -27,6 +27,9 @@ class ProfileViewModel(
     private val _state = MutableLiveData<ProfileState>()
     val state: LiveData<ProfileState> = _state
 
+    fun logout() {
+        authRepo.logout()
+    }
     fun loadProfile() {
         viewModelScope.launch {
             try {
