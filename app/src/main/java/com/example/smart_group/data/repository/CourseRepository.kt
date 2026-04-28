@@ -26,17 +26,17 @@ class CourseRepository(
             .toObjects(Course::class.java)
     }
 
-    suspend fun addCourse(course: Course) {
-        coursesRef.document(course.courseId).set(course).await()
-    }
+//    suspend fun addCourse(course: Course) {
+//        coursesRef.document(course.courseId).set(course).await()
+//    }
 
     suspend fun updateCourse(course: Course) {
         coursesRef.document(course.courseId).set(course).await()
     }
 
-    suspend fun deleteCourse(courseId: String) {
-        coursesRef.document(courseId).delete().await()
-    }
+//    suspend fun deleteCourse(courseId: String) {
+//        coursesRef.document(courseId).delete().await()
+//    }
 
     fun listenToCourse(courseId: String, onChange: (Course) -> Unit) {
         coursesRef.document(courseId)

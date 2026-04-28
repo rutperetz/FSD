@@ -11,23 +11,23 @@ class EnrollmentRepository(
     private fun enrollmentsRef(courseId: String) =
         db.collection("courses").document(courseId).collection("enrollments")
 
-    suspend fun getEnrollments(courseId: String): List<Enrollment> =
-        enrollmentsRef(courseId).get().await().toObjects(Enrollment::class.java)
-
-    suspend fun getEnrollment(courseId: String, enrollmentId: String): Enrollment? =
-        enrollmentsRef(courseId).document(enrollmentId).get().await().toObject(Enrollment::class.java)
-
-    suspend fun addEnrollment(courseId: String, enrollment: Enrollment) {
-        enrollmentsRef(courseId).document(enrollment.enrollmentId).set(enrollment).await()
-    }
+//    suspend fun getEnrollments(courseId: String): List<Enrollment> =
+//        enrollmentsRef(courseId).get().await().toObjects(Enrollment::class.java)
+//
+//    suspend fun getEnrollment(courseId: String, enrollmentId: String): Enrollment? =
+//        enrollmentsRef(courseId).document(enrollmentId).get().await().toObject(Enrollment::class.java)
+//
+//    suspend fun addEnrollment(courseId: String, enrollment: Enrollment) {
+//        enrollmentsRef(courseId).document(enrollment.enrollmentId).set(enrollment).await()
+//    }
 
     suspend fun updateEnrollment(courseId: String, enrollment: Enrollment) {
         enrollmentsRef(courseId).document(enrollment.enrollmentId).set(enrollment).await()
     }
 
-    suspend fun deleteEnrollment(courseId: String, enrollmentId: String) {
-        enrollmentsRef(courseId).document(enrollmentId).delete().await()
-    }
+//    suspend fun deleteEnrollment(courseId: String, enrollmentId: String) {
+//        enrollmentsRef(courseId).document(enrollmentId).delete().await()
+//    }
 
 //    suspend fun getEnrollmentsByStudentId(studentId: String): List<Enrollment> {
 //        return db.collectionGroup("enrollments")
