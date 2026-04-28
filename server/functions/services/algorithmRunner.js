@@ -4,6 +4,7 @@ const functions = require("firebase-functions");
 const { startRound } = require("../algorithm/roundManager");
 const dbService = require("./firestoreDb");
 const { createTask } = require("../tasks/taskService");
+const { verifyRequest } = require("../utils/auth");
 
 // ------------------------------------------------------------
 // runAlgorithm
@@ -24,6 +25,8 @@ exports.runAlgorithm = onRequest({
 }, async(req, res) => {
 
     try {
+        await verifyRequest(req);
+
         const { courseId, round } = req.body;
         if (!courseId || typeof round !== "number") {
             return res.status(400).send("Missing or invalid parameters");

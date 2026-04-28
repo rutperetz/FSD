@@ -55,7 +55,10 @@ async function createTask(courseId, runTime, round) {
         httpRequest: {
             httpMethod: "POST",
             url: url,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "x-task-secret": process.env.TASK_SECRET
+             },
             body: Buffer.from(JSON.stringify({ courseId, round })).toString("base64"),
         },
         scheduleTime: {
