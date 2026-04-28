@@ -11,37 +11,11 @@ class EnrollmentRepository(
     private fun enrollmentsRef(courseId: String) =
         db.collection("courses").document(courseId).collection("enrollments")
 
-//    suspend fun getEnrollments(courseId: String): List<Enrollment> =
-//        enrollmentsRef(courseId).get().await().toObjects(Enrollment::class.java)
-//
-//    suspend fun getEnrollment(courseId: String, enrollmentId: String): Enrollment? =
-//        enrollmentsRef(courseId).document(enrollmentId).get().await().toObject(Enrollment::class.java)
-//
-//    suspend fun addEnrollment(courseId: String, enrollment: Enrollment) {
-//        enrollmentsRef(courseId).document(enrollment.enrollmentId).set(enrollment).await()
-//    }
 
     suspend fun updateEnrollment(courseId: String, enrollment: Enrollment) {
         enrollmentsRef(courseId).document(enrollment.enrollmentId).set(enrollment).await()
     }
 
-//    suspend fun deleteEnrollment(courseId: String, enrollmentId: String) {
-//        enrollmentsRef(courseId).document(enrollmentId).delete().await()
-//    }
-
-//    suspend fun getEnrollmentsByStudentId(studentId: String): List<Enrollment> {
-//        return db.collectionGroup("enrollments")
-//            .whereEqualTo("studentId", studentId)
-//            .get()
-//            .await()
-//            .documents
-//            .mapNotNull { document ->
-//                document.toObject(Enrollment::class.java)
-//            }
-//    }
-
-
-    // Returns all courses the student is enrolled in
     suspend fun getEnrollmentsByStudentId(studentId: String): List<Enrollment> {
         val courses = db.collection("courses").get().await()
 
@@ -60,7 +34,6 @@ class EnrollmentRepository(
         return result
     }
 
-    //// Returns enrollment in a specific course (used to check optIn for group registration)
     suspend fun getEnrollmentByStudent(courseId: String, studentId: String): Enrollment? {
 
         val result = enrollmentsRef(courseId)

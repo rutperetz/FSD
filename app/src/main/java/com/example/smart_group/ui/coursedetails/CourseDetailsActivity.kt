@@ -161,6 +161,15 @@ class CourseDetailsActivity : AppCompatActivity() {
 
         btnEditDeadline.setOnClickListener {
 
+            if (!isEditingAllowed()) {
+                Toast.makeText(
+                    this,
+                    "Editing is not available during grouping",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             val datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker().build()
 
             datePicker.addOnPositiveButtonClickListener { selectedDate ->
@@ -197,6 +206,15 @@ class CourseDetailsActivity : AppCompatActivity() {
         }
 
         btnEditGroupSize.setOnClickListener {
+
+            if (!isEditingAllowed()) {
+                Toast.makeText(
+                    this,
+                    "Editing is not available during grouping",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
 
             val dialogView = layoutInflater.inflate(R.layout.dialog_group_size, null)
             val minInput = dialogView.findViewById<EditText>(R.id.minInput)
@@ -288,5 +306,11 @@ class CourseDetailsActivity : AppCompatActivity() {
                 findViewById<ImageView>(R.id.btnEditGroupSize).visibility = View.GONE
             }
         }
+    }
+
+    private fun isEditingAllowed(): Boolean {
+        val status = vm.course.value?.groupingStatus
+        return status == com.example.smart_group.data.model.GroupingStatus.PENDING ||
+                status == com.example.smart_group.data.model.GroupingStatus.COMPLETED
     }
 }

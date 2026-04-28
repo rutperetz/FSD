@@ -38,10 +38,6 @@ class AuthRepository(
         user.reload().await()
     }
 
-//    fun isCurrentUserEmailVerified(): Boolean {
-//        return auth.currentUser?.isEmailVerified == true
-//    }
-
     fun logout() {
         auth.signOut()
     }

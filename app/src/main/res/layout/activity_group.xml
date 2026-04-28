@@ -23,7 +23,6 @@
             android:orientation="vertical"
             android:paddingBottom="24dp">
 
-            <!-- 🔹 HEADER -->
             <LinearLayout
                 android:id="@+id/headerBar"
                 android:layout_width="match_parent"
@@ -45,7 +44,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless" />
 
             </LinearLayout>
-            <!-- 🔹 COURSE HEADER -->
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/headerContainer"
                 android:layout_width="match_parent"
@@ -98,7 +97,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 🔹 MEMBERS -->
             <TextView
                 android:id="@+id/tvMembersTitle"
                 android:layout_width="wrap_content"
@@ -131,7 +129,6 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-            <!-- 🔹 REASONS -->
             <TextView
                 android:id="@+id/tvReasonsTitle"
                 android:layout_width="wrap_content"
@@ -153,7 +150,6 @@
                 android:textColor="#173B63"
                 android:textSize="14sp" />
 
-            <!-- 🔹 FEEDBACK -->
             <TextView
                 android:id="@+id/tvFeedbackTitle"
                 android:layout_width="wrap_content"
@@ -214,7 +210,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 🔹 BOTTOM NAV -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="0dp"
